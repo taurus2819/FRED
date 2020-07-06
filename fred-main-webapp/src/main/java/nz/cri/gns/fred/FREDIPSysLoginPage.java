@@ -1,9 +1,14 @@
 package nz.cri.gns.fred;
 
+import java.io.IOException;
 import java.util.Date;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.HibernateServletUtil;
 import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.util.UserUtil;
 import nz.cri.gns.jsp.IPSysLoginPage;
@@ -34,6 +39,11 @@ public abstract class FREDIPSysLoginPage extends IPSysLoginPage {
             throw new RuntimeException(e);
         }
         return user;
+    }
+
+    @Override
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HibernateServletUtil.withHibernateSession(() -> super.service(request, response));
     }
 
 }

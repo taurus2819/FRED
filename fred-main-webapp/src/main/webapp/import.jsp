@@ -167,11 +167,6 @@
             status = "AuthError";
             message = "User not found";            
         }
-
-        try {
-            FredHibernate.get().getDAOFactory().closeSession();
-        } catch (Exception e) {
-        }
     } catch (Exception e) {
         status = "Error";
         message = "Unexpected error";   

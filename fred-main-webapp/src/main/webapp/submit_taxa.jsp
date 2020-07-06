@@ -29,8 +29,4 @@
 		response.sendRedirect("folder_list.jsp");
 	else
 		response.sendRedirect(whereTo + "&q=" + Math.random());
-	try {
-		FredHibernate.get().getDAOFactory().closeSession();
-	} catch (Exception e) {
-	}
 %>

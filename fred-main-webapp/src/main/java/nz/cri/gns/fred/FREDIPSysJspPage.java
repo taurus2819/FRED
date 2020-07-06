@@ -2,8 +2,6 @@ package nz.cri.gns.fred;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,9 +10,8 @@ import javax.servlet.jsp.PageContext;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
 
-import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.KeyValueObject;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.HibernateServletUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.jsp.CustomHTMLLink;
 import nz.cri.gns.jsp.ExtranetTemplate;
@@ -26,7 +23,6 @@ import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.xls.upload.XlsUploadUtils;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
-    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.FREDIPSysJspPage");
 
     private static final long serialVersionUID = 20050818L;
     private static IpGrantedAuthority fredRights;
@@ -123,15 +119,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            super.service(request, response);
-        } finally {
-            try {
-                FredHibernate.get().getDAOFactory().closeSession();
-            } catch (StorageAccessException e) {
-                log.log(Level.WARNING, null, e);
-            }
-        }
+        HibernateServletUtil.withHibernateSession(() -> super.service(request, response));
     }
     
     /**

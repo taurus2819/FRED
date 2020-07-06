@@ -249,8 +249,4 @@
 	}
 
 	drawBottom(out, et);
-	try {
-		FredHibernate.get().getDAOFactory().closeSession();
-	} catch (Exception e) {
-	}
 %>

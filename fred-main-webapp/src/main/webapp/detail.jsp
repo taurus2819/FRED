@@ -95,7 +95,7 @@
         }
     }
 %><%
-    try {
+    {
         User user = (User) getUser(session);
         DAOFactory factory = FredHibernate.get().getDAOFactory();
         SampleUtil sampleUtil = new SampleUtil(factory);
@@ -889,10 +889,5 @@
         }
 
         drawBottom(out, et);
-    } finally {
-        try {
-            FredHibernate.get().getDAOFactory().closeSession();
-        } catch (Exception e) {
-        }
     }
 %>

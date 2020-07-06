@@ -9,10 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nz.cri.gns.auth.domain.User;
+import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.util.FREDUtil;
@@ -20,7 +20,7 @@ import nz.cri.gns.jsp.IPSysJspPage;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.XLSUploaderServlet;
 
-public class XLSUploadServlet extends HttpServlet {
+public class XLSUploadServlet extends FREDHibernateServlet {
 
     private static Logger log = Logger.getLogger("nz.cri.gns.fred.importer.XLSUploadServlet");
 
@@ -38,13 +38,13 @@ public class XLSUploadServlet extends HttpServlet {
         Connection manageConn = null;
         Connection importConn = null;
         Connection errorConn = null;
-
-        DAOFactory factory = FredHibernate.get().getDAOFactory();
+        DAOFactory factory = null;
 
         try {
             manageConn = FREDUtil.getConnection();
             importConn = FREDUtil.getConnection();
             errorConn = FREDUtil.getConnection();
+            factory = FredHibernate.get().getDAOFactory();
 
             new XLSUploaderServlet().doUploadAndImport(
                     req,
@@ -87,6 +87,6 @@ public class XLSUploadServlet extends HttpServlet {
             } catch (SQLException ex) {
             }
         }
-
     }
+
 }

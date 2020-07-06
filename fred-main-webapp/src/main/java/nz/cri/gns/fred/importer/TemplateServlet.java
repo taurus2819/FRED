@@ -5,10 +5,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nz.cri.gns.auth.domain.User;
+import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.util.FREDUtil;
@@ -16,7 +16,7 @@ import nz.cri.gns.jsp.IPSysJspPage;
 import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.export.SpreadsheetExporter;
 
-public class TemplateServlet extends HttpServlet {
+public class TemplateServlet extends FREDHibernateServlet {
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -24,10 +24,10 @@ public class TemplateServlet extends HttpServlet {
             throws ServletException, IOException {
 
         Connection conn = null;
+        DAOFactory factory = null;
         try {
 
             User user = IPSysJspPage.getUser(request.getSession());
-            DAOFactory factory = FredHibernate.get().getDAOFactory();
             if (null == user) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "You must log in first.");
                 return;
@@ -41,6 +41,7 @@ public class TemplateServlet extends HttpServlet {
 
                 SpreadsheetExporter ss;
                 if ("FRED_PALEO".equals(templateCode)) {
+                    factory = FredHibernate.get().getDAOFactory();
                     ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleontological Analysis", factory, user);
                 } else {
                     ss = new SpreadsheetExporter(conn, templateCode, null, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
@@ -51,6 +52,7 @@ public class TemplateServlet extends HttpServlet {
             // Now do it for real.
             SpreadsheetExporter ss;
             if ("FRED_PALEO".equals(templateCode)) {
+                factory = FredHibernate.get().getDAOFactory();
                 ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleontological Analysis", factory, user);
             } else {
                 ss = new SpreadsheetExporter(conn, templateCode, null, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));

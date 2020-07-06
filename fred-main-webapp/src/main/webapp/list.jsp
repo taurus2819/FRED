@@ -406,10 +406,4 @@ public IpGrantedAuthority getRequiredRights() {
                 }
             }
         }
-    %></table><%
-        try {
-            FredHibernate.get().getDAOFactory().closeSession();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-%></body></html>
+    %></table></body></html>

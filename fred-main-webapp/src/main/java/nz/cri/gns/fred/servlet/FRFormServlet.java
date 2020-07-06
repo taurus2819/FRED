@@ -11,7 +11,6 @@ import java.util.Vector;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.FactoryConfigurationError;
@@ -64,9 +63,10 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEvent;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
+import nz.cri.gns.fred.FREDHibernateServlet;
 import org.apache.commons.lang3.StringEscapeUtils;
 
-public class FRFormServlet extends HttpServlet implements PdfPageEvent {
+public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent {
 
 	private static final long serialVersionUID = 20050818L;
 	

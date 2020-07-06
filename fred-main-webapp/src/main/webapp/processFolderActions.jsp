@@ -1,5 +1,6 @@
 <%@page pageEncoding="utf-8"
 %><%@page contentType="text/xml"
+%><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.auth.domain.User"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
@@ -229,6 +230,4 @@ if (request.getParameter("ActionType") != null) {
 	}
 }
 
-%></fred><%
-folderUtil.closeSession();
-%>
+%></fred>

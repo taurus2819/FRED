@@ -7,11 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -19,6 +16,7 @@ import net.sf.hibernate.HibernateException;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Adoption;
@@ -53,11 +51,7 @@ import org.apache.commons.csv.CSVPrinter;
 /**
  * Was export.jsp.
  */
-public class ExportServlet
-        extends HttpServlet {
-
-    private static final Logger log = Logger.getLogger(
-            "nz.cri.gns.fred.servlet.ExportServlet");
+public class ExportServlet     extends FREDHibernateServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -696,14 +690,7 @@ public class ExportServlet
             }
         } catch (StorageAccessException | SQLException | NamingException | HibernateException e) {
             throw new ServletException(e);
-        } finally {
-            try {
-                factory.closeSession();
-            } catch (StorageAccessException ex) {
-                log.log(Level.WARNING, null, ex);
-            }
-        }
-
+        } 
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

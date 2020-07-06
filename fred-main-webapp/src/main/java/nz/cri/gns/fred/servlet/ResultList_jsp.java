@@ -2,7 +2,6 @@ package nz.cri.gns.fred.servlet;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.*;
@@ -36,14 +35,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
 import nz.cri.gns.fred.util.StageUtil;
-import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
-public class ResultList_jsp extends HttpServlet {
+public class ResultList_jsp extends FREDHibernateServlet {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.servlet.ResultList_jsp");
     
@@ -554,7 +553,6 @@ public class ResultList_jsp extends HttpServlet {
             }
 
             h.drawBottom(out, et);
-            factory.closeSession();
         } catch (Exception e) {
             log.log(Level.WARNING, null, e);
             out.write("<p>An error occurred:</p><p> ");

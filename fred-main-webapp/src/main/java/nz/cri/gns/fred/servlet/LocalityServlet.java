@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import nz.cri.gns.fred.FREDHibernateServlet;
 
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
@@ -17,7 +17,7 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 
-public class LocalityServlet extends HttpServlet {
+public class LocalityServlet extends FREDHibernateServlet {
 
     private static final long serialVersionUID = 20060714L;
 
@@ -75,14 +75,6 @@ public class LocalityServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect(baseUrl + "detail.jsp?FeatID=-1");
-        } finally {
-            if (factory != null) {
-                try {
-                    factory.closeSession();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

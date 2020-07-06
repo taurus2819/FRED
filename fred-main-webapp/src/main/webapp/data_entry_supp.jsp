@@ -215,10 +215,6 @@
 			if (request.getParameter("Add").equals("Person")) {
 				Person person = personUtil.findOrCreatePerson(request.getParameter("PersonName"));
 				%><script language="JavaScript">alert("<%=person.getName()%> added to list.  Please now select from drop-down list to add to form");</script><%
-				try {
-					FredHibernate.get().getDAOFactory().closeSession();
-				} catch (Exception e) {
-				}
 			}
 		}
 		try {

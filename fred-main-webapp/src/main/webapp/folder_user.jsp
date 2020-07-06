@@ -144,6 +144,5 @@
 	}
 
 	drawBottom(out, et);
-	folderUtil.closeSession();
 
 %>

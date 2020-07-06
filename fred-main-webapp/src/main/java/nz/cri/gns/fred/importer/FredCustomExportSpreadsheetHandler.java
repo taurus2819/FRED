@@ -71,12 +71,12 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
             case "INFERRED_STAGE_LOWER":
             case "INFERRED_STAGE_UPPER":
                 try {
-                    sheet.addDropDownHeader(heading, c, conn, getStages());
-                } catch (SQLException ex) {
-                    throw new MgException("Could not get a list of Ages.", ex);
-                }
-                sheet.nextColumn();
-                return true;
+                sheet.addDropDownHeader(heading, c, conn, getStages());
+            } catch (SQLException ex) {
+                throw new MgException("Could not get a list of Ages.", ex);
+            }
+            sheet.nextColumn();
+            return true;
             default:
                 return false;
         }
@@ -124,22 +124,14 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
     }
 
     private void addFolderList(GenericSpreadsheet sheet, String heading, User user) {
-        DAOFactory factory = null;
         try {
-            factory = FredHibernate.get().getDAOFactory();
+            DAOFactory factory = FredHibernate.get().getDAOFactory();
             List<UserFolder> folders = new FolderUtil(factory).getPersonalFolders(user);
             List<String> columnValues = folders.stream().map(folder -> folder.getFolderName()).collect(Collectors.toList());
             sheet.addDropDownHeader(heading, null, columnValues);
             sheet.nextColumn();
         } catch (StorageAccessException e) {
             throw new MgException(e);
-        } finally {
-            if (null != factory) {
-                try {
-                    factory.closeSession();
-                } catch (StorageAccessException ex) {
-                }
-            }
         }
     }
 

@@ -3,7 +3,6 @@ package nz.cri.gns.fred.servlet;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.*;
@@ -20,12 +19,11 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
@@ -34,10 +32,7 @@ import nz.cri.gns.xss.SanitizeHttpServletRequest;
 /**
  * Was de.jsp
  */
-public class De_jsp
-        extends HttpServlet {
-
-    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.servlet.De_jsp");
+public class De_jsp extends FREDHibernateServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -184,12 +179,6 @@ public class De_jsp
             out.flush();
         } catch (StorageAccessException | InsufficientPrivelegesException | SQLException e) {
             throw new ServletException(e);
-        } finally {
-            try {
-                factory.closeSession();
-            } catch (StorageAccessException ex) {
-                log.log(Level.WARNING, null, ex);
-            }
         }
     }
 

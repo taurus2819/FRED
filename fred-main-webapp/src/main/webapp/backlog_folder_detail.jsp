@@ -30,7 +30,6 @@
 	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	try {
 		if (request.getParameter("ID") == null) {
-			factory.closeSession();
 			response.sendRedirect("folder_list.jsp");
 			return;
 		}
@@ -139,8 +138,5 @@
 		drawBottom(out, et);
 	} catch (Exception e) {
 		e.printStackTrace();
-	} finally {
-		//Close the session
-		factory.closeSession();
 	}
 %>

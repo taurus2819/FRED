@@ -302,6 +302,5 @@
     } finally {
         drawBottom(out, et);
         et.setDisplayLoadingMessage(false);
-        factory.closeSession();
     }
 %>

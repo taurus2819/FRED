@@ -167,10 +167,6 @@ public class HibernateDAOFactory
         return HibernateUtils.getFirst(provider, "FROM TaxonomicGroup As g WHERE g.name = ?", groupName, TaxonomicGroup.class);
     }
 
-    public void closeSession() throws StorageAccessException {
-        provider.closeSession();
-    }
-
     //FeatureDAO methods
     //SampleDAO methods
     public Relationship cloneRelationship(Relationship relationship) {

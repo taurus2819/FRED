@@ -1,5 +1,6 @@
 <%@page pageEncoding="utf-8"
 %><%@page contentType="text/xml"
+%><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="java.text.DateFormat"
 %><%@page import="java.util.Vector"
 %><%@page import="java.net.URLEncoder"
@@ -138,6 +139,4 @@ for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 }
 %></samples>
 </feature>
-</fred><%
-folderUtil.closeSession();
-%>
+</fred>

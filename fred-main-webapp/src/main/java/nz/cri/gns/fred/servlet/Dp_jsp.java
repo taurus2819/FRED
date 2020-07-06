@@ -17,6 +17,7 @@ import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.website.WebsiteConstants;
 import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
 import nz.cri.gns.jsp.IconnedLink;
@@ -24,7 +25,7 @@ import nz.cri.gns.jsp.IconnedLink;
 /**
  * Was dp.jsp. Submit data entry stuff.
  */
-public class Dp_jsp extends HttpServlet {
+public class Dp_jsp extends FREDHibernateServlet {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.servlet.Dp_jsp");
 
@@ -46,12 +47,12 @@ public class Dp_jsp extends HttpServlet {
         });
 
         DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
-        
-        if (null==dataEntryForm) {
+
+        if (null == dataEntryForm) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Sorry; your session went away by accident. Go back and try again.");
             return;
         }
-        
+
         try {
             try {
                 DAOFactory factory = FredHibernate.get().getDAOFactory();
@@ -62,14 +63,13 @@ public class Dp_jsp extends HttpServlet {
                 } else {
                     dataEntryForm.save(FREDConstants.DATA_ORIGIN_ONLINE);
                 }
-                factory.closeSession();
+
                 String whereTo = (String) session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT);
                 if (whereTo == null) {
                     response.sendRedirect("folder_list.jsp");
                 } else {
                     response.sendRedirect(whereTo + "&q=" + Math.random());
                 }
-                return;
 
             } catch (TaxonomicListException e) {
                 //Still save it
@@ -135,11 +135,11 @@ public class Dp_jsp extends HttpServlet {
 
                 }
             } else {
-                    out.write("<tr><td class=\"heading\">Problem Field&nbsp;&nbsp;</td><td>");
-                    out.write("</td></tr>\n");
-                    out.write("\t\t\t\t<tr><td class=\"heading\">Error</td><td>");
-                    out.print("Unfortunately, FRED didn't give any nice error messages to display here.");
-                    out.write("</td></tr>");
+                out.write("<tr><td class=\"heading\">Problem Field&nbsp;&nbsp;</td><td>");
+                out.write("</td></tr>\n");
+                out.write("\t\t\t\t<tr><td class=\"heading\">Error</td><td>");
+                out.print("Unfortunately, FRED didn't give any nice error messages to display here.");
+                out.write("</td></tr>");
             }
 
             out.write("</table>");
@@ -182,11 +182,6 @@ public class Dp_jsp extends HttpServlet {
 
         } finally {
             out.flush();
-            try {
-                FredHibernate.get().getDAOFactory().closeSession();
-            } catch (StorageAccessException ex) {
-                log.log(Level.SEVERE, null, ex);
-            }
         }
 
     }

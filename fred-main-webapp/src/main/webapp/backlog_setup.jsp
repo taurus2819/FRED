@@ -25,7 +25,6 @@
 DAOFactory factory = FredHibernate.get().getDAOFactory();
 try {
 	if (request.getParameter("ID") == null) {
-		factory.closeSession();
 		response.sendRedirect("folder_list.jsp");
 		return;
 	} 
@@ -39,7 +38,6 @@ try {
 	if (request.getParameter("folderTo") != null) {
 		UserFolder folderTo = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderTo")), user);
 		if (!folderTo.isAllowedEditLocalities()) {
-			factory.closeSession();
 			response.sendRedirect("folder_list.jsp");
 			return;
 		}
@@ -80,8 +78,5 @@ try {
 	drawBottom(out, et);
 } catch (Exception e) {
 	e.printStackTrace();
-} finally {
-	//Close the session
-	factory.closeSession();
 }
 %>

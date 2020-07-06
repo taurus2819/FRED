@@ -1,6 +1,5 @@
 package nz.cri.gns.fred.util;
 
-import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.FREDConstants;
 
@@ -10,10 +9,6 @@ public abstract class ModelUtil implements FREDConstants {
 	
 	public ModelUtil(DAOFactory factory) {
 		this.factory = factory;
-	}
-	
-	public void closeSession() throws StorageAccessException {
-		factory.closeSession();
 	}
 
     protected boolean equalsEmptyEquivNull(String str1, String str2) {
