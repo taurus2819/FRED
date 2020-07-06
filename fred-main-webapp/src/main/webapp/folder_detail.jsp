@@ -387,22 +387,22 @@
 					}	
 					if (featureNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this locality') == true) {featureAction('" + featureId + "', 'Delete');}", "","Delete/Remove"));
+						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this locality?') == true) {featureAction('" + featureId + "', 'Delete');}", "","Delete/Remove"));
 						tr.appendChild(td);
 					} else if (featureNode.getElementsByTagName("remove")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {featureAction('" + featureId + "', 'Remove');}", "","Delete/Remove"));
+						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to remove this locality from your folder?') == true) {featureAction('" + featureId + "', 'Remove');}", "","Delete/Remove"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}	
 					if (featureNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/submit.gif", "javascript:if (confirm('Are you sure you want to submit this locality') == true) {featureAction('" + featureId + "', 'Submit');}", "","Submit"));
+						td.appendChild(createIcon("images/submit.gif", "javascript:if (confirm('Are you sure you want to submit this locality?') == true) {featureAction('" + featureId + "', 'Submit');}", "","Submit"));
 						tr.appendChild(td);
 					} else if (featureNode.getElementsByTagName("revoke")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/revoke.gif", "javascript:if (confirm('Are you sure you want to revoke this locality') == true) {featureAction('" + featureId + "', 'Revoke');}", ""));
+						td.appendChild(createIcon("images/revoke.gif", "javascript:if (confirm('Are you sure you want to revoke this locality?') == true) {featureAction('" + featureId + "', 'Revoke');}", ""));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
@@ -491,7 +491,7 @@
 					tr.appendChild(document.createElement("td"));
 					if (sampleNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this sample') == true) {sampleAction('" + sampleId + "', 'Delete');}", "","Delete/Remove"));
+						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this sample?') == true) {sampleAction('" + sampleId + "', 'Delete');}", "","Delete/Remove"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
@@ -589,7 +589,7 @@
 					tr.appendChild(document.createElement("td"));
 					if (recordNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this record') == true) {recordAction('" + recordId + "', 'Delete');}", "","Delete/Remove"));
+						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this record?') == true) {recordAction('" + recordId + "', 'Delete');}", "","Delete/Remove"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
@@ -747,15 +747,15 @@
 					}
 					%></td><td style="text-align: left"><%
 					if (!status.equals(FREDConstants.APPROVED) && featureUtil.isAllowedDeleteFeature(user, feature, folder)) {
-						%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Delete');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" title="Delete/Remove"/></a>&nbsp;<%
+						%><a href="javascript:if (confirm('Are you sure you want to delete this locality?') == true) {featureAction('<%=feature.getFeatureId()%>', 'Delete');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" title="Delete/Remove"/></a>&nbsp;<%
 					} else if (status.equals(FREDConstants.APPROVED) && !FREDUtil.isEmpty(feature.getFolders())) {
-						%><a href="javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {featureAction('<%=feature.getFeatureId()%>', 'Remove');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Remove Locality" title="Delete/Remove"/></a>&nbsp;<%
+						%><a href="javascript:if (confirm('Are you sure you want to remove this locality from your folder?') == true) {featureAction('<%=feature.getFeatureId()%>', 'Remove');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Remove Locality" title="Delete/Remove"/></a>&nbsp;<%
 					}
 					%></td><td style="text-align: left"><%
 					if (featureUtil.isAllowedSubmitFeature(user, feature, folder)) {
-						%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Submit');}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" title="Submit"/></a>&nbsp;<%
+						%><a href="javascript:if (confirm('Are you sure you want to submit this locality?') == true) {featureAction('<%=feature.getFeatureId()%>', 'Submit');}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" title="Submit"/></a>&nbsp;<%
 					} else if (featureUtil.isAllowedRevokeFeature(user, feature, folder)) {
-						%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Revoke');}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
+						%><a href="javascript:if (confirm('Are you sure you want to revoke this locality?') == true) {featureAction('<%=feature.getFeatureId()%>', 'Revoke');}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
 					}
 					%></td>
 					<td style="text-align: left"><%
