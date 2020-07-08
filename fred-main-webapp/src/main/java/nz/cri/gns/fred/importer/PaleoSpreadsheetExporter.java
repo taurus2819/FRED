@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -12,9 +15,11 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FolderUtil;
+import nz.cri.gns.fred.util.LabUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
@@ -79,8 +84,17 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             String stageModList = s.addList("Stage mod", new String[]{"?"});
 
             RecordUtil recordUtil = new RecordUtil(factory);
-
-            String labList = s.addList("Laboratories", factory.getFredDAO().getLabSectionLongNames());
+            
+                        LabUtil labUtil = new LabUtil(factory);
+            
+            List<Lab> labs = labUtil.getLabs();
+            
+            String labList = s.addList("Laboratories", labUtil.getLabs().stream().map(Lab::getName).collect(Collectors.toList()));
+            ArrayList<String> sections = new ArrayList();
+            for (Lab lab : labs){
+                sections.add(lab.getName());
+                sections.add(s.addList("sections of " + lab.getName(), lab.getSections().stream().map(LabSection::getCode).collect(Collectors.toList())));
+            }
 
             String beatlesList = s.addList("Beatles", new String[]{"John", "Paul", "George", "Ringo", "Stu"});
             String wilburysList = s.addList("Traveling Wilburys", new String[]{"George", "Jeff", "Tom", "Bob", "Roy"});
