@@ -62,7 +62,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             FolderUtil folderUtil = new FolderUtil(factory);
             String folderList = s.addList("Folders", folderUtil.getPersonalFolders(user).stream().map(UserFolder::getFolderName).collect(Collectors.toList()));
-            
+
             TaxonomicUtil taxUtil = new TaxonomicUtil(factory);
             List<TaxonomicGroup> groups;
             groups = taxUtil.getTaxonomicGroups();
@@ -81,7 +81,12 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             RecordUtil recordUtil = new RecordUtil(factory);
 
             String labList = s.addList("Laboratories", factory.getFredDAO().getLabSectionLongNames());
-            
+
+            String beatlesList = s.addList("Beatles", new String[]{"John", "Paul", "George", "Ringo", "Stu"});
+            String wilburysList = s.addList("Traveling Wilburys", new String[]{"George", "Jeff", "Tom", "Bob", "Roy"});
+            String bandList = s.addList("Bands", new String[]{"Beatles", "Traveling Wilburys"});
+            String bandChildren = s.addList("Band Children", new String[]{"@@GNS_submenu@@", "0,-1", "Beatles", beatlesList, "Traveling Wilburys", wilburysList});
+
             s.addSheet(SHEETNAME, it);
 
             // Leave a blank row for "headings".
@@ -118,6 +123,9 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             addTextCellsAcross("Stage Comments", it, "Enter comments about the stage.");
 
             addCellsAcross("Laboratory", labList, it, "Choose a Laboratory.");
+            
+            addCellsAcross("Band", bandList, it, "Choose a Band.");
+            addCellsAcross("Band Member", bandChildren, it, "Choose a Band Member");
 
             addTextCellsAcross("Lab Number", it, "Enter the number used in the laboratory for this sample.");
 
@@ -132,7 +140,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
                 s.setCellAsHeading();
                 s.nextColumn();
 
-                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter '*' for presense, a numeric count, count|comment, a straight comment, 'aff.' or 'cf.'", false);
+                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter '*' for presence, a numeric count, count|comment, a straight comment, 'aff.' or 'cf.'", false);
             }
 
             s.finish();
@@ -177,7 +185,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         }
         wb = (XSSFWorkbook) spreadsheet.getUnderlyingSpreadsheet();
         XSSFSheet s = wb.getSheet(SHEETNAME);
-        if (s==null) {
+        if (s == null) {
             return;
         }
         s.setColumnWidth(1, 32 * 256);
