@@ -111,8 +111,8 @@ public class TestImporter {
 
             // Upload it.
             XLSUploader uploader = new XLSUploader();
-            InputStream in = new FileInputStream(getResource("/importer/paleo.xlsx"));
-            sheets = uploader.readWorksheets(in, "paleo.xlsx", -1, conn);
+            InputStream in = new FileInputStream(getResource("/importer/paleo.xlsm"));
+            sheets = uploader.readWorksheets(in, "paleo.xlsm", -1, conn);
 
             Integer sheetId = sheets.get(0).id;
             List<RowProcessor> rps = new ArrayList<>();
