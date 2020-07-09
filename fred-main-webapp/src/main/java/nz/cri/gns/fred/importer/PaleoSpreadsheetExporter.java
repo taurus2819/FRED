@@ -83,23 +83,18 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             String stageModList = s.addList("Stage mod", new String[]{"?"});
 
-            RecordUtil recordUtil = new RecordUtil(factory);
-            
-                        LabUtil labUtil = new LabUtil(factory);
-            
+            LabUtil labUtil = new LabUtil(factory);
             List<Lab> labs = labUtil.getLabs();
-            
             String labList = s.addList("Laboratories", labUtil.getLabs().stream().map(Lab::getName).collect(Collectors.toList()));
-            ArrayList<String> sections = new ArrayList();
-            for (Lab lab : labs){
-                sections.add(lab.getName());
-                sections.add(s.addList("sections of " + lab.getName(), lab.getSections().stream().map(LabSection::getCode).collect(Collectors.toList())));
+            
+            ArrayList<String> labCodes = new ArrayList();
+            labCodes.add("@@GNS_submenu@@");
+            labCodes.add("0,-1");
+            for (Lab lab : labs) {
+                labCodes.add(lab.getName());
+                labCodes.add(s.addList("codes of " + lab.getName(), lab.getSections().stream().map(LabSection::getCode).sorted().collect(Collectors.toList())));
             }
-
-            String beatlesList = s.addList("Beatles", new String[]{"John", "Paul", "George", "Ringo", "Stu"});
-            String wilburysList = s.addList("Traveling Wilburys", new String[]{"George", "Jeff", "Tom", "Bob", "Roy"});
-            String bandList = s.addList("Bands", new String[]{"Beatles", "Traveling Wilburys"});
-            String bandChildren = s.addList("Band Children", new String[]{"@@GNS_submenu@@", "0,-1", "Beatles", beatlesList, "Traveling Wilburys", wilburysList});
+            String labSectionList = s.addList("Lab Codes", labCodes);
 
             s.addSheet(SHEETNAME, it);
 
@@ -136,11 +131,8 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             addTextCellsAcross("Stage Comments", it, "Enter comments about the stage.");
 
-            addCellsAcross("Laboratory", labList, it, "Choose a Laboratory.");
-            
-            addCellsAcross("Band", bandList, it, "Choose a Band.");
-            addCellsAcross("Band Member", bandChildren, it, "Choose a Band Member");
-
+            addCellsAcross("Lab Name", labList, it, "Choose a Laboratory Name.");
+            addCellsAcross("Lab Code", labSectionList, it, "Choose a Laboratory Code.");
             addTextCellsAcross("Lab Number", it, "Enter the number used in the laboratory for this sample.");
 
             addTextCellsAcross("Collection Comments", it, "Enter comments about this collection. ");

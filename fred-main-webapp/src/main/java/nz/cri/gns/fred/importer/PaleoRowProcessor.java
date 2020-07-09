@@ -2,6 +2,7 @@ package nz.cri.gns.fred.importer;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class PaleoRowProcessor extends RowProcessor {
     Map<Integer, BigDecimal> topDepthMatrix; // Map column num -> top depth
     Map<Integer, BigDecimal> bottomDepthMatrix; // Map column  num -> bottom depth.
     Map<Integer, String> sampleTypeMatrix; // Map column num -> sample type.
+    Map<Integer, String> labNameMatrix; // Map column num ->  lab name
 
     // These are the rows in the spreadsheet.
     private static final int ROW_FOLDER = 1;
@@ -59,10 +61,11 @@ public class PaleoRowProcessor extends RowProcessor {
     private static final int ROW_STOP_STAGE = 11;
     private static final int ROW_STOP_MOD = 12;
     private static final int ROW_STAGE_COMMENT = 13;
-    private static final int ROW_LABORATORY = 14;
-    private static final int ROW_LAB_NUMBER = 15;
-    private static final int ROW_COLLECTION_COMMENTS = 16;
-    private static final int ROW_MATRIX_START = 17;
+    private static final int ROW_LAB_NAME = 14;
+    private static final int ROW_LAB_CODE = 15;
+    private static final int ROW_LAB_NUMBER = 16;
+    private static final int ROW_COLLECTION_COMMENTS = 17;
+    private static final int ROW_MATRIX_START = 18;
     private final FredDAO fredDAO;
     private final TaxonomicUtil taxonUtil;
     private final PersonUtil personUtil;
@@ -82,6 +85,7 @@ public class PaleoRowProcessor extends RowProcessor {
         this.topDepthMatrix = new Hashtable<>();
         this.bottomDepthMatrix = new Hashtable<>();
         this.sampleTypeMatrix = new Hashtable<>();
+        this.labNameMatrix = new HashMap();
         this.fredDAO = factory.getFredDAO();
         this.taxonUtil = new TaxonomicUtil(factory);
         this.personUtil = new PersonUtil(factory);
@@ -114,7 +118,7 @@ public class PaleoRowProcessor extends RowProcessor {
             if (rowNum > ROW_SAMPLE_TYPE && each.getColumnNum() >= 2) {
                 paleo = getPaleo(v.getColumnNum());
                 if (null == paleo) {
-                    throw new RowImportException(row, v, "The locality wasn't defined back in row " + Integer.toString(ROW_LOCALITY+1) + " of column " + XLSXSpreadsheet.columnNumToLetters(each.getColumnNum()));
+                    throw new RowImportException(row, v, "The locality wasn't defined back in row " + Integer.toString(ROW_LOCALITY + 1) + " of column " + XLSXSpreadsheet.columnNumToLetters(each.getColumnNum()));
                 }
             }
 
@@ -181,7 +185,10 @@ public class PaleoRowProcessor extends RowProcessor {
                             paleo.setStageComments(v.getValueString());
                             log("Setting stage comments: " + v.getValueString());
                             break;
-                        case ROW_LABORATORY:
+                        case ROW_LAB_NAME:
+                            labNameMatrix.put(v.getColumnNum(), v.getValueString());           
+                            break;
+                        case ROW_LAB_CODE:
                             setLabSection(paleo, row, v);
                             break;
                         case ROW_LAB_NUMBER:
@@ -292,9 +299,9 @@ public class PaleoRowProcessor extends RowProcessor {
             }
         } else {
             // We add a space to make sure we capture any last '|'.
-            String[] parts = (newEntry+" ").split("\\|");
+            String[] parts = (newEntry + " ").split("\\|");
             try {
-                if (null!=parts[0] && !parts[0].isEmpty()) {
+                if (null != parts[0] && !parts[0].isEmpty()) {
                     count = Integer.parseInt(parts[0]);
                 }
             } catch (NumberFormatException e) {
@@ -310,7 +317,7 @@ public class PaleoRowProcessor extends RowProcessor {
                     if (coords.isEmpty()) {
                         coords = null;
                     }
-                    comments = comments+parts[2].trim();
+                    comments = comments + parts[2].trim();
                 } else {
                     comments = newEntry; // At the very least, don't lose data.
                 }
@@ -347,7 +354,7 @@ public class PaleoRowProcessor extends RowProcessor {
         }
         Taxon tx;
         if (null == txs || txs.isEmpty()) {
-            warn("Cannot find the taxon \"txStr\"+. Assuming it is a new one."); 
+            warn("Cannot find the taxon \"txStr\"+. Assuming it is a new one.");
             tx = taxonUtil.createTaxon();
             tx.setTaxonomicGroup(taxonGroup);
             tx.setStatus(FREDConstants.PROVISIONAL);
@@ -364,7 +371,7 @@ public class PaleoRowProcessor extends RowProcessor {
         PaleontologyListEntry result = fredDAO.createNewPaleontologyListEntry();
         result.setSpecimenCount(count);
         result.setSpecimenCoords(coords);
-        if (null==comments || comments.isEmpty()) {
+        if (null == comments || comments.isEmpty()) {
             result.setComments(null);
         } else {
             result.setComments(comments);
@@ -503,7 +510,7 @@ public class PaleoRowProcessor extends RowProcessor {
         if (!v.isEmpty()) {
             LabSection ls;
 
-            ls = fredDAO.findLabSectionByLongName(v.getValueString());
+            ls = fredDAO.getLabSection(labNameMatrix.get(v.getColumnNum()), v.getValueString());
             log("Setting lab section: " + ls);
             if (!v.isEmpty() && null == ls) {
                 throw new RowImportException(row, v, "Failed to find this laboratory.");
