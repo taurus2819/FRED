@@ -244,10 +244,6 @@ public interface FredDAO {
 
     public FrUser createNewFrUser();
 
-    /** Use this to create a drop-down list of labs. */
-    public List<String> getLabSectionLongNames();
-
-    /** In the drop-down list you made using the previous method, use this to work out which LabSection it was. */
-    public LabSection findLabSectionByLongName(String name);
+    public LabSection getLabSection(String labName, String labCode);
 
 }
