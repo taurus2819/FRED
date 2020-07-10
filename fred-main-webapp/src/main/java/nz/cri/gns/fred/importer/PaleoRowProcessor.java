@@ -2,7 +2,7 @@ package nz.cri.gns.fred.importer;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +43,6 @@ public class PaleoRowProcessor extends RowProcessor {
     Map<Integer, BigDecimal> topDepthMatrix; // Map column num -> top depth
     Map<Integer, BigDecimal> bottomDepthMatrix; // Map column  num -> bottom depth.
     Map<Integer, String> sampleTypeMatrix; // Map column num -> sample type.
-    Map<Integer, String> labNameMatrix; // Map column num ->  lab name
 
     // These are the rows in the spreadsheet.
     private static final int ROW_FOLDER = 1;
@@ -60,16 +59,10 @@ public class PaleoRowProcessor extends RowProcessor {
     private static final int ROW_STOP_STAGE = 11;
     private static final int ROW_STOP_MOD = 12;
     private static final int ROW_STAGE_COMMENT = 13;
-    private static final int ROW_LAB_NAME = 14;
-    private static final int ROW_LAB_CODE = 15;
-    private static final int ROW_LAB_NUMBER = 16;
-    private static final int ROW_COLLECTION_COMMENTS = 17;
-    private static final int ROW_MATRIX_START = 18;
-
-    private static final int COL_TAXON_GROUP = 1;
-    private static final int COL_TAXON = 2;
-    private static final int COL_DATA_START = 3;
-
+    private static final int ROW_LABORATORY = 14;
+    private static final int ROW_LAB_NUMBER = 15;
+    private static final int ROW_COLLECTION_COMMENTS = 16;
+    private static final int ROW_MATRIX_START = 17;
     private final FredDAO fredDAO;
     private final TaxonomicUtil taxonUtil;
     private final PersonUtil personUtil;
@@ -84,12 +77,11 @@ public class PaleoRowProcessor extends RowProcessor {
         super(code);
         this.user = user;
         this.paleoMatrix = paleoMatrix;
-        this.folderNameMatrix = new HashMap<>();
-        this.localityNameMatrix = new HashMap<>();
-        this.topDepthMatrix = new HashMap<>();
-        this.bottomDepthMatrix = new HashMap<>();
-        this.sampleTypeMatrix = new HashMap<>();
-        this.labNameMatrix = new HashMap();
+        this.folderNameMatrix = new Hashtable<>();
+        this.localityNameMatrix = new Hashtable<>();
+        this.topDepthMatrix = new Hashtable<>();
+        this.bottomDepthMatrix = new Hashtable<>();
+        this.sampleTypeMatrix = new Hashtable<>();
         this.fredDAO = factory.getFredDAO();
         this.taxonUtil = new TaxonomicUtil(factory);
         this.personUtil = new PersonUtil(factory);
@@ -104,16 +96,11 @@ public class PaleoRowProcessor extends RowProcessor {
     @Override
     protected void importRow(Row row) throws SQLException, RowImportException {
         int rowNum = row.getRowNum();
-        Taxon taxon = null;
 
         if (rowNum == ROW_SAMPLE_TYPE + 1) {
             for (Integer c : localityNameMatrix.keySet()) {
                 findSample(c, row);
             }
-        }
-
-        if (rowNum >= ROW_MATRIX_START) {
-            taxon = addTaxon(row);
         }
 
         for (RowValue each : row) {
@@ -124,14 +111,14 @@ public class PaleoRowProcessor extends RowProcessor {
                 continue;
             }
             Paleontology paleo = null;
-            if (rowNum > ROW_SAMPLE_TYPE && each.getColumnNum() >= COL_DATA_START) {
+            if (rowNum > ROW_SAMPLE_TYPE && each.getColumnNum() >= 2) {
                 paleo = getPaleo(v.getColumnNum());
                 if (null == paleo) {
-                    throw new RowImportException(row, v, "The locality wasn't defined back in row " + Integer.toString(ROW_LOCALITY + 1) + " of column " + XLSXSpreadsheet.columnNumToLetters(each.getColumnNum()));
+                    throw new RowImportException(row, v, "The locality wasn't defined back in row " + Integer.toString(ROW_LOCALITY+1) + " of column " + XLSXSpreadsheet.columnNumToLetters(each.getColumnNum()));
                 }
             }
 
-            if (each.getColumnNum() >= COL_DATA_START) {
+            if (each.getColumnNum() >= 2) {
                 if (rowNum < ROW_MATRIX_START) {
                     switch (rowNum) {
                         case ROW_FOLDER:
@@ -194,10 +181,7 @@ public class PaleoRowProcessor extends RowProcessor {
                             paleo.setStageComments(v.getValueString());
                             log("Setting stage comments: " + v.getValueString());
                             break;
-                        case ROW_LAB_NAME:
-                            labNameMatrix.put(v.getColumnNum(), v.getValueString());
-                            break;
-                        case ROW_LAB_CODE:
+                        case ROW_LABORATORY:
                             setLabSection(paleo, row, v);
                             break;
                         case ROW_LAB_NUMBER:
@@ -214,7 +198,7 @@ public class PaleoRowProcessor extends RowProcessor {
                 } else {
                     // Import the pal list entries.
                     String p = v.getValueString();
-                    addPaleoListEntry(paleo, taxon, p);
+                    addPaleoListEntry(paleo, row, p);
                 }
             }
         }
@@ -272,58 +256,6 @@ public class PaleoRowProcessor extends RowProcessor {
         return (Paleontology) paleoMatrix.get(index).getPaleontology();
     }
 
-    private Taxon addTaxon(Row row) throws RowImportException {
-        TaxonomicGroup taxonGroup = null;
-
-        if (!row.hasValue(COL_TAXON_GROUP)) {
-            throw new RowImportException(row, null, "No taxon group on this row.");
-        }
-        String tgStr = row.getValue(COL_TAXON_GROUP).getValueString();
-        if (null == tgStr) {
-            throw new RowImportException(row, null, "No taxon group on this row.");
-        }
-        try {
-            taxonGroup = (TaxonomicGroup) taxonUtil.getTaxonomicGroup(tgStr);
-        } catch (StorageAccessException ex) {
-            throw new RowImportException(row, "TAXON_GROUP", "Error occurred while looking for this taxon group", ex);
-        }
-        if (null == taxonGroup) {
-            throw new RowImportException(row, "TAXON_GROUP", "Could not find the taxon group " + tgStr, null);
-        }
-
-        List<Taxon> txs;
-
-        if (!row.hasValue(COL_TAXON)) {
-            throw new RowImportException(row, null, "No taxon on this row.");
-        }
-        String txStr = row.getValue(COL_TAXON).getValueString();
-        if (null == txStr) {
-            throw new RowImportException(row, null, "No taxon on this row.");
-        }
-        try {
-            txs = taxonUtil.getMatchingTaxa(txStr, taxonGroup, Match.EXACT, 1);
-
-        } catch (StorageAccessException ex) {
-            throw new RowImportException(row, "TAXON", "Can not find this Taxonomy", ex);
-        }
-        Taxon tx;
-        if (null == txs || txs.isEmpty()) {
-            warn("Cannot find the taxon " + txStr + ". Assuming it is a new one.");
-            tx = taxonUtil.createTaxon();
-            tx.setTaxonomicGroup(taxonGroup);
-            tx.setStatus(FREDConstants.PROVISIONAL);
-            tx.setTaxonomicName(txStr);
-            try {
-                fredDAO.save(tx);
-            } catch (StorageAccessException e) {
-                throw new RowImportException(row, row.getValue(1), "Could not create this taxon because:", e);
-            }
-        } else {
-            tx = txs.get(0);
-        }
-        return tx;
-    }
-
     /**
      * Add a paleo list entry. The format of newEntry is:
      * <dl>
@@ -332,7 +264,7 @@ public class PaleoRowProcessor extends RowProcessor {
      * <dt>A number</dt><dd>a count</dd>
      * <dt>"aff." or "cf."</dt><dd>all the specimens found in that sample are
      * qualified</dd>
-     * <dt>any text</dt><dd>Simple occurrence, sames as "*". The text will be
+     * <dt>any text</dt><dd>Simple occurence, sames as "*". The text will be
      * used as a comment.</dd>
      * <dt>A number+"|"+Comment</dt><dd>A count, then a comment.</dd>
      * </dl>
@@ -340,7 +272,7 @@ public class PaleoRowProcessor extends RowProcessor {
      * @param p
      * @param newEntry
      */
-    private void addPaleoListEntry(Paleontology p, Taxon taxon, String newEntry) throws RowImportException {
+    private void addPaleoListEntry(Paleontology p, Row row, String newEntry) throws RowImportException {
         if (null == newEntry || newEntry.trim().isEmpty()) {
             return;
         }
@@ -348,6 +280,7 @@ public class PaleoRowProcessor extends RowProcessor {
         Integer count = null;
         String coords = null;
         String comments = "";
+        TaxonomicGroup taxonGroup = null;
 
         if (!newEntry.contains("|")) {
             try {
@@ -359,9 +292,9 @@ public class PaleoRowProcessor extends RowProcessor {
             }
         } else {
             // We add a space to make sure we capture any last '|'.
-            String[] parts = (newEntry + " ").split("\\|");
+            String[] parts = (newEntry+" ").split("\\|");
             try {
-                if (null != parts[0] && !parts[0].isEmpty()) {
+                if (null!=parts[0] && !parts[0].isEmpty()) {
                     count = Integer.parseInt(parts[0]);
                 }
             } catch (NumberFormatException e) {
@@ -377,27 +310,71 @@ public class PaleoRowProcessor extends RowProcessor {
                     if (coords.isEmpty()) {
                         coords = null;
                     }
-                    comments = comments + parts[2].trim();
+                    comments = comments+parts[2].trim();
                 } else {
                     comments = newEntry; // At the very least, don't lose data.
                 }
             }
         }
 
+        if (!row.hasValue(0)) {
+            throw new RowImportException(row, null, "No taxon group in column A on this row.");
+        }
+        String tgStr = row.getValue(0).getValueString();
+        if (null == tgStr) {
+            throw new RowImportException(row, null, "No taxon group in column A on this row.");
+        }
+        try {
+            taxonGroup = (TaxonomicGroup) taxonUtil.getTaxonomicGroup(tgStr);
+        } catch (StorageAccessException ex) {
+            throw new RowImportException(row, "TAXON_GROUP", "Error occurred while looking for this taxon group in column A.", ex);
+        }
+        if (null == taxonGroup) {
+            throw new RowImportException(row, "TAXON_GROUP", "Could not find the taxon group " + tgStr + " in column A", null);
+        }
+
+        List<Taxon> txs;
+
+        String txStr = row.getValue(1).getValueString();
+        if (null == txStr) {
+            throw new RowImportException(row, null, "No taxon on this row.");
+        }
+        try {
+            txs = taxonUtil.getMatchingTaxa(txStr, taxonGroup, Match.EXACT, 1);
+
+        } catch (StorageAccessException ex) {
+            throw new RowImportException(row, "TAXON", "Can not find this Taxonomy", ex);
+        }
+        Taxon tx;
+        if (null == txs || txs.isEmpty()) {
+            warn("Cannot find the taxon \"txStr\"+. Assuming it is a new one."); 
+            tx = taxonUtil.createTaxon();
+            tx.setTaxonomicGroup(taxonGroup);
+            tx.setStatus(FREDConstants.PROVISIONAL);
+            tx.setTaxonomicName(txStr);
+            try {
+                fredDAO.save(tx);
+            } catch (StorageAccessException e) {
+                throw new RowImportException(row, row.getValue(1), "Could not create this taxon because:", e);
+            }
+        } else {
+            tx = txs.get(0);
+        }
+
         PaleontologyListEntry result = fredDAO.createNewPaleontologyListEntry();
         result.setSpecimenCount(count);
         result.setSpecimenCoords(coords);
-        if (null == comments || comments.isEmpty()) {
+        if (null==comments || comments.isEmpty()) {
             result.setComments(null);
         } else {
             result.setComments(comments);
         }
-        result.setTaxonomicGroup(taxon.getTaxonomicGroup());
-        result.setTaxon(taxon);
-        result.setTaxonomicName(taxon.getTaxonomicName());
+        result.setTaxonomicGroup(taxonGroup);
+        result.setTaxon(tx);
+        result.setTaxonomicName(txStr);
         result.setPaleontology(p);
         p.getListEntries().add(result);
-        log("Made a new pal_list entry. Group: " + taxon.getTaxonomicGroup().getDisplayName() + " Taxon: " + taxon.getTaxonomicName() + " Count: " + count + " Coords: " + coords + " Comments: " + comments);
+        log("Made a new pal_list entry. Group: " + taxonGroup.getDisplayName() + " Taxon: " + txStr + " Count: " + count + " Coords: " + coords + " Comments: " + comments);
     }
 
     private void findSample(Integer columnNum, Row row) throws RowImportException {
@@ -526,7 +503,7 @@ public class PaleoRowProcessor extends RowProcessor {
         if (!v.isEmpty()) {
             LabSection ls;
 
-            ls = fredDAO.getLabSection(labNameMatrix.get(v.getColumnNum()), v.getValueString());
+            ls = fredDAO.findLabSectionByLongName(v.getValueString());
             log("Setting lab section: " + ls);
             if (!v.isEmpty() && null == ls) {
                 throw new RowImportException(row, v, "Failed to find this laboratory.");

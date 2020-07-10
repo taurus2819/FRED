@@ -499,16 +499,31 @@ public class HibernateDAOFactory
         }
     }
 
+    private static final String LAB_SECTION_LONG_NAME_FORMAT =
+        " concat(concat(section.lab.name, '-'), section.code) ";
+
     @Override
-    public LabSection getLabSection(String labName, String labCode) {
+    public List<String> getLabSectionLongNames() {
         try {
-            Query query = retrieveSession().createQuery(
-                    "FROM LabSection AS section WHERE section.lab.name = :name and section.code = :code");
-            query.setString("name", labName);
-            query.setString("code", labCode);
+            Query query = retrieveSession().createQuery("select "
+                    +LAB_SECTION_LONG_NAME_FORMAT
+                    +" FROM LabSection section ORDER BY section.name, section.lab.name");
+            return (List<String>)query.list();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public LabSection findLabSectionByLongName(String name) {
+        try {
+            Query query = retrieveSession().createQuery("FROM LabSection AS section WHERE "
+                            +LAB_SECTION_LONG_NAME_FORMAT+"=:name");
+            query.setString("name", name);
             return (LabSection) query.uniqueResult();
         } catch (HibernateException e) {
             throw new RuntimeException(e);
         }
+
     }
 }

@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -15,11 +12,9 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.Lab;
-import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FolderUtil;
-import nz.cri.gns.fred.util.LabUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
@@ -67,7 +62,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             FolderUtil folderUtil = new FolderUtil(factory);
             String folderList = s.addList("Folders", folderUtil.getPersonalFolders(user).stream().map(UserFolder::getFolderName).collect(Collectors.toList()));
-
+            
             TaxonomicUtil taxUtil = new TaxonomicUtil(factory);
             List<TaxonomicGroup> groups;
             groups = taxUtil.getTaxonomicGroups();
@@ -83,19 +78,10 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             String stageModList = s.addList("Stage mod", new String[]{"?"});
 
-            LabUtil labUtil = new LabUtil(factory);
-            List<Lab> labs = labUtil.getLabs();
-            String labList = s.addList("Laboratories", labUtil.getLabs().stream().map(Lab::getName).collect(Collectors.toList()));
+            RecordUtil recordUtil = new RecordUtil(factory);
 
-            ArrayList<String> labCodes = new ArrayList();
-            labCodes.add("@@GNS_submenu@@");
-            labCodes.add("0,-1");
-            for (Lab lab : labs) {
-                labCodes.add(lab.getName());
-                labCodes.add(s.addList("codes of " + lab.getName(), lab.getSections().stream().map(LabSection::getCode).sorted().collect(Collectors.toList())));
-            }
-            String labSectionList = s.addList("Lab Codes", labCodes);
-
+            String labList = s.addList("Laboratories", factory.getFredDAO().getLabSectionLongNames());
+            
             s.addSheet(SHEETNAME, it);
 
             // Leave a blank row for "headings".
@@ -107,7 +93,14 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             addTextCellsAcross("Bottom Depth", it, "Select the accuracy of the date.");
             addCellsAcross("Sample Type", sampleTypeList, it, "Choose a Sample Type.");
 
-            addTimestampCellsAcross("Identification Date", it, "Enter an Identification Date in the format \"DD/MM/YYYY HH:MM:SS\"");
+            cr(s, it);
+            it.nextColumn();
+            s.setCellValue("Identification Date");
+            s.setCellAsHeading();
+            it.nextColumn();
+            to = it.copy().skipColumns(numColumns);
+            s.setCellsTimestamp(to, "Enter an Identification Date in the format \"DD/MM/YYYY HH:MM:SS\"", false);
+            s.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
 
             String dateRoundingList = s.addList("Date Rounding", new String[]{"Year", "Month"});
             addCellsAcross("Date Rounding", dateRoundingList, it, "Select the accuracy of the date.");
@@ -124,15 +117,14 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             addTextCellsAcross("Stage Comments", it, "Enter comments about the stage.");
 
-            addCellsAcross("Lab Name", labList, it, "Choose a Laboratory Name.");
-            addCellsAcross("Lab Code", labSectionList, it, "Choose a Laboratory Code.");
+            addCellsAcross("Laboratory", labList, it, "Choose a Laboratory.");
+
             addTextCellsAcross("Lab Number", it, "Enter the number used in the laboratory for this sample.");
 
             addTextCellsAcross("Collection Comments", it, "Enter comments about this collection. ");
 
             for (int i = 0; i < LAST_ROW; i++) {
                 cr(s, it);
-                it.nextColumn();
                 s.setCellsSelection(groupList, it, "Choose a Taxonomic Group", false);
                 s.setCellAsHeading();
                 s.nextColumn();
@@ -140,11 +132,11 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
                 s.setCellAsHeading();
                 s.nextColumn();
 
-                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter '*' for presence, a numeric count, count|comment, a straight comment, 'aff.' or 'cf.'", false);
+                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter '*' for presense, a numeric count, count|comment, a straight comment, 'aff.' or 'cf.'", false);
             }
 
             s.finish();
-            makeThirdColumnBigger();
+            makeSecondColumnBigger();
 
             s.write();
         } catch (StorageAccessException e) {
@@ -154,21 +146,8 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         }
     }
 
-    private void addTimestampCellsAcross(String heading, SheetIterator it, String placeholder) {
-        cr(spreadsheet, it);
-        it.nextColumn();
-        it.nextColumn();
-        spreadsheet.setCellValue(heading);
-        spreadsheet.setCellAsHeading();
-        SheetIterator to = it.copy().skipColumns(numColumns);
-        it.nextColumn();
-        spreadsheet.setCellsTimestamp(to, placeholder, false);
-        spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
-    }
-
     private void addCellsAcross(String heading, String listReference, SheetIterator it, String placeholder) {
         cr(spreadsheet, it);
-        it.nextColumn();
         it.nextColumn();
         spreadsheet.setCellValue(heading);
         spreadsheet.setCellAsHeading();
@@ -182,7 +161,6 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
     private void addTextCellsAcross(String heading, SheetIterator it, String placeholder) {
         cr(spreadsheet, it);
         it.nextColumn();
-        it.nextColumn();
         spreadsheet.setCellValue(heading);
         spreadsheet.setCellAsHeading();
         it.nextColumn();
@@ -191,7 +169,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
     }
 
-    private void makeThirdColumnBigger() {
+    private void makeSecondColumnBigger() {
         Object w = spreadsheet.getUnderlyingSpreadsheet();
         XSSFWorkbook wb;
         if (!(w instanceof XSSFWorkbook)) {
@@ -199,9 +177,9 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         }
         wb = (XSSFWorkbook) spreadsheet.getUnderlyingSpreadsheet();
         XSSFSheet s = wb.getSheet(SHEETNAME);
-        if (s == null) {
+        if (s==null) {
             return;
         }
-        s.setColumnWidth(2, 32 * 256);
+        s.setColumnWidth(1, 32 * 256);
     }
 }
