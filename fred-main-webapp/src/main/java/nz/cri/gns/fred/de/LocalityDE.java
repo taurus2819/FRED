@@ -367,7 +367,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         reinitialise(factory);
         ArrayList<String[]> error = new ArrayList<>();
-        
+
 //        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()){
 //            for (String value : entry.getValue()){
 //                System.out.println("Get Parameters = " + value);
@@ -441,6 +441,12 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             accuracy = Float.parseFloat(request.getParameter("Accuracy"));
         }
 
+        Integer locMethodID = null;
+        try {
+            locMethodID = Integer.parseInt(request.getParameter("LocMethodID"));
+        } catch (NumberFormatException x) {
+            //method is null (-1) by default
+        }
         site = SiteUtil.findOrMakeSiteInstance(
                 error,
                 feature.getFeatureName(),
@@ -451,17 +457,16 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 sanitizeHttpRequest.stripAllScripts(request.getParameter("North")),
                 sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")),
                 sanitizeHttpRequest.stripAllScripts(request.getParameter("Country")),
-                Integer.parseInt(request.getParameter("LocMethodID")),
+                locMethodID,
                 accuracy,
                 sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")),
                 user
         );
 
-
-        if (null!=site && null==feature.getOrigSystemId()) {
+        if (null != site && null == feature.getOrigSystemId()) {
             feature.setOrigSystemId(site.getOriginalId());
         }
-        if (null!=site && null==feature.getOrigCoord()) {
+        if (null != site && null == feature.getOrigCoord()) {
             feature.setOrigCoord(site.getOriginalCoordinates());
         }
 
