@@ -86,7 +86,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             LabUtil labUtil = new LabUtil(factory);
             List<Lab> labs = labUtil.getLabs();
             String labList = s.addList("Laboratories", labUtil.getLabs().stream().map(Lab::getName).collect(Collectors.toList()));
-            
+
             ArrayList<String> labCodes = new ArrayList();
             labCodes.add("@@GNS_submenu@@");
             labCodes.add("0,-1");
@@ -107,14 +107,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             addTextCellsAcross("Bottom Depth", it, "Select the accuracy of the date.");
             addCellsAcross("Sample Type", sampleTypeList, it, "Choose a Sample Type.");
 
-            cr(s, it);
-            it.nextColumn();
-            s.setCellValue("Identification Date");
-            s.setCellAsHeading();
-            it.nextColumn();
-            to = it.copy().skipColumns(numColumns);
-            s.setCellsTimestamp(to, "Enter an Identification Date in the format \"DD/MM/YYYY HH:MM:SS\"", false);
-            s.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
+            addTimestampCellsAcross("Identification Date", it, "Enter an Identification Date in the format \"DD/MM/YYYY HH:MM:SS\"");
 
             String dateRoundingList = s.addList("Date Rounding", new String[]{"Year", "Month"});
             addCellsAcross("Date Rounding", dateRoundingList, it, "Select the accuracy of the date.");
@@ -139,6 +132,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             for (int i = 0; i < LAST_ROW; i++) {
                 cr(s, it);
+                it.nextColumn();
                 s.setCellsSelection(groupList, it, "Choose a Taxonomic Group", false);
                 s.setCellAsHeading();
                 s.nextColumn();
@@ -150,7 +144,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             }
 
             s.finish();
-            makeSecondColumnBigger();
+            makeThirdColumnBigger();
 
             s.write();
         } catch (StorageAccessException e) {
@@ -160,8 +154,21 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         }
     }
 
+    private void addTimestampCellsAcross(String heading, SheetIterator it, String placeholder) {
+        cr(spreadsheet, it);
+        it.nextColumn();
+        it.nextColumn();
+        spreadsheet.setCellValue(heading);
+        spreadsheet.setCellAsHeading();
+        SheetIterator to = it.copy().skipColumns(numColumns);
+        it.nextColumn();
+        spreadsheet.setCellsTimestamp(to, placeholder, false);
+        spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
+    }
+
     private void addCellsAcross(String heading, String listReference, SheetIterator it, String placeholder) {
         cr(spreadsheet, it);
+        it.nextColumn();
         it.nextColumn();
         spreadsheet.setCellValue(heading);
         spreadsheet.setCellAsHeading();
@@ -175,6 +182,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
     private void addTextCellsAcross(String heading, SheetIterator it, String placeholder) {
         cr(spreadsheet, it);
         it.nextColumn();
+        it.nextColumn();
         spreadsheet.setCellValue(heading);
         spreadsheet.setCellAsHeading();
         it.nextColumn();
@@ -183,7 +191,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
     }
 
-    private void makeSecondColumnBigger() {
+    private void makeThirdColumnBigger() {
         Object w = spreadsheet.getUnderlyingSpreadsheet();
         XSSFWorkbook wb;
         if (!(w instanceof XSSFWorkbook)) {
@@ -194,6 +202,6 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         if (s == null) {
             return;
         }
-        s.setColumnWidth(1, 32 * 256);
+        s.setColumnWidth(2, 32 * 256);
     }
 }
