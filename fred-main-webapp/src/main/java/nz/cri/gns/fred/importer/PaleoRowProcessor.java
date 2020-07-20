@@ -11,6 +11,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
+import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.hibernate.Age;
 import nz.cri.gns.fred.hibernate.Paleontology;
 import nz.cri.gns.fred.hibernate.Person;
@@ -301,6 +302,11 @@ public class PaleoRowProcessor extends RowProcessor {
             throw new RowImportException(row, null, "No taxon on this row.");
         }
         try {
+            txStr = TaxonomicUtil.normaliseTaxonomicName(txStr);
+        } catch (DataInputException x) {
+            throw new RowImportException(row, null, "Unexpected error when normalising taxonomic name.");
+        }
+        try {
             txs = taxonUtil.getMatchingTaxa(txStr, taxonGroup, Match.EXACT, 1);
 
         } catch (StorageAccessException ex) {
@@ -316,7 +322,7 @@ public class PaleoRowProcessor extends RowProcessor {
             try {
                 fredDAO.save(tx);
             } catch (StorageAccessException e) {
-                throw new RowImportException(row, row.getValue(1), "Could not create this taxon because:", e);
+                throw new RowImportException(row, txStr, "Could not create this taxon because:", e);
             }
         } else {
             tx = txs.get(0);
