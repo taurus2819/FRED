@@ -196,7 +196,7 @@ public class PaleontologyRecordDE extends RecordDE {
                         //The group
                         TaxonomicGroup group = taxonomicUtil.getTaxonomicGroup(groupStr);
                         //clean TaxaName
-                        String cleanName = TaxonomicUtil.getCleanedName(nameStr);
+                        String cleanName = TaxonomicUtil.normaliseTaxonomicName(nameStr);
                         //Prepare for having an entry
                         PaleontologyListEntry entry = null;
                         //Is the taxonomic name valid?

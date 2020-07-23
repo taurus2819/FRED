@@ -108,7 +108,7 @@ public class AJAXServlet extends FREDHibernateServlet {
                         if (request.getParameter("group") != null) {
                             group = taxaUtil.getTaxonomicGroup(request.getParameter("group"));
                         }
-                        cleanName = TaxonomicUtil.getCleanedName(start);
+                        cleanName = TaxonomicUtil.normaliseTaxonomicName(start);
                         List<Taxon> taxa = taxaUtil.getMatchingTaxa(cleanName, group, Match.ANYWHERE, 30);
                         for (Taxon taxon : taxa) {
                             values.add(new NamedId(taxon.getTaxaId().toString(), ((group == null) ? taxon.getTaxonomicGroup().getName() + ": " : "") + taxon.getTaxonomicName()));
@@ -151,7 +151,7 @@ public class AJAXServlet extends FREDHibernateServlet {
                         if (request.getParameter("TaxonomicGroup") != null) {
                             group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
                         }
-                        String cleanName = TaxonomicUtil.getCleanedName(name);
+                        String cleanName = TaxonomicUtil.normaliseTaxonomicName(name);
                         if (cleanName == null || cleanName.length() == 0) {
                             if (group != null) {
                                 status = FREDConstants.APPROVED;
@@ -211,7 +211,7 @@ public class AJAXServlet extends FREDHibernateServlet {
                     case TaxonomicName:
                         TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
                         TaxonomicGroup group = taxaUtil.getTaxonomicGroup(sanitizeHttpRequest.stripAllScripts(request.getParameter("TaxonomicGroup").trim()));
-                        String cleanName = TaxonomicUtil.getCleanedName(name);
+                        String cleanName = TaxonomicUtil.normaliseTaxonomicName(name);
                         String author = sanitizeHttpRequest.stripAllScripts(request.getParameter("Author"));
                         Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
                         if (taxon == null) {

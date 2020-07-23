@@ -120,7 +120,7 @@ public class HibernateDAOFactory
     }
 
     /**
-     * @deprectaed use getTaxaCount
+     * @deprecated use getTaxaCount
      */
     @SuppressWarnings("unchecked")
     public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {

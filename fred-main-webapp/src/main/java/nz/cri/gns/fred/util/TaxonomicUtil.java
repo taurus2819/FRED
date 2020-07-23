@@ -10,7 +10,6 @@ import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import net.sf.hibernate.Query;
 
 import net.sf.hibernate.expression.Criterion;
 import net.sf.hibernate.expression.Expression;
@@ -149,96 +148,27 @@ public class TaxonomicUtil extends ModelUtil {
 
     /**
      * Returns the taxonomic name stripped of any prefix and suffix
+     *
+     * @param taxonomicName
+     * @return the taxonomic name without prefixes and suffixes like spp.
+     * @throws nz.cri.gns.fred.de.DataInputException
      */
-    public static String getCleanedName(String cleanName) throws DataInputException {
-        if (cleanName == null) {
+    public static String normaliseTaxonomicName(String taxonomicName) throws DataInputException {
+        if (taxonomicName == null) {
             throw new DataInputException();
         }
-        cleanName = cleanName.replaceAll("\"", "'");
-        cleanName = cleanName.replaceAll("<", "'");
-        cleanName = cleanName.replaceAll(">", "'");
-        cleanName = cleanName.replaceAll("  ", " ");
-        cleanName = cleanName.replaceAll("group", "gr.");
-        cleanName = cleanTaxaName(cleanName, "?");
-        cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
-        cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
-        cleanName = cleanTaxaNameOpen(cleanName, "sp.");
-        cleanName = cleanTaxaNameOpen(cleanName, "spp.");
-        cleanName = cleanTaxaNameOpen(cleanName, "subgen.");
-        cleanName = cleanTaxaNameOpen(cleanName, "gen.");
-        cleanName = cleanTaxaNameOpen(cleanName, "subfam.");
-        cleanName = cleanTaxaNameOpen(cleanName, "fam.");
-        cleanName = cleanTaxaName(cleanName, "indet.");
-        cleanName = cleanTaxaName(cleanName, "cf.");
-        cleanName = cleanTaxaName(cleanName, "aff.");
-        cleanName = cleanTaxaName(cleanName, "MS.");
-        cleanName = cleanTaxaName(cleanName, "s.s.");
-        cleanName = cleanTaxaName(cleanName, "s.s");
-        cleanName = cleanTaxaName(cleanName, "s.l.");
-        cleanName = cleanTaxaName(cleanName, "ex gr.");
-        cleanName = cleanTaxaName(cleanName, "gr.");
-        cleanName = cleanTaxaName(cleanName, "var.");
-        cleanName = cleanNoDot(cleanName, "et");
-        return cleanName;
-    }
 
-    private static String cleanTaxaName(String taxaName, String checkString) {
-        while (taxaName.indexOf(checkString) >= 0) {
-            taxaName = taxaName.substring(0, taxaName.indexOf(checkString)).trim() + " " + taxaName.substring(taxaName.indexOf(checkString) + checkString.length(), taxaName.length()).trim();
-            taxaName = taxaName.trim();
-        }
-        return taxaName;
-    }
-
-    private static String cleanTaxaNameOpen(String taxaName, String checkString) {
-        taxaName = cleanAlphaChar(taxaName, checkString);
-        taxaName = cleanTaxaName(taxaName, "n." + checkString + "indet.");
-        taxaName = cleanTaxaName(taxaName, "n. " + checkString + "indet.");
-        taxaName = cleanTaxaName(taxaName, "n." + checkString + " indet.");
-        taxaName = cleanTaxaName(taxaName, "n. " + checkString + " indet.");
-        taxaName = cleanTaxaName(taxaName, "n." + checkString);
-        taxaName = cleanTaxaName(taxaName, "n. " + checkString);
-        taxaName = cleanTaxaName(taxaName, checkString + "indet.");
-        taxaName = cleanTaxaName(taxaName, checkString + " indet.");
-        taxaName = cleanTaxaName(taxaName, checkString);
-        return taxaName;
-    }
-
-    private static String cleanAlphaChar(String taxaName, String checkString) {
-        int len = taxaName.length();
-        int pos = 0;
-        boolean ok = true;
-        while (ok) {
-            pos = taxaName.indexOf(checkString, pos + 1);
-            if (pos > 0 && pos + checkString.length() < len) {
-                pos = pos + checkString.length();
-                if (pos + 1 == len || pos + 2 == len) {
-                    taxaName = taxaName.substring(0, pos);
-                } else if (taxaName.indexOf(" ", pos + 1) <= pos + 2 && taxaName.indexOf(" ", pos + 1) > 0) {
-                    taxaName = taxaName.substring(0, pos) + "  " + taxaName.substring(pos + 2, taxaName.length());
-                }
-            } else {
-                ok = false;
-            }
-        }
-        return taxaName;
-    }
-
-    private static String cleanNoDot(String taxaName, String checkString) {
-    	taxaName = cleanTaxaName(taxaName, " " + checkString + " ");
-    	//check end of string
-    	if (taxaName.lastIndexOf(" " + checkString) == taxaName.length() - checkString.length() - 1) {
-    		taxaName = taxaName.substring(0, taxaName.lastIndexOf(" et")).trim();
-        }
-    	//check beginning of string
-    	if (taxaName.indexOf(checkString + " ") == 0) {
-            taxaName = taxaName.substring(checkString.length() + 1, taxaName.length()).trim();
-        }
-    	return taxaName;
+        return taxonomicName
+                .replaceAll("[\"<>]", "'") // normalise quotation marks
+                .replaceAll("\\?|group", " ") // remove strings that are not followed by "."
+                .replaceAll("(n[.])?\\s*(subspp|subsp|spp|sp|subgen|gen|subfam|fam)[.]", " ") // these ones might be preceded by "n."
+                .replaceAll("(indet|cf|aff|MS|s[.]s|s[.]l|ex gr|gr|var)[.]", " ")
+                .replaceAll("\\s\\s+", " ") // collapse groups of whitespace into single whitespace
+                .trim();
     }
 
     /**
-     * Checks vital comparitive fields and if compatible, then updates others to
+     * Checks vital comparative fields and if compatible, then updates others to
      * match and returns true, otherwise return false;
      *
      * Vital fields are group and name and author
