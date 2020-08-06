@@ -77,7 +77,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             StageUtil stageUtil = new StageUtil(factory);
 
             List<Age> ages;
-            ages = stageUtil.getAges();
+            ages = stageUtil.getCurrentAges();
             String groupList = s.addList("Taxonomic Groups", groups.stream().map(TaxonomicGroup::getDisplayName).collect(Collectors.toList()));
             String ageList = s.addList("Stages", ages.stream().map(Age::getDisplayName).collect(Collectors.toList()));
 

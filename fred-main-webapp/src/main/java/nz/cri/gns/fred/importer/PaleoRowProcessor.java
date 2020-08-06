@@ -539,7 +539,7 @@ public class PaleoRowProcessor extends RowProcessor {
             String stageName = v.getValueString();
             Stage s = (Stage) getStage(paleo);
             try {
-                Age a = (Age) stageUtil.getAgeByName(stageName);
+                Age a = (Age) stageUtil.getCurrentAgeByName(stageName);
                 if (a == null) {
                     throw new RowImportException(row, v, "Misspelled, obsolete, or unknown age.");
                 }
@@ -557,7 +557,7 @@ public class PaleoRowProcessor extends RowProcessor {
 
             Stage s = (Stage) getStage(paleo);
             try {
-                Age a = (Age) stageUtil.getAgeByName(stageName);
+                Age a = (Age) stageUtil.getCurrentAgeByName(stageName);
                 if (a == null) {
                     throw new RowImportException(row, v, "Misspelled, obsolete, or unknown age.");
                 }
@@ -566,7 +566,6 @@ public class PaleoRowProcessor extends RowProcessor {
             } catch (StorageAccessException ex) {
                 throw new RowImportException(row, v, "Something went wrong trying to verify this age.", ex);
             }
-
         }
     }
 
