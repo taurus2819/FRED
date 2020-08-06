@@ -1,0 +1,34 @@
+
+# /
+/.classpath
+/.project
+/target
+/.pom.xml.swp
+
+# /fred-acceptance-tests/
+/fred-acceptance-tests/target
+
+# /fred-integration-tests/
+/fred-integration-tests/target
+
+# /fred-main-webapp/
+/fred-main-webapp/nb-configuration.xml
+/fred-main-webapp/nbactions.xml
+/fred-main-webapp/target
+
+# /fred-main-webapp/src/main/java/
+/fred-main-webapp/src/main/java/.swp
+
+# /fred-main-webapp/src/main/java/nz/cri/gns/fred/reports/
+/fred-main-webapp/src/main/java/nz/cri/gns/fred/reports/FredNukem.java
+
+# /fred-main-webapp/src/main/sql/del/
+
+# /fred-main-webapp/src/main/webapp/
+/fred-main-webapp/src/main/webapp/.~lock.FRED.xlsm#
+
+# /fred-main-webapp/src/main/webapp/plugin/OpenLayers-2.11/img/
+/fred-main-webapp/src/main/webapp/plugin/OpenLayers-2.11/img/Thumbs.db
+
+# /fred-redirect-webapp/
+/fred-redirect-webapp/target
