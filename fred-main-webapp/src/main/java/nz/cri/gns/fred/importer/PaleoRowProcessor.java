@@ -1,10 +1,14 @@
 package nz.cri.gns.fred.importer;
 
+import java.io.Writer;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.sf.hibernate.HibernateException;
+import net.sf.hibernate.Transaction;
 
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -17,6 +21,7 @@ import nz.cri.gns.fred.hibernate.Paleontology;
 import nz.cri.gns.fred.hibernate.Person;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
+import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.*;
 import nz.cri.gns.fred.util.*;
 import nz.cri.gns.munginator.MgException;
@@ -81,6 +86,9 @@ public class PaleoRowProcessor extends RowProcessor {
     private final AuditUtil auditUtil;
     private final User user;
 
+    private boolean isRolledBack = false;
+    private Transaction transaction = null;
+
     public PaleoRowProcessor(User user, DAOFactory factory, String code, Map<Integer, Record> paleoMatrix) {
         super(code);
         this.user = user;
@@ -99,6 +107,17 @@ public class PaleoRowProcessor extends RowProcessor {
         this.sampleUtil = new SampleUtil(factory);
         this.folderUtil = new FolderUtil(factory);
         this.auditUtil = new AuditUtil(factory);
+        this.canVerify = false;
+    }
+
+    @Override
+    public void initialize(Connection c, Connection errorConn, Integer sheetId, Integer userId, Writer out) throws SQLException, RowImportException {
+        try {
+            this.transaction = FredHibernate.get().currentSession().beginTransaction();
+        } catch (HibernateException x) {
+            throw new SQLException("Could not begin transaction", x);
+        }
+        super.initialize(c, errorConn, sheetId, userId, out);
     }
 
     /* RowProcessor methods. */
@@ -232,12 +251,29 @@ public class PaleoRowProcessor extends RowProcessor {
     }
 
     @Override
-    public void close() {
-        for (Record each : paleoMatrix.values()) {
+    public void rollback() throws SQLException {
+        this.isRolledBack = true;
+        try {
+            transaction.rollback();
+        } catch (HibernateException x) {
+            throw new SQLException("Could not commit transaction", x);
+        }
+    }
+
+    @Override
+    public void commit() throws SQLException {
+        if (!isRolledBack) {
+            for (Record each : paleoMatrix.values()) {
+                try {
+                    fredDAO.save(each);
+                } catch (StorageAccessException ex) {
+                    throw new MgException(ex);
+                }
+            }
             try {
-                fredDAO.save(each);
-            } catch (StorageAccessException ex) {
-                throw new MgException(ex);
+                transaction.commit();
+            } catch (HibernateException x) {
+                throw new SQLException("Could not commit transaction", x);
             }
         }
     }
@@ -504,10 +540,13 @@ public class PaleoRowProcessor extends RowProcessor {
             Stage s = (Stage) getStage(paleo);
             try {
                 Age a = (Age) stageUtil.getAgeByName(stageName);
+                if (a == null) {
+                    throw new RowImportException(row, v, "Misspelled, obsolete, or unknown age.");
+                }
                 s.setLowerAge(a);
                 log("Setting lower stage: " + a.getDisplayName());
             } catch (StorageAccessException ex) {
-                throw new RowImportException(row, v, "Could not find this age.", ex);
+                throw new RowImportException(row, v, "Something went wrong trying to verify this age.", ex);
             }
         }
     }
@@ -519,10 +558,13 @@ public class PaleoRowProcessor extends RowProcessor {
             Stage s = (Stage) getStage(paleo);
             try {
                 Age a = (Age) stageUtil.getAgeByName(stageName);
+                if (a == null) {
+                    throw new RowImportException(row, v, "Misspelled, obsolete, or unknown age.");
+                }
                 s.setUpperAge(a);
                 log("Setting upper stage: " + a.getDisplayName());
             } catch (StorageAccessException ex) {
-                throw new RowImportException(row, v, "Could not find this age.", ex);
+                throw new RowImportException(row, v, "Something went wrong trying to verify this age.", ex);
             }
 
         }
