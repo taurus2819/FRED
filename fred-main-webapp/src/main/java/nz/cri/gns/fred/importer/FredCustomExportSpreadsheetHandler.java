@@ -8,8 +8,10 @@ import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FolderUtil;
+import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.Read;
 import nz.cri.gns.munginator.SchemaSingleton;
@@ -70,13 +72,8 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
             case "KNOWN_STAGE_UPPER":
             case "INFERRED_STAGE_LOWER":
             case "INFERRED_STAGE_UPPER":
-                try {
-                sheet.addDropDownHeader(heading, c, conn, getStages());
-            } catch (SQLException ex) {
-                throw new MgException("Could not get a list of Ages.", ex);
-            }
-            sheet.nextColumn();
-            return true;
+                addStagesList(sheet, heading);
+                return true;
             default:
                 return false;
         }
@@ -135,13 +132,15 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
         }
     }
 
-    private Read getStages() throws SQLException {
-        Read r = SchemaSingleton.getInstance(conn).select("AGE");
-        r.addColumn("AGE_ID");
-        r.addColumn("NAME");
-        r.addWhere("OBSOLETE_FLAG", 0);
-        r.addWhere("DUPLICATE_FLAG", 0);
-        r.addOrderBy("BASE_AGE");
-        return r;
+    private void addStagesList(GenericSpreadsheet sheet, String heading) {
+        try {
+            DAOFactory factory = FredHibernate.get().getDAOFactory();
+            List<Age> ages = new StageUtil(factory).getCurrentAges();
+            List<String> columnValues = ages.stream().map(age -> age.getName()).collect(Collectors.toList());
+            sheet.addDropDownHeader(heading, null, columnValues);
+            sheet.nextColumn();
+        } catch (StorageAccessException x) {
+            throw new MgException(x);
+        }
     }
 }

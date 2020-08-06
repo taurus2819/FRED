@@ -32,3 +32,6 @@
 
 # /fred-redirect-webapp/
 /fred-redirect-webapp/target
+nb-configuration.xml
+fred-acceptance-tests/nb-configuration.xml
+fred-integration-tests/nb-configuration.xml
