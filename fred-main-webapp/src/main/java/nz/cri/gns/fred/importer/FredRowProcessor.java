@@ -222,7 +222,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         String countryCode = findCountryId(row, "COUNTRY");
         Integer origSystemId = findOrigSystemId(row, "ORIG_SYSTEM_ID");
 
-        log("Searching for site... please wait...");
+        printInfo("Searching for site... please wait...");
         SiteRecord site = SiteUtil.findOrMakeSiteInstance(
                 error,
                 getRowValueString(row, "FEATURE_NAME"),
@@ -247,7 +247,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
 
         if (!site.existsAlready()) {
-            log("Site does not exist; creating a new one.");
+            printInfo("Site does not exist; creating a new one.");
             try {
                 site = SiteUtil.save(site); // Will fail if the site has an ID already. 
             } catch (SiteException ex) {
@@ -259,7 +259,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 throw new RowImportException(row, "NORTHING", "Creating a site using the site service has failed.", null);
             }
         } else {
-            log("Site already exists: \"" + site.getDirections() + "\". I will not update it.");
+            printInfo("Site already exists: \"" + site.getDirections() + "\". I will not update it.");
         }
 
         update.set("FEATURE_ID$SITE_ID", site.getId());
