@@ -22,6 +22,21 @@ import nz.cri.gns.munginator.upload.CustomExportSpreadsheetHandler;
 
 public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadsheetHandler {
 
+    private static final String[] origSystems
+            = new String[]{
+                "NZMG",
+                "NZMS260",
+                "NZTM",
+                "NZTopo50",
+                "Chatham Island Grid",
+                "Auckland Island Transverse Mercator",
+                "Campbell Island Transverse Mercator",
+                "New Caledonia Transverse Mercator",
+                "NZGD49",
+                "Chatham Island Datum",
+                "NZGD2000",
+                "WGS84"};
+
     private final Connection conn;
     private final User user;
 
@@ -36,6 +51,10 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
         switch (c.getImportCode()) {
             case "FOLDER":
                 addFolderList(sheet, heading, user);
+                return true;
+            case "ORIG_SYSTEM_ID":
+                sheet.addDropDownHeader(heading, c, origSystems);
+                sheet.nextColumn();
                 return true;
             case "LOCATION_METHOD":
                 addLocationMethodColumn(sheet, heading);

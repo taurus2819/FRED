@@ -1,6 +1,5 @@
 package nz.cri.gns.fred.importer;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,14 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.NamingException;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.db.util.SiteUtil.SiteException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.SiteUtil;
@@ -29,6 +26,8 @@ import nz.cri.gns.munginator.upload.TemplateRowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.ImportColumn;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
 import nz.cri.gns.munginator.upload.stagingarea.RowSingleValue;
+import nz.cri.gns.util.map.Datum;
+import nz.cri.gns.util.map.DatumFactory;
 
 /**
  * I am the importer for the Outcrop, Vertical Section and Drillhole
@@ -56,7 +55,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
     @Override
     protected void verifyRow(Row row) throws SQLException, RowImportException {
         if ("FRED_OUTCROP".equals(spreadsheetType)) {
-            checkDatumCode(row);
+            findOrigSystemId(row, "ORIG_SYSTEM_ID");
         }
         super.verifyRow(row);
     }
@@ -200,17 +199,17 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     private Integer findOrigSystemId(Row row, String code) throws RowImportException {
         String name = getRowValueString(row, code);
-
-        try (Read s = schema.getTable("SC.ORIG_SYSTEM").select()) {
-            s.addColumn("SYSTEM_ID");
-            s.addWhere("COORD_SYSTEM", name);
-            s.doIt(importConn);
-            if (!s.next()) {
-                throw new RowImportException(row, code, "This is not a valid system.", null);
-            }
-            return s.getInteger("SYSTEM_ID");
-        } catch (SQLException e) {
-            throw new RowImportException(row, code, null, e);
+        
+        if (name == null){
+            throw new RowImportException(row, code, "Must not be empty",null );
+        }
+        
+        Datum datum = DatumFactory.createDatum(name);
+        
+        if (null == datum){
+              throw new RowImportException(row, code, "This is not a valid system.", null);
+        } else {
+            return datum.getDatabaseId();
         }
     }
 
@@ -267,38 +266,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     private String getOrigCoords(Row row) throws RowImportException {
         return getRowValueString(row, "EASTING") + "|" + getRowValueString(row, "NORTHING");
-    }
-
-    private void checkDatumCode(Row row) throws RowImportException {
-        Connection conn = null;
-        try {
-            conn = FREDUtil.getConnection();
-            Integer datumId = findOrigSystemId(row, "ORIG_SYSTEM_ID");
-            if (null == datumId) {
-                throw new RowImportException(row, "ORIG_SYSTEM_ID", "This cell needs a value.", null);
-            }
-            Read s = schema.select("SC.ORIG_SYSTEM");
-            s.addColumn("SYSTEM_CODE");
-            s.addWhere("SYSTEM_ID", datumId);
-            try {
-                s.doIt(conn);
-                if (!s.next()) {
-                    throw new RowImportException(row, "ORIG_SYSTEM_ID", "Datum not in the lookup table.", null);
-                }
-            } finally {
-                s.close();
-            }
-
-        } catch (SQLException | NamingException e) {
-            throw new RowImportException(row, "ORIG_SYSTEM_ID", "Could not get datum", e);
-        } finally {
-            try {
-                if (null != conn) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-            }
-        }
     }
 
     private Float toFloat(Double d) {
