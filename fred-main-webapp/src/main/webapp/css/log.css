@@ -16,6 +16,7 @@ th,td {
     font-size:16px;
     font-weight: bold;
     border: none;
+    padding-top: 10px;
 }
 
 .errorCell {
@@ -41,6 +42,10 @@ th,td {
 
 .newrow {
     font-weight: bold;
+}
+
+.debug {
+    display: none;
 }
 
 .info {
