@@ -189,11 +189,11 @@ public class PaleoRowProcessor extends RowProcessor {
                             break;
                         case ROW_ID_DATE:
                             paleo.setIdentificationDate(v.getValueTimestamp());
-                            printInfo("Setting date: " + v.getValueString());
+                            printDebug("Setting date: " + v.getValueString());
                             break;
                         case ROW_DATE_ROUNDING:
                             paleo.setDateRounding(v.getValueString());
-                            printInfo("Setting date rounding: " + v.getValueString());
+                            printDebug("Setting date rounding: " + v.getValueString());
                             break;
                         case ROW_IDENTIFIER:
                             setIdentifiers(paleo, row, v);
@@ -212,7 +212,7 @@ public class PaleoRowProcessor extends RowProcessor {
                             break;
                         case ROW_STAGE_COMMENT:
                             paleo.setStageComments(v.getValueString());
-                            printInfo("Setting stage comments: " + v.getValueString());
+                            printDebug("Setting stage comments: " + v.getValueString());
                             break;
                         case ROW_LAB_NAME:
                             labNameMatrix.put(v.getColumnNum(), v.getValueString());
@@ -222,11 +222,11 @@ public class PaleoRowProcessor extends RowProcessor {
                             break;
                         case ROW_LAB_NUMBER:
                             paleo.setLabNumber(v.getValueString());
-                            printInfo("Setting lab number: " + v.getValueString());
+                            printDebug("Setting lab number: " + v.getValueString());
                             break;
                         case ROW_COLLECTION_COMMENTS:
                             paleo.setCollectionComments(v.getValueString());
-                            printInfo("Setting collection comments: " + v.getValueString());
+                            printDebug("Setting collection comments: " + v.getValueString());
                             break;
                         default:
                             throw new MgException();
@@ -440,7 +440,7 @@ public class PaleoRowProcessor extends RowProcessor {
         result.setTaxonomicName(taxon.getTaxonomicName());
         result.setPaleontology(p);
         p.getListEntries().add(result);
-        printInfo("Made a new pal_list entry. Group: " + taxon.getTaxonomicGroup().getDisplayName() + " Taxon: " + taxon.getTaxonomicName() + " Count: " + count + " Coords: " + coords + " Comments: " + comments);
+        printDebug("Made a new pal_list entry. Group: " + taxon.getTaxonomicGroup().getDisplayName() + " Taxon: " + taxon.getTaxonomicName() + " Count: " + count + " Coords: " + coords + " Comments: " + comments);
     }
 
     private void findSample(Integer columnNum, Row row) throws RowImportException {
@@ -482,12 +482,12 @@ public class PaleoRowProcessor extends RowProcessor {
 
             r.doIt(importConn);
             if (!r.next()) {
-                printInfo("If you're an expert, this is the SQL: " + r.toString());
+                printDebug("If you're an expert, this is the SQL: " + r.toString());
                 throw new RowImportException(row, (RowValue) null, "Could not find a sample with the FR number='" + localityName + "', topDepth=" + topDepth + ", bottomDepth=" + bottomDepth + ", drillType=" + drillType);
             }
 
             Integer sampleId = r.getInteger("SAMPLE_ID");
-            printInfo("Found a sample with the FR number='" + localityName + "', topDepth=" + topDepth + ", bottomDepth=" + bottomDepth + ", drillType=" + drillType + " for column " + XLSXSpreadsheet.columnNumToLetters(columnNum));
+            printDebug("Found a sample with the FR number='" + localityName + "', topDepth=" + topDepth + ", bottomDepth=" + bottomDepth + ", drillType=" + drillType + " for column " + XLSXSpreadsheet.columnNumToLetters(columnNum));
 
             if (r.next()) {
                 throw new RowImportException(row, (RowValue) null, "Found multiple samples with this locality, depths and sample type.");
@@ -531,7 +531,7 @@ public class PaleoRowProcessor extends RowProcessor {
             return;
         }
 
-        printInfo("Found person: " + p.getDisplayName());
+        printDebug("Found person: " + p.getDisplayName());
         paleo.getIdentifiers().add(p);
     }
 
@@ -545,7 +545,7 @@ public class PaleoRowProcessor extends RowProcessor {
                     throw new RowImportException(row, v, "Misspelled, obsolete, or unknown age.");
                 }
                 s.setLowerAge(a);
-                printInfo("Setting lower stage: " + a.getDisplayName());
+                printDebug("Setting lower stage: " + a.getDisplayName());
             } catch (StorageAccessException ex) {
                 throw new RowImportException(row, v, "Something went wrong trying to verify this age.", ex);
             }
@@ -563,7 +563,7 @@ public class PaleoRowProcessor extends RowProcessor {
                     throw new RowImportException(row, v, "Misspelled, obsolete, or unknown age.");
                 }
                 s.setUpperAge(a);
-                printInfo("Setting upper stage: " + a.getDisplayName());
+                printDebug("Setting upper stage: " + a.getDisplayName());
             } catch (StorageAccessException ex) {
                 throw new RowImportException(row, v, "Something went wrong trying to verify this age.", ex);
             }
@@ -575,7 +575,7 @@ public class PaleoRowProcessor extends RowProcessor {
             LabSection ls;
 
             ls = fredDAO.getLabSection(labNameMatrix.get(v.getColumnNum()), v.getValueString());
-            printInfo("Setting lab section: " + ls);
+            printDebug("Setting lab section: " + ls);
             if (!v.isEmpty() && null == ls) {
                 throw new RowImportException(row, v, "Failed to find this laboratory.");
             }
