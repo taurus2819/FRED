@@ -421,9 +421,12 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.LAB'), 1, 'LAB_ID');
 insert into mg_column (id, mg_table, mg_column_type, code, ORDER_BY_RANK) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.LAB'), 3, 'LAB_NAME', 1);
 
+CREATE OR REPLACE FORCE VIEW "FR"."LU_COUNTRY" ("COUNTRY_CODE", "COUNTRY_NAME", "COUNTRY_DIAL_CODE") AS 
+  SELECT "COUNTRY_CODE","COUNTRY_NAME","COUNTRY_DIAL_CODE" FROM MIS.COUNTRY
+  ORDER BY decode (country_code, 'AQ', 'AA', 'NZ', 'AB', country_name);
 
 CREATE TABLE LU_COORD_SYSTEM (
-        ORIG_SYSTEM_ID NUMBER(3) PRIMARY KEY REFERENCES SC.ORIG_SYSTEM(SYSTEM_ID),
+        ORIG_SYSTEM_ID NUMBER(3) PRIMARY KEY,
         CODE VARCHAR(40),
         NAME VARCHAR(100),
         DISP_ORDER NUMBER(3) DEFAULT 0
