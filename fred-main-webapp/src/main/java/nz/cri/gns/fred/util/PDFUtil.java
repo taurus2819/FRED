@@ -1,6 +1,6 @@
 package nz.cri.gns.fred.util;
 
-import nz.cri.gns.db.DBUtils;
+//import nz.cri.gns.db.DBUtils;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -10,14 +10,18 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
+
 public class PDFUtil {
+    
+                   private static SpecialCharactersFormatting charFormatting = new SpecialCharactersFormatting();
 
 	public static void addCell(PdfPTable table, Object text, Font font) {
 		addCell(table, text, font, Element.ALIGN_LEFT, 1);
 	}
 	
 	public static void addCell(PdfPTable table, Object text, Font font, int align, int colSpan) {
-		PdfPCell cell = new PdfPCell(new Phrase(DBUtils.nvl(text), font));
+		//PdfPCell cell = new PdfPCell(new Phrase(DBUtils.nvl(text), font));
+		PdfPCell cell = new PdfPCell(new Phrase( charFormatting.getText(String.valueOf(text)), font));
 		cell.setHorizontalAlignment(align);
 		cell.setBorder(Rectangle.NO_BORDER);
 		cell.setVerticalAlignment(Element.ALIGN_TOP);
