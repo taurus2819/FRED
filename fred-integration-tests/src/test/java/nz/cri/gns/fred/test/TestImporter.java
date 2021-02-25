@@ -15,10 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.sql.DataSource;
-import nz.cri.gns.auth.AuthServiceClient;
 import nz.cri.gns.auth.AuthServiceException;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -32,7 +29,7 @@ import nz.cri.gns.munginator.upload.XLSUploader.SheetIdentifier;
 import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -127,9 +124,9 @@ public class TestImporter {
 
             Importer im = new Importer(conn, conn, conn, rps, sheetId, null, out);
 
-            assertTrue(im.doVerify());
+            assertEquals(RowProcessor.State.OK, im.doVerify());
 
-            assertTrue(im.doImport());
+            assertEquals(RowProcessor.State.ERROR, im.doImport());
         } finally {
             conn.close();
         }

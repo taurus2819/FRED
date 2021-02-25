@@ -122,8 +122,7 @@
 	<tr class="lightColour"><td colspan="3">Download the spreadsheet by clicking on the link 
                 below and then choosing "Save" when prompted by your browser  (Note: in some browsers it 
                 may be necessary to right-click on the link and choose <i>Save As</i> from the pop-up menu). 
-                The spreadsheet has been tested with Microsoft Excel 2002,2007,2010 but should work with 
-                all versions.</td></tr>
+                The spreadsheet has been tested with Microsoft Excel 365.</td></tr>
                 <tr class="lightColour">
                     <td colspan="3">
                         <a href="template.xlsm?CODE=FRED_OUTCROP">

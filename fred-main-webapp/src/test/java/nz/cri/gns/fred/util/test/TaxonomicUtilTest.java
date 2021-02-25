@@ -21,6 +21,9 @@ public class TaxonomicUtilTest {
                 "group name"},
             {"spp.",
                 "name",
+                "name n. spp."},            
+            {"spp.",
+                "name",
                 "name spp."},
             {"n. spp. indet.",
                 "name",
@@ -29,7 +32,7 @@ public class TaxonomicUtilTest {
                 "name",
                 "name n.spp.indet."},
             {"n. indet.",
-                "name n.", // TODO is this expected?
+                "name n.", // n. indet. is an error and should not be truncated
                 "name n. indet."},
             {"indet.",
                 "name",

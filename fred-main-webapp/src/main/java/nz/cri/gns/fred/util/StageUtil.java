@@ -95,6 +95,10 @@ public class StageUtil extends ModelUtil {
         return null;
     }
 
+    public List<Age> getAges() throws StorageAccessException {
+        return fredDAO.getUnsortedList("FROM Age AS a  order by a.baseAge, a.topAge", Age.class);
+    }
+
     public List<Age> getCurrentAges() throws StorageAccessException {
         return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ? AND a.duplicateFlag = ? order by a.baseAge, a.topAge", Age.class, false, false);
     }

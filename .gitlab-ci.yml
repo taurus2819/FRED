@@ -1,0 +1,70 @@
+variables:
+  # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
+  # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
+  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  # As of Maven 3.3.0 instead of this you may define these options in `.mvn/maven.config` so the same config is used
+  # when running from the command line.
+  # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+
+image: openjdk:8
+
+stages:
+  - build
+  - test
+  - run
+  - package
+  - deploy
+
+initial-build:
+  tags:
+    - docker
+  stage: build
+  script: ./mvnw $MAVEN_CLI_OPTS clean install -s .mvn/settings.xml
+
+code-quality:
+  tags:
+    - docker
+  stage: build
+  script: ./mvnw $MAVEN_CLI_OPTS checkstyle:checkstyle -s .mvn/settings.xml
+
+integration-tests:
+  tags:
+    - docker
+  stage: test
+  script: ./mvnw $MAVEN_CLI_OPTS integration-test -s .mvn/settings.xml
+  artifacts:
+    reports:
+      junit:
+        - fred-main-webapp/target/surefire-reports/TEST-*.xml
+        - fred-acceptance-tests/target/failsafe-reports/TEST-*.xml
+
+artifactory-deploy:
+  tags:
+    - docker
+  stage: package
+  script: ./mvnw $MAVEN_CLI_OPTS -Dmaven.test.skip=true -Pjenkins-build deploy -s .mvn/settings.xml
+    # only:
+    # - master
+    
+deploy-dev:
+  tags:
+    - docker
+  stage: deploy
+  script: 
+  - ./mvnw -Pjenkins-build -DdeploymentURL=$data_dev_url:$tomcat_paleo_port/manager/text tomcat7:redeploy -s .mvn/settings.xml
+  - ./mvnw clean verify -Pdevelopment -s .mvn/settings.xml
+  when: manual
+  # only:
+  #  - master
+ 
+deploy-uat:
+  tags:
+    - docker
+  stage: deploy
+  script: 
+  - ./mvnw -Pjenkins-build -DdeploymentURL=$data_uat_url:$tomcat_paleo_port/manager/text tomcat7:redeploy -s .mvn/settings.xml
+  - ./mvnw clean verify -Puat -s .mvn/settings.xml
+  when: manual
+  # only:
+  #   - master

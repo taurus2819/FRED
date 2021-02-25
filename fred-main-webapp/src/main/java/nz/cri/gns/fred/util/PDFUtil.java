@@ -21,7 +21,7 @@ public class PDFUtil {
 	
 	public static void addCell(PdfPTable table, Object text, Font font, int align, int colSpan) {
 		//PdfPCell cell = new PdfPCell(new Phrase(DBUtils.nvl(text), font));
-                                     PdfPCell cell = new PdfPCell(new Phrase( charFormatting.getText(String.valueOf(text)), font));
+		PdfPCell cell = new PdfPCell(new Phrase( charFormatting.getText(String.valueOf(text)), font));
 		cell.setHorizontalAlignment(align);
 		cell.setBorder(Rectangle.NO_BORDER);
 		cell.setVerticalAlignment(Element.ALIGN_TOP);

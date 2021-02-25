@@ -3,12 +3,12 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.2.33.200</version>
+        <version>3.3.0.1</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred</artifactId>
     <packaging>war</packaging>
-    <version>3.2.33.200</version>
+    <version>3.3.0.1</version>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
@@ -125,7 +125,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.1.88.695</version>            
+            <version>3.1.89.697</version>            
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
@@ -169,15 +169,15 @@
             <artifactId>jta</artifactId>
             <version>1.1</version>
         </dependency>
-        
-        <!-- HTML to readable text -->
+		
+		<!-- HTML to readable text -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.10.3</version>
             <type>jar</type>
         </dependency>
-
+		
 <!--        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -213,7 +213,7 @@
         <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>munginator</artifactId>
-            <version>0.1.0.2</version>
+            <version>0.1.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>

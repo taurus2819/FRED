@@ -189,11 +189,11 @@ public class PaleoRowProcessor extends RowProcessor {
                             break;
                         case ROW_ID_DATE:
                             paleo.setIdentificationDate(v.getValueTimestamp());
-                            log("Setting date: " + v.getValueString());
+                            printDebug("Setting date: " + v.getValueString());
                             break;
                         case ROW_DATE_ROUNDING:
                             paleo.setDateRounding(v.getValueString());
-                            log("Setting date rounding: " + v.getValueString());
+                            printDebug("Setting date rounding: " + v.getValueString());
                             break;
                         case ROW_IDENTIFIER:
                             setIdentifiers(paleo, row, v);
@@ -212,7 +212,7 @@ public class PaleoRowProcessor extends RowProcessor {
                             break;
                         case ROW_STAGE_COMMENT:
                             paleo.setStageComments(v.getValueString());
-                            log("Setting stage comments: " + v.getValueString());
+                            printDebug("Setting stage comments: " + v.getValueString());
                             break;
                         case ROW_LAB_NAME:
                             labNameMatrix.put(v.getColumnNum(), v.getValueString());
@@ -222,11 +222,11 @@ public class PaleoRowProcessor extends RowProcessor {
                             break;
                         case ROW_LAB_NUMBER:
                             paleo.setLabNumber(v.getValueString());
-                            log("Setting lab number: " + v.getValueString());
+                            printDebug("Setting lab number: " + v.getValueString());
                             break;
                         case ROW_COLLECTION_COMMENTS:
                             paleo.setCollectionComments(v.getValueString());
-                            log("Setting collection comments: " + v.getValueString());
+                            printDebug("Setting collection comments: " + v.getValueString());
                             break;
                         default:
                             throw new MgException();
@@ -333,7 +333,8 @@ public class PaleoRowProcessor extends RowProcessor {
         if (!row.hasValue(COL_TAXON)) {
             throw new RowImportException(row, null, "No taxon on this row.");
         }
-        String txStr = row.getValue(COL_TAXON).getValueString();
+        RowSingleValue rowValue = row.getValue(COL_TAXON);
+        String txStr = rowValue.getValueString();
         if (null == txStr) {
             throw new RowImportException(row, null, "No taxon on this row.");
         }
@@ -350,7 +351,7 @@ public class PaleoRowProcessor extends RowProcessor {
         }
         Taxon tx;
         if (null == txs || txs.isEmpty()) {
-            warn("Cannot find the taxon " + txStr + ". Assuming it is a new one.");
+            warnAndRequireConfirmation(row, rowValue, "Cannot find this taxon. Please carefully check the spelling and only save these records if all taxonomic names are spelled correctly.");
             tx = taxonUtil.createTaxon();
             tx.setTaxonomicGroup(taxonGroup);
             tx.setStatus(FREDConstants.PROVISIONAL);
@@ -439,7 +440,7 @@ public class PaleoRowProcessor extends RowProcessor {
         result.setTaxonomicName(taxon.getTaxonomicName());
         result.setPaleontology(p);
         p.getListEntries().add(result);
-        log("Made a new pal_list entry. Group: " + taxon.getTaxonomicGroup().getDisplayName() + " Taxon: " + taxon.getTaxonomicName() + " Count: " + count + " Coords: " + coords + " Comments: " + comments);
+        printDebug("Made a new pal_list entry. Group: " + taxon.getTaxonomicGroup().getDisplayName() + " Taxon: " + taxon.getTaxonomicName() + " Count: " + count + " Coords: " + coords + " Comments: " + comments);
     }
 
     private void findSample(Integer columnNum, Row row) throws RowImportException {
@@ -481,12 +482,12 @@ public class PaleoRowProcessor extends RowProcessor {
 
             r.doIt(importConn);
             if (!r.next()) {
-                log("If you're an expert, this is the SQL: " + r.toString());
+                printDebug("If you're an expert, this is the SQL: " + r.toString());
                 throw new RowImportException(row, (RowValue) null, "Could not find a sample with the FR number='" + localityName + "', topDepth=" + topDepth + ", bottomDepth=" + bottomDepth + ", drillType=" + drillType);
             }
 
             Integer sampleId = r.getInteger("SAMPLE_ID");
-            log("Found a sample with the FR number='" + localityName + "', topDepth=" + topDepth + ", bottomDepth=" + bottomDepth + ", drillType=" + drillType + " for column " + XLSXSpreadsheet.columnNumToLetters(columnNum));
+            printDebug("Found a sample with the FR number='" + localityName + "', topDepth=" + topDepth + ", bottomDepth=" + bottomDepth + ", drillType=" + drillType + " for column " + XLSXSpreadsheet.columnNumToLetters(columnNum));
 
             if (r.next()) {
                 throw new RowImportException(row, (RowValue) null, "Found multiple samples with this locality, depths and sample type.");
@@ -526,11 +527,11 @@ public class PaleoRowProcessor extends RowProcessor {
             throw new RowImportException(row, v, "Could not find this person", ex);
         }
         if (null == p) {
-            warn("Could not find this person: " + personName);
+            warnAndRequireConfirmation(row, v, "Could not find this person.");
             return;
         }
 
-        log("Found person: " + p.getDisplayName());
+        printDebug("Found person: " + p.getDisplayName());
         paleo.getIdentifiers().add(p);
     }
 
@@ -544,7 +545,7 @@ public class PaleoRowProcessor extends RowProcessor {
                     throw new RowImportException(row, v, "Misspelled, obsolete, or unknown age.");
                 }
                 s.setLowerAge(a);
-                log("Setting lower stage: " + a.getDisplayName());
+                printDebug("Setting lower stage: " + a.getDisplayName());
             } catch (StorageAccessException ex) {
                 throw new RowImportException(row, v, "Something went wrong trying to verify this age.", ex);
             }
@@ -562,7 +563,7 @@ public class PaleoRowProcessor extends RowProcessor {
                     throw new RowImportException(row, v, "Misspelled, obsolete, or unknown age.");
                 }
                 s.setUpperAge(a);
-                log("Setting upper stage: " + a.getDisplayName());
+                printDebug("Setting upper stage: " + a.getDisplayName());
             } catch (StorageAccessException ex) {
                 throw new RowImportException(row, v, "Something went wrong trying to verify this age.", ex);
             }
@@ -574,7 +575,7 @@ public class PaleoRowProcessor extends RowProcessor {
             LabSection ls;
 
             ls = fredDAO.getLabSection(labNameMatrix.get(v.getColumnNum()), v.getValueString());
-            log("Setting lab section: " + ls);
+            printDebug("Setting lab section: " + ls);
             if (!v.isEmpty() && null == ls) {
                 throw new RowImportException(row, v, "Failed to find this laboratory.");
             }

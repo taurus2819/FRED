@@ -640,6 +640,8 @@ public class ExportServlet     extends FREDHibernateServlet {
                                             sb.append(person.getName()).append("; ");
                                         }
                                         c.print(sb.toString());
+                                    } else {
+                                        c.print(null);
                                     }
                                 }
                                 c.println();

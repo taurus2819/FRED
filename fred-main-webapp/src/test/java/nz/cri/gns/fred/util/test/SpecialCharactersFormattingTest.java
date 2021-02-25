@@ -13,7 +13,7 @@ import org.junit.Test;
  *
  * @author ercilla
  */
-public class TestSpecialCharactersFormatting {
+public class SpecialCharactersFormattingTest {
 
     @Test
     public void testGetTextForMacrons() {
