@@ -18,13 +18,18 @@ public class StageDEUtil {
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.StageDEUtil");
 
     public static void addStage2(Template template, Stage stage, String prefix) {
-        if (stage != null) {
+        if (stage != null
+                && stage.getLowerAge() != null
+                    && stage.getLowerAge().getName() != null
+                        &&  stage.getLowerAge().getCode() != null) {
             String start = stage.getLowerAge().getName() + " (" + stage.getLowerAge().getCode() + ")";
             if (stage.getStageLowerMod() != null) {
                 start = start + "?";
             }
             template.addSub(prefix + "StageStart", start);
-            if (stage.getUpperAge() != null) {
+            if (stage.getUpperAge() != null
+                    && stage.getUpperAge().getName() != null
+                        && stage.getUpperAge().getCode() != null) {
                 String stop = stage.getUpperAge().getName() + " (" + stage.getUpperAge().getCode() + ")";
                 if (stage.getStageUpperMod() != null) {
                     stop = stop + "?";
