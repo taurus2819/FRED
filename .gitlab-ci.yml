@@ -52,8 +52,8 @@ deploy-dev:
     - docker
   stage: deploy
   script: 
-  - ./mvnw -Pjenkins-build -DdeploymentURL=$data_dev_url:$tomcat_paleo_port/manager/text tomcat7:redeploy -s .mvn/settings.xml
-  - ./mvnw clean verify -Pdevelopment -s .mvn/settings.xml
+  - ./mvnw $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_dev_url:$tomcat_paleo_port/manager/text tomcat7:redeploy -s .mvn/settings.xml
+  - ./mvnw $MAVEN_CLI_OPTS clean verify -Pdevelopment -s .mvn/settings.xml
   when: manual
   # only:
   #  - master
@@ -63,8 +63,8 @@ deploy-uat:
     - docker
   stage: deploy
   script: 
-  - ./mvnw -Pjenkins-build -DdeploymentURL=$data_uat_url:$tomcat_paleo_port/manager/text tomcat7:redeploy -s .mvn/settings.xml
-  - ./mvnw clean verify -Puat -s .mvn/settings.xml
+  - ./mvnw $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_uat_url:$tomcat_paleo_port/manager/text tomcat7:redeploy -s .mvn/settings.xml
+  - ./mvnw $MAVEN_CLI_OPTS clean verify -Puat -s .mvn/settings.xml
   when: manual
   # only:
   #   - master
