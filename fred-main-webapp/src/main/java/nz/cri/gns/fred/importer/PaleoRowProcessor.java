@@ -4,6 +4,7 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +134,7 @@ public class PaleoRowProcessor extends RowProcessor {
         }
 
         if (rowNum >= ROW_MATRIX_START) {
-            taxon = getOrCreateTaxon(row);
+            taxon = getOrCreateTaxon(row, user);
         }
 
         for (RowValue each : row) {
@@ -323,7 +324,7 @@ public class PaleoRowProcessor extends RowProcessor {
         }
     }
 
-    private TaxonData getOrCreateTaxon(Row row) throws RowImportException {
+    private TaxonData getOrCreateTaxon(Row row, User user) throws RowImportException {
         TaxonomicGroup taxonGroup = null;
 
         if (!row.hasValue(COL_TAXON_GROUP)) {
@@ -374,6 +375,8 @@ public class PaleoRowProcessor extends RowProcessor {
             tx.setTaxonomicGroup(taxonGroup);
             tx.setStatus(FREDConstants.PROVISIONAL);
             tx.setTaxonomicName(txNormStr);
+            tx.setSubmittedById(user.getId().intValue());
+            tx.setSubmittedDate(new Date());
             try {
                 fredDAO.save(tx);
             } catch (StorageAccessException e) {
