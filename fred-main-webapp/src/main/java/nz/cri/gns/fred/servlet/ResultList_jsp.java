@@ -422,8 +422,8 @@ public class ResultList_jsp extends FREDHibernateServlet {
                         out.write("\" />\n");
                         out.write("                                                            </td>\n");
                         out.write("                                                            <td>\n");
-                        out.write("                                                                <a href=\"detail.jsp?resultsIndex=");
-                        out.print((resultsList.size() - 1));
+                        out.write("                                                                <a href=\"detail.jsp?FeatID=");
+                        out.print(feature.getFeatureId());
                         out.write("&backURL=");
                         out.print(URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1"));
                         out.write("&backText=Back+To+Result+List\"><img src=\"images/loc.gif\" border=\"0\" height=\"20\" width=\"20\" alt=\"View Locality\" title=\"View Locality\"/></a>\n");
@@ -474,8 +474,8 @@ public class ResultList_jsp extends FREDHibernateServlet {
                                     out.write("<tr class=\"lightColour\">\n");
                                     out.write("\t\t\t\t\t\t\t\t\t\t\t\t<td></td>\n");
                                     out.write("\t\t\t\t\t\t\t\t\t\t\t\t<td>\n");
-                                    out.write("\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"detail.jsp?resultsIndex=");
-                                    out.print((resultsList.size() - 1));
+                                    out.write("\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"detail.jsp?ID=");
+                                    out.print(sample.getSampleId());
                                     out.write("&backURL=");
                                     out.print(URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1"));
                                     out.write("&backText=Back%20To%20Result%20List\">\n");
