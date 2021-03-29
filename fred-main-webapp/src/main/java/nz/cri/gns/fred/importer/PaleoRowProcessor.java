@@ -296,10 +296,6 @@ public class PaleoRowProcessor extends RowProcessor {
             throw new MgException(ex);
         }
         paleoMatrix.put(index, r);
-
-        // PDB-221
-        r.getPaleontology().setStage(null);
-
         return r;
     }
 

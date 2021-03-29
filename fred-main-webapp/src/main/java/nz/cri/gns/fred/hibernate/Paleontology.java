@@ -32,7 +32,7 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     private String collectionComments;
     private Record record;
     private LabSection labSection;
-    private Stage stage = new nz.cri.gns.fred.hibernate.Stage();
+    private Stage stage;
     private Set<PaleontologyListEntry> palLists = new HashSet();
     private Set<Person> identifiers = new HashSet();
 
