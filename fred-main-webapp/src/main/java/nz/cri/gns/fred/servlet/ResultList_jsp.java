@@ -122,8 +122,6 @@ public class ResultList_jsp extends FREDHibernateServlet {
 
             // Start drawing page from the extranet template defined	
             h.drawTop(out, et, request, response);
-            out.print("loading...");
-            out.flush(); // Make sure the loading message appears.
 
             // Execute any actions
             String alertText = "";
