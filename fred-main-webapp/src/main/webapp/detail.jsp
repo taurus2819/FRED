@@ -108,35 +108,8 @@
 
         String sampID = request.getParameter("ID");
         String featID = request.getParameter("FeatID");
-
-        List<Object> resultsList = (List<Object>) session.getAttribute("FRED.results");
-        if (featID != null || sampID != null) {
-            resultsList = null;
-        }
-        int resultsSize = (resultsList == null ? 0 : resultsList.size());
-
-        String resultsIndex = request.getParameter("resultsIndex");
-        resultsIndex = resultsIndex == null ? "-1" : resultsIndex;
-        resultsIndex = resultsIndex.equals("") ? "-1" : resultsIndex;
-        int thisIndex = Integer.decode(resultsIndex).intValue();
-        int nextIndex = thisIndex + 1;
-        nextIndex = Math.min(nextIndex, resultsSize - 1);
-        int prevIndex = thisIndex - 1;
-        prevIndex = Math.max(prevIndex, 0);
-
-        String featureIndex = request.getParameter("featureIndex");
         Feature feature = null;
         Sample sample = null;
-        if ((featID == null || featID.equals("")) && resultsIndex != "-1" && resultsList != null && resultsSize > 0) {
-            Object result = resultsList.get(thisIndex);
-            if (result instanceof Feature) {
-                feature = (Feature) result;
-                featID = "" + feature.getFeatureId();
-            } else {
-                sample = (Sample) result;
-                sampID = "" + sample.getSampleId();
-            }
-        }
 
         int site = ServletUtils.getSite(getPageState(request, response));
         if (request.getRemoteAddr().equals("127.0.0.1")) {
@@ -354,22 +327,6 @@
         <th colspan="2">
             Locality Information&nbsp;&nbsp;&nbsp;
             <a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print"/></a>
-                <%
-                    if (resultsSize > 0) {
-                %><div style="float: right"><%
-                    if (thisIndex == 0) {
-                %>_<%                } else {
-                %>
-                <a href="detail.jsp?backURL=result_list.jsp%3FPage%3D1&backText=Back+To+Result+List&resultsIndex=<%=prevIndex%>">prev</a>
-                <%
-                    }
-                %>&nbsp;<%
-                    if (thisIndex == (resultsSize - 1)) {
-                %>_<%                                           } else {
-                %><a href="detail.jsp?backURL=result_list.jsp%3FPage%3D1&backText=Back+To+Result+List&resultsIndex=<%=nextIndex%>">next</a><%
-                    }
-                %></div><%
-            }%>
         </th>
     </tr>
     <tr class="lightColour"><td class="heading">FR Number</td><td class="heading"><%=((feature.getFrNumber() != null) ? feature.getFrNumber().getFrNumber() : "not yet allocated")%></td></tr><%
