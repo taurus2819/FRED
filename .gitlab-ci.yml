@@ -28,11 +28,11 @@ code-quality:
   stage: build
   script: ./mvnw $MAVEN_CLI_OPTS checkstyle:checkstyle -s .mvn/settings.xml
 
-sonarqube-check:
-  tags:
-    - docker
-  stage: build
-  script: ./mvnw $MAVEN_CLI_OPTS sonar:sonar -Dsonar.projectKey=applications_FRED_AXjCrkJdFnkgNxTNbcr4 -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN_FRED -s .mvn/settings.xml
+#sonarqube-check:
+#  tags:
+#    - docker
+#  stage: build
+#  script: ./mvnw $MAVEN_CLI_OPTS sonar:sonar -Dsonar.projectKey=applications_FRED_AXjCrkJdFnkgNxTNbcr4 -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN_FRED -s .mvn/settings.xml
 
 integration-tests:
   tags:
