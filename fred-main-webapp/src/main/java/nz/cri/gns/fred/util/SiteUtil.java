@@ -249,6 +249,15 @@ public class SiteUtil extends ModelUtil {
         Coordinate coord = datum.parseCoordinate(feature.getOrigCoord());
         return coord;
     }
+    
+    /**
+     * Returns true if the string is not null, empty, or only has whitespace.
+     * @param s the string
+     * @return whether the String has data
+     */
+    public static boolean hasData(String s){
+        return (null != s && !s.isEmpty() && !s.isBlank());
+    }
 
     /**
      * Populate my fields that are relevant to the Site schema. After populating
@@ -265,7 +274,7 @@ public class SiteUtil extends ModelUtil {
     public static SiteRecord findOrMakeSiteInstance(
             List<String[]> error,
             String featureName,
-            Integer origSystemId, 
+            Integer origSystemId,
             String origCoords, // TODO: unused?
             String datumStr, // Please leave null. Use origSystemId.
             String east,
@@ -283,96 +292,108 @@ public class SiteUtil extends ModelUtil {
 
         SiteRecord site; // return me.
 
-        /* This is based on refactored existing code. Some behaviour has changed. -mikevdg */
-        // try to re-use any existing site details.
-        // take 1- try the well name
-        site = SiteUtil.getSite(featureName);
+        try {
 
-        Datum datum;
-        if (null==datumStr) {
-            datum = DatumFactory.createDatum(origSystemId);
-        } else {
-            // This is a source of bugs. Don't use this.
-            datum = DatumFactory.createDatum(datumStr);
-        }
-        
-        Datum.Coordinate coord = null;
-        if (east != null && !east.equals("") && north != null && !north.equals("")) {
-            try {
-                if (datum.isMapSheetSystem()) {
-                    int precision = east.length();
-                    if (north.length() != precision) {
-                        error.add(new String[]{"Coordinate", "Truncated coordinates different lengths"});
-                    } else if ((precision > 0 && precision < 3) || precision > 4) {
-                        error.add(new String[]{"Coordinate", "Length of truncated coordinates must be 3 or 4"});
+            /* This is based on refactored existing code. Some behaviour has changed. -mikevdg */
+            // try to re-use any existing site details.
+            // take 1- try the well name
+            site = SiteUtil.getSite(featureName);
+
+            Datum datum;
+            if (null == datumStr) {
+                datum = DatumFactory.createDatum(origSystemId);
+            } else {
+                // This is a source of bugs. Don't use this.
+                datum = DatumFactory.createDatum(datumStr);
+            }
+
+            if (null == site && !(hasData(east) || hasData(north))) {
+                error.add(new String[]{"Coordinate", "Coordinate is required"});
+                return null;
+            }
+
+            Datum.Coordinate coord = null;
+            if (hasData(east) && hasData(north)) {
+                try {
+                    if (datum.isMapSheetSystem()) {
+                        int precision = east.length();
+                        if (north.length() != precision) {
+                            error.add(new String[]{"Coordinate", "Truncated coordinates different lengths"});
+                        } else if ((precision > 0 && precision < 3) || precision > 4) {
+                            error.add(new String[]{"Coordinate", "Length of truncated coordinates must be 3 or 4"});
+                        } else {
+                            // WTF!? This is not a problem that needs reflection as a solution.
+                            coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(
+                                    new Class[]{double.class, double.class, String.class, int.class}).newInstance(
+                                            new Object[]{
+                                                new Double(north),
+                                                new Double(east),
+                                                mapSheet,
+                                                precision});
+                        }
                     } else {
-                        // WTF!? This is not a problem that needs reflection as a solution.
                         coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(
-                                new Class[]{double.class, double.class, String.class, int.class}).newInstance(
+                                new Class[]{double.class, double.class}).newInstance(
                                         new Object[]{
                                             new Double(north),
-                                            new Double(east),
-                                            mapSheet,
-                                            precision});
+                                            new Double(east)});
                     }
-                } else {
-                    coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(
-                            new Class[]{double.class, double.class}).newInstance(
-                                    new Object[]{
-                                        new Double(north),
-                                        new Double(east)});
+                } catch (NumberFormatException e) {
+                    error.add(new String[]{"Coordinate", "Non numeric coordinate entered"});
+                } catch (IllegalArgumentException | InstantiationException | SecurityException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                    error.add(new String[]{"Coordinate", e.getMessage()});
                 }
-            } catch (NumberFormatException e) {
-                error.add(new String[]{"Coordinate", "Non numeric coordinate entered"});
-            } catch (IllegalArgumentException | InstantiationException | SecurityException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             }
-        }
 
-        if (null == coord) {
-            return site;
-        }
+            if (null == coord) {
+                return site;
+            }
 
-        if (!datum.coordinateAcceptable(coord)) {
-            error.add(new String[]{"Coordinate", "Coordsaveinates not of correct type"});
-        }
+            if (!datum.coordinateAcceptable(coord)) {
+                error.add(new String[]{"Coordinate", "Coordinates not of correct type"});
+            }
 
-        if (null == site) {
-            site = SiteUtil.getSite(datum, coord);
-        }
+            if (null == site) {
+                site = SiteUtil.getSite(datum, coord);
+            }
 
-        if (null == site) {
-            // Make a new one.
-            site = new SiteRecord();
-        }
+            if (null == site) {
+                // Make a new one.
+                site = new SiteRecord();
+            }
 
-        if (null == origSystemId || null == origCoords) {
+            if (null == origSystemId || null == origCoords) {
+                try {
+                    // TODO: This set the original coordinates from the datum, but we also have origCoords?
+                    site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+                } catch (Exception e) {
+                    log.log(Level.INFO, null, e);
+                    error.add(new String[]{"Coordinate", "Datum is invalid. " + e.getMessage()});
+                }
+            } else {
+                site.setOriginal(origSystemId, origCoords);
+            }
+
             try {
-                // TODO: This set the original coordinates from the datum, but we also have origCoords?
-                site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+                site.setLatLong(datum.convertToNZGD49(coord));
             } catch (Exception e) {
                 log.log(Level.INFO, null, e);
-                error.add(new String[]{"Coordinate", "Datum is invalid. " + e.getMessage()});
+                error.add(new String[]{"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
             }
-        } else {
-            site.setOriginal(origSystemId, origCoords);
-        }
 
-        try {
-            site.setLatLong(datum.convertToNZGD49(coord));
-        } catch (Exception e) {
-            log.log(Level.INFO, null, e);
-            error.add(new String[]{"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
-        }
+            site.setDirections(locality);
+            site.setCountry(country);
+            site.setOwner(user.getId().intValue());
 
-        site.setDirections(locality);
-        site.setCountry(country);
-        site.setOwner(user.getId().intValue());
-
-        if (null != locationMethodId) {
-            site.setMethod(locationMethodId);
-        }
-        if (null != accuracy) {
-            site.setAccuracy(accuracy);
+            if (null != locationMethodId) {
+                site.setMethod(locationMethodId);
+            }
+            if (null != accuracy) {
+                site.setAccuracy(accuracy);
+            }
+        } catch (Exception x) {
+            error.add(new String[]{"Coordinate", x.getMessage()});
+            site = null;
         }
         return site;
     }
