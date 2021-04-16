@@ -256,7 +256,7 @@ public class SiteUtil extends ModelUtil {
      * @return whether the String has data
      */
     public static boolean hasData(String s){
-        return (null != s && !s.isEmpty() && !s.isBlank());
+        return (null != s && !s.isEmpty() && !s.trim().isEmpty());
     }
 
     /**
