@@ -12,6 +12,9 @@
         <easyb.version>1.4</easyb.version>
         <cobertura.version>2.5.1</cobertura.version>
         <thucydides.version>0.9.107</thucydides.version>
+        <sonar.projectKey>applications_FRED_AXjCrkJdFnkgNxTNbcr4</sonar.projectKey>
+        <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 	
     <scm>

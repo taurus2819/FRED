@@ -6,6 +6,8 @@ variables:
   # when running from the command line.
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+  GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
 
 image: openjdk:8
 
@@ -28,11 +30,18 @@ code-quality:
   stage: build
   script: ./mvnw $MAVEN_CLI_OPTS checkstyle:checkstyle -s .mvn/settings.xml
 
-#sonarqube-check:
-#  tags:
-#    - docker
-#  stage: build
-#  script: ./mvnw $MAVEN_CLI_OPTS sonar:sonar -Dsonar.projectKey=applications_FRED_AXjCrkJdFnkgNxTNbcr4 -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN_FRED -s .mvn/settings.xml
+sonarqube-check:
+  tags:
+    - docker
+  stage: build
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script: ./mvnw $MAVEN_CLI_OPTS sonar:sonar -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN -s .mvn/settings.xml
+  allow_failure: true
+  only:
+    - master
 
 integration-tests:
   tags:
