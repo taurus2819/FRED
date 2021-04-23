@@ -20,101 +20,98 @@ import javax.servlet.http.HttpServletResponse;
 
 import javax.naming.*;
 
-public class WFSProxy extends HttpServlet	{
+public class WFSProxy extends HttpServlet {
 
+    private String TARGET_URL_WFS;
 
-	private String TARGET_URL_WFS;
-		
-	
-/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
-	 */
-	@Override
-	public void init(ServletConfig arg0) throws ServletException {
-		
-		super.init(arg0);
-		init();
-	}
+     */
+    @Override
+    public void init(ServletConfig arg0) throws ServletException {
 
-	//	 public methods
-	public void init() throws ServletException
-	{
-		super.init();
-		
-		//initialize with parameters from web.xml	
-		try {
-			Context env = (Context)new InitialContext().lookup("java:comp/env");
-			TARGET_URL_WFS = (String)env.lookup("FRED_WFS");
-		} catch (NamingException e) {
-			e.printStackTrace();
-		}
-	} // init	
-		
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-    	throws IOException, ServletException	{
-		
-		URLConnection serverConnection = new URL(TARGET_URL_WFS).openConnection();
-		serverConnection.setRequestProperty("CONTENT-TYPE", "text/xml");
-		serverConnection.setDoInput(true);
-		serverConnection.setDoOutput(true);
-		
-		//1. read from client, write to server
-		int bytie;
-		InputStream fromClient = request.getInputStream();
-		OutputStream toServer = serverConnection.getOutputStream();
-		
-		while((bytie = fromClient.read()) != -1)	{
-			toServer.write(bytie);
-		}
-		fromClient.close();
-		toServer.close();
-		
-		InputStream fromServer = serverConnection.getInputStream();
-		
-		response.setContentType("text/xml");
-		OutputStream toClient = response.getOutputStream();
-		
-		while((bytie = fromServer.read()) != -1)	{
-			toClient.write(bytie);
-		}
-		fromServer.close();
-		toClient.close();
+        super.init(arg0);
+        init();
     }
-	
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException	
-	{		
-		String inParams = "?";
-		
-		for(Enumeration eno = request.getParameterNames(); eno.hasMoreElements();){
-			String key = eno.nextElement().toString();
-			inParams+= key+"="+URLEncoder.encode(request.getParameter(key),"UTF-8");
-			if(eno.hasMoreElements())
-				inParams+="&";
-		}
-		String targetURL = TARGET_URL_WFS;
-		
-		URLConnection serverConnection = new URL(targetURL+inParams).openConnection();
-		//Logger.getLogger(this.getClass().getName()).info("Proxy calls "+targetURL+inParams);
-		serverConnection.setDoInput(true);
-		serverConnection.setDoOutput(false);
-		
-		BufferedReader fromServer = new BufferedReader(new InputStreamReader(serverConnection.getInputStream()));
-		BufferedWriter toClient = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 
-		response.setContentType("text/xml");
-	
-		String line;
-		try {
-			while((line = fromServer.readLine()) != null)	{
-				line.trim();
-				toClient.write(line);
-			}
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-		}
+    //	 public methods
+    @Override
+    public void init() throws ServletException {
+        super.init();
 
-		fromServer.close();
-		toClient.flush();
-		toClient.close();
-	}	
+        //initialize with parameters from web.xml	
+        try {
+            Context env = (Context) new InitialContext().lookup("java:comp/env");
+            TARGET_URL_WFS = (String) env.lookup("FRED_WFS");
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+    } // init	
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+
+        URLConnection serverConnection = new URL(TARGET_URL_WFS).openConnection();
+        serverConnection.setRequestProperty("CONTENT-TYPE", "text/xml");
+        serverConnection.setDoInput(true);
+        serverConnection.setDoOutput(true);
+
+        //1. read from client, write to server
+        int bytie;
+        OutputStream toServer;
+        try (InputStream fromClient = request.getInputStream()) {
+            toServer = serverConnection.getOutputStream();
+            while ((bytie = fromClient.read()) != -1) {
+                toServer.write(bytie);
+            }
+        }
+        toServer.close();
+
+        OutputStream toClient;
+        try (InputStream fromServer = serverConnection.getInputStream()) {
+            response.setContentType("text/xml");
+            toClient = response.getOutputStream();
+            while ((bytie = fromServer.read()) != -1) {
+                toClient.write(bytie);
+            }
+        }
+        toClient.close();
+    }
+
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String inParams = "?";
+
+        for (Enumeration eno = request.getParameterNames(); eno.hasMoreElements();) {
+            String key = eno.nextElement().toString();
+            inParams += key + "=" + URLEncoder.encode(request.getParameter(key), "UTF-8");
+            if (eno.hasMoreElements()) {
+                inParams += "&";
+            }
+        }
+        String targetURL = TARGET_URL_WFS;
+
+        URLConnection serverConnection = new URL(targetURL + inParams).openConnection();
+        //Logger.getLogger(this.getClass().getName()).info("Proxy calls "+targetURL+inParams);
+        serverConnection.setDoInput(true);
+        serverConnection.setDoOutput(false);
+
+        BufferedWriter toClient;
+        try (BufferedReader fromServer = new BufferedReader(new InputStreamReader(serverConnection.getInputStream()))) {
+            toClient = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+            response.setContentType("text/xml");
+            String line;
+            try {
+                while ((line = fromServer.readLine()) != null) {
+                    String trim = line.trim();
+                    toClient.write(trim);
+                }
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
+            toClient.flush();
+            toClient.close();
+        }
+    }
 }
