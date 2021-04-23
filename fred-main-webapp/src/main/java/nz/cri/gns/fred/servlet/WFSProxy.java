@@ -97,9 +97,8 @@ public class WFSProxy extends HttpServlet {
         serverConnection.setDoInput(true);
         serverConnection.setDoOutput(false);
 
-        BufferedWriter toClient;
-        try (BufferedReader fromServer = new BufferedReader(new InputStreamReader(serverConnection.getInputStream()))) {
-            toClient = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+        try (BufferedReader fromServer = new BufferedReader(new InputStreamReader(serverConnection.getInputStream()));
+                BufferedWriter toClient = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()))) {
             response.setContentType("text/xml");
             String line;
             try {
@@ -111,7 +110,6 @@ public class WFSProxy extends HttpServlet {
                 e.printStackTrace();
             }
             toClient.flush();
-            toClient.close();
         }
     }
 }
