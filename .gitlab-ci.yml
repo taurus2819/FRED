@@ -1,85 +1,80 @@
+# You can override the included template(s) by including variable overrides
+# See https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#priority-of-environment-variables
 variables:
-  # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
-  # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
-  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-  # As of Maven 3.3.0 instead of this you may define these options in `.mvn/maven.config` so the same config is used
-  # when running from the command line.
-  # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
-  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
-  GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
-
+  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+    -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true
+    -DdeployAtEnd=true"
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  GIT_DEPTH: '0'
 image: openjdk:8
-
 stages:
-  - build
-  - test
-  - run
-  - package
-  - deploy
-
+- build
+- test
+- run
+- package
+- deploy
 initial-build:
   tags:
-    - docker
+  - docker
   stage: build
-  script: ./mvnw $MAVEN_CLI_OPTS clean install -s .mvn/settings.xml
-
+  script: "./mvnw $MAVEN_CLI_OPTS clean install -s .mvn/settings.xml"
 code-quality:
   tags:
-    - docker
+  - docker
   stage: build
-  script: ./mvnw $MAVEN_CLI_OPTS checkstyle:checkstyle -s .mvn/settings.xml
-
+  script: "./mvnw $MAVEN_CLI_OPTS checkstyle:checkstyle -s .mvn/settings.xml"
 sonarqube-check:
   tags:
-    - docker
+  - docker
   stage: build
   cache:
     key: "${CI_JOB_NAME}"
     paths:
-      - .sonar/cache
-  script: ./mvnw $MAVEN_CLI_OPTS compile sonar:sonar -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN -s .mvn/settings.xml
+    - ".sonar/cache"
+  script: "./mvnw $MAVEN_CLI_OPTS compile sonar:sonar -Dsonar.host.url=$SONAR_HOST_URL
+    -Dsonar.login=$SONAR_TOKEN -s .mvn/settings.xml"
   allow_failure: true
   only:
-    - master
-
+  - master
 integration-tests:
   tags:
-    - docker
+  - docker
   stage: test
-  script: ./mvnw $MAVEN_CLI_OPTS integration-test -s .mvn/settings.xml
+  script: "./mvnw $MAVEN_CLI_OPTS integration-test -s .mvn/settings.xml"
   artifacts:
     reports:
       junit:
-        - fred-main-webapp/target/surefire-reports/TEST-*.xml
-        - fred-acceptance-tests/target/failsafe-reports/TEST-*.xml
-
+      - fred-main-webapp/target/surefire-reports/TEST-*.xml
+      - fred-acceptance-tests/target/failsafe-reports/TEST-*.xml
 artifactory-deploy:
   tags:
-    - docker
+  - docker
   stage: package
-  script: ./mvnw $MAVEN_CLI_OPTS -Dmaven.test.skip=true -Pjenkins-build deploy -s .mvn/settings.xml
-    # only:
-    # - master
-    
+  script: "./mvnw $MAVEN_CLI_OPTS -Dmaven.test.skip=true -Pjenkins-build deploy -s
+    .mvn/settings.xml"
 deploy-dev:
   tags:
-    - docker
+  - docker
   stage: deploy
-  script: 
-  - ./mvnw $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_dev_url:$tomcat_paleo_port/manager/text tomcat7:redeploy -s .mvn/settings.xml
-  - ./mvnw $MAVEN_CLI_OPTS clean verify -Pdevelopment -s .mvn/settings.xml
+  script:
+  - "./mvnw $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_dev_url:$tomcat_paleo_port/manager/text
+    tomcat7:redeploy -s .mvn/settings.xml"
+  - "./mvnw $MAVEN_CLI_OPTS clean verify -Pdevelopment -s .mvn/settings.xml"
   when: manual
-  # only:
-  #  - master
- 
 deploy-uat:
   tags:
-    - docker
+  - docker
   stage: deploy
-  script: 
-  - ./mvnw $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_uat_url:$tomcat_paleo_port/manager/text tomcat7:redeploy -s .mvn/settings.xml
-  - ./mvnw $MAVEN_CLI_OPTS clean verify -Puat -s .mvn/settings.xml
+  script:
+  - "./mvnw $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_uat_url:$tomcat_paleo_port/manager/text
+    tomcat7:redeploy -s .mvn/settings.xml"
+  - "./mvnw $MAVEN_CLI_OPTS clean verify -Puat -s .mvn/settings.xml"
   when: manual
-  # only:
-  #   - master
+sast:
+  stage: test
+include:
+- template: Security/SAST.gitlab-ci.yml
