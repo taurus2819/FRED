@@ -26,7 +26,7 @@ code-quality:
   tags:
   - docker
   stage: build
-  script: "./mvnw $MAVEN_CLI_OPTS checkstyle:checkstyle -s .mvn/settings.xml"
+  script: "./mvnw $MAVEN_CLI_OPTS site checkstyle:checkstyle -s .mvn/settings.xml"
 sonarqube-check:
   tags:
   - docker
@@ -74,7 +74,8 @@ deploy-uat:
     tomcat7:redeploy -s .mvn/settings.xml"
   - "./mvnw $MAVEN_CLI_OPTS clean verify -Puat -s .mvn/settings.xml"
   when: manual
-sast:
-  stage: test
-include:
-- template: Security/SAST.gitlab-ci.yml
+#Todo
+#sast:
+#  stage: test
+#include:
+#- template: Security/SAST.gitlab-ci.yml

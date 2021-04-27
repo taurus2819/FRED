@@ -9,19 +9,17 @@
 	
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <easyb.version>1.4</easyb.version>
-        <cobertura.version>2.5.1</cobertura.version>
-        <thucydides.version>0.9.107</thucydides.version>
         <sonar.projectKey>applications_FRED_AXjCrkJdFnkgNxTNbcr4</sonar.projectKey>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
-	
+    <!-- Is this really used? -->	
     <scm>
-        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</developerConnection>
-        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</url>
-    </scm>
+        <connection>scm:git:git@git.gns.cri.nz:applications/FRED.git/</connection>
+        <developerConnection>scm:git:git@git.gns.cri.nz:applications/FRED.git</developerConnection>
+        <url>scm:git:git@git.gns.cri.nz:applications/FRED.git</url>
+    </scm> 
+
     <distributionManagement>
         <repository>
             <id>central</id>
@@ -44,11 +42,20 @@
     </issueManagement>
 	
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>4.2.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <!--packaging-->   
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>3.3.1</version>
                 <configuration>
                     <attachClasses>true</attachClasses>                            
                 </configuration>
@@ -56,7 +63,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -64,7 +71,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.11</version>
+                <version>2.22.2</version>
                 <executions>
                     <execution>
                         <id>unit-tests</id>
@@ -115,29 +122,6 @@
                 </configuration>
             </plugin>     
             <plugin>
-                <groupId>org.easyb</groupId>
-                <artifactId>maven-easyb-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <storyType>html</storyType>
-                    <storyReport>target/easyb/easyb.html</storyReport>
-                    <easybTestDirectory>src/test/stories</easybTestDirectory>
-                    <jvmArguments>-Xmx512m -Dwebdriver.driver=${webdriver.driver}</jvmArguments>
-                </configuration>
-            </plugin>
-            <!--plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.0.1</version>
-            </plugin-->
-            <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
@@ -146,30 +130,12 @@
                     <url>${deploymentURL}</url>
                     <server>Tomcat</server>
                 </configuration>
-            </plugin>			
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.easyb</groupId>
-                    <artifactId>maven-easyb-plugin</artifactId>
-                    <version>${easyb.version}</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>test</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <storyType>html</storyType>                         
-                        <storyReport>${basedir}/target/easyb/easyb-report.html
-                        </storyReport>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        
+            </plugin>	
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+            </plugin>		
+        </plugins>                
     </build>
 
     <reporting>
@@ -186,25 +152,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.14.0</version>
                 <configuration>
-                    <targetJdk>1.6</targetJdk>
+                    <targetJdk>1.8</targetJdk>
                     <aggregate>true</aggregate>
                     <format>xml</format>
                     <rulesets>
-                        <ruleset>/pmd-rules.xml</ruleset>
+                        <ruleset>/rulesets/java/braces.xml</ruleset>
+                        <ruleset>/rulesets/java/naming.xml</ruleset>
                     </rulesets>
                     <minimumTokens>20</minimumTokens>
                     <ignoreIdentifiers>true</ignoreIdentifiers>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <effort>Max</effort>
-                    <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
             <plugin>
@@ -212,25 +170,14 @@
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>2.1</version>
             </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.2.0</version>
+            </plugin>
         </plugins>
     </reporting>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.easyb</groupId>
-                <artifactId>easyb-core</artifactId>
-                <version>${easyb.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jacoco</groupId>
-                <artifactId>org.jacoco.agent</artifactId>
-                <version>0.6.3.201306030806</version>
-                <classifier>runtime</classifier>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -292,14 +239,7 @@
                             <failurePriority>2</failurePriority>
                         </configuration>
                     </plugin>
-                    <plugin>
-                        <artifactId>findbugs-maven-plugin</artifactId>
-                        <version>3.0.1</version>
-                        <configuration>
-                            <effort>Max</effort>
-                            <xmlOutput>true</xmlOutput>
-                        </configuration>
-                    </plugin>                    
+                                        
                 </plugins>
             </build>
         </profile>
@@ -336,7 +276,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-site-plugin</artifactId>
-                        <version>3.0</version>
+                        <version>3.9.1</version>
                     </plugin>
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
@@ -361,32 +301,6 @@
                 </plugins>
             </build>
         </profile>   
-        <!--profile>
-            <id>sonar</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.7.2</version>
-                        <configuration>
-                            <argLine>-javaagent:${sonar.jacoco.jar}=destfile=${sonar.jacoco.reportPath}</argLine>
-                            <test>**/*.java</test>
-                            <excludedGroups>nz.cri.gns.test.IntegrationTest</excludedGroups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-            <properties>
-                <sonar.jacoco.reportPath>${basedir}/../code-coverage/jacoco.exec</sonar.jacoco.reportPath>
-                <sonar.jacoco.jar>${basedir}/lib/jacocoagent.jar</sonar.jacoco.jar>
-                <sonar.jacoco.jar>/data2/jenkins/jobs/FRED/workspace/fred-main-webapp/lib/jacocoagent.jar</sonar.jacoco.jar>
-                <sonar.phase>test</sonar.phase>
-                <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-                <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-            </properties>
-        </profile-->
-    </profiles>
-    
+    </profiles>    
 </project> 
 
