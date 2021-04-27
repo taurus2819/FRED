@@ -27,6 +27,9 @@ code-quality:
   - docker
   stage: build
   script: "./mvnw $MAVEN_CLI_OPTS site checkstyle:checkstyle -s .mvn/settings.xml"
+  artifacts:
+    paths:
+      - target/site/
 sonarqube-check:
   tags:
   - docker
