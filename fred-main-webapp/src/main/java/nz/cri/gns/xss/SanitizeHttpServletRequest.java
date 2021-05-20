@@ -82,6 +82,18 @@ public class SanitizeHttpServletRequest {
             // Avoid onload= expressions
             scriptPattern = Pattern.compile("onload(.*?)=", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             value = scriptPattern.matcher(value).replaceAll("");
+            
+            //&#39;
+            scriptPattern = Pattern.compile("&#39;", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            value = scriptPattern.matcher(value).replaceAll("'");
+            
+            //&#96;
+            scriptPattern = Pattern.compile("&#96;", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            value = scriptPattern.matcher(value).replaceAll("'");
+            
+            //&#34;
+            scriptPattern = Pattern.compile("&#34;", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            value = scriptPattern.matcher(value).replaceAll("'");
         }
         return value;
     }

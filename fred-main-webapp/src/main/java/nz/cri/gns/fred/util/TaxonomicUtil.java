@@ -159,6 +159,7 @@ public class TaxonomicUtil extends ModelUtil {
         }
 
         return taxonomicName
+                .replaceAll("`", "'")
                 .replaceAll("[\"<>]", "'") // normalise quotation marks
                 .replaceAll("\\?|group", " ") // remove strings that are not followed by "."
                 .replaceAll("(n[.])?\\s*(subspp|subsp|spp|sp|subgen|gen|subfam|fam)[.]", " ") // these ones might be preceded by "n."
