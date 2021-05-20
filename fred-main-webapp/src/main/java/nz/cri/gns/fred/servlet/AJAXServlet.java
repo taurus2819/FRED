@@ -136,7 +136,8 @@ public class AJAXServlet extends FREDHibernateServlet {
 
             @Override
             public void process(Type type, HttpServletRequest request, PrintWriter out) throws ServletException, IOException, StorageAccessException, DataInputException {
-                String name = request.getParameter("name").trim();
+                SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
+                String name = sanitizeHttpRequest.stripAllScripts(request.getParameter("name").trim());
                 String status = "";
                 String moreData = null;
                 switch (type) {

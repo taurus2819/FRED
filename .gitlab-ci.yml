@@ -26,23 +26,23 @@ code-quality:
   tags:
   - docker
   stage: build
-  script: "./mvnw $MAVEN_CLI_OPTS site checkstyle:checkstyle -s .mvn/settings.xml"
-  artifacts:
-    paths:
-      - target/site/
-sonarqube-check:
-  tags:
-  - docker
-  stage: build
-  cache:
-    key: "${CI_JOB_NAME}"
-    paths:
-    - ".sonar/cache"
-  script: "./mvnw $MAVEN_CLI_OPTS compile sonar:sonar -Dsonar.host.url=$SONAR_HOST_URL
-    -Dsonar.login=$SONAR_TOKEN -s .mvn/settings.xml"
-  allow_failure: true
-  only:
-  - master
+  script: "./mvnw $MAVEN_CLI_OPTS checkstyle:checkstyle -s .mvn/settings.xml"
+  # artifacts:
+  #   paths:
+  #     - target/site/
+# sonarqube-check:
+#   tags:
+#   - docker
+#   stage: build
+#   cache:
+#     key: "${CI_JOB_NAME}"
+#     paths:
+#     - ".sonar/cache"
+#   script: "./mvnw $MAVEN_CLI_OPTS compile sonar:sonar -Dsonar.host.url=$SONAR_HOST_URL
+#     -Dsonar.login=$SONAR_TOKEN -s .mvn/settings.xml"
+#   allow_failure: true
+#   only:
+# - master
 integration-tests:
   tags:
   - docker
