@@ -19,7 +19,15 @@
         <developerConnection>scm:git:git@git.gns.cri.nz:applications/FRED.git</developerConnection>
         <url>scm:git:git@git.gns.cri.nz:applications/FRED.git</url>
     </scm> 
-
+<repositories>
+  <repository>
+    <id>osgeo</id>
+    <name>OSGeo Release Repository</name>
+    <url>https://repo.osgeo.org/repository/release/</url>
+    <snapshots><enabled>false</enabled></snapshots>
+    <releases><enabled>true</enabled></releases>
+  </repository>
+</repositories>
     <distributionManagement>
         <repository>
             <id>central</id>
