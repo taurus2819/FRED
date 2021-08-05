@@ -203,7 +203,8 @@
              
                 int docID = 0;
                 Item item = null;                
-                DocumentAttacher attacher = null;
+                DocumentAttacher attacher = null;                
+                Thread.sleep(4000);
                 for (int j=0; j < items.size(); j++) {               
                     item = items.get(j);                    
                     try {
@@ -276,7 +277,6 @@
                         out.println("<table border=\"0\" width=\"550\"><tr><td colspan=\"3\" class=\"deHeading\">Existing Images/Files for " + item.subtype + ": " + item.title + (item.palListEntry == null ? "" : " (" + item.palListEntry.getTaxonomicName() + ")") + "</td></tr>");
                         out.println("    <tr><td>&nbsp;</td></tr>");
                         if (mrs != null && mrs.length > 0) {
-                            Thread.sleep(4000);
                             for (int i = 0; i < mrs.length; i++) {
                                 out.println("<tr><td style=\"text-align:left\"><a href=\"binary_data_entry.jsp?" + item.getVariableName() + "=" + item.intID + "&FoldID=" + foldID + "&PalListID" + item.id + "=" + (item.palListId != null ? item.palListId : "") + "&RecType=" + item.subtype + "&Action=Remove&DeleteID=" + i + "\"><img src=\"images/cancel.gif\" width=\"20\" height=\"20\" border=\"0\" alt=\"Delete\" /></a></td>");
                                 out.println("    <td style=\"text-align:left\"><a href=\"/online/DigitalDocument?src=" + mrs[i].getCode() + "\"><img border=\"0\" src=\"/online/Thumbnail?src=" + mrs[i].getCode() + "\" alt=\"FRED document\" /></a>&nbsp;&nbsp;</td>");

@@ -275,7 +275,7 @@
                     for(var i=0; i<features.length; i++)    {
                         var selectedFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(features[i].geometry.x, features[i].geometry.y), null, null);
                         selectedFeature.attributes = {
-                        id: features[0].attributes["feature_id"], 
+                        id: features[i].attributes["feature_id"], 
                         number: features[i].attributes["fr_number"], 
                         feature_type: features[i].attributes["feature_type"], 
                         locality: features[i].attributes["locality"]};
