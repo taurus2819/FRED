@@ -204,7 +204,7 @@
                 int docID = 0;
                 Item item = null;                
                 DocumentAttacher attacher = null;                
-                Thread.sleep(4000);
+                Thread.sleep(3000);
                 for (int j=0; j < items.size(); j++) {               
                     item = items.get(j);                    
                     try {
