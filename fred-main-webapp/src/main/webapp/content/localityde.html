@@ -37,7 +37,7 @@
 <option value="NZGD2000"{@@isNZGD2000: selected@}>Lat/Long NZGD2000</option>
 <option value="WGS84"{@@isWGS84: selected@}>Lat/Long WGS84</option>
 </select></td></tr>
-<tr id="mapSheetTr"{@@mapSheetInvisible: style="display: none"@}><td></td><td class="smallheading" style="color: #FF0000">Map Sheet</td><td><input type="text" name="MapSheet" value="{@mapSheet}"/></td></tr>
+<tr id="mapSheetTr"{@@mapSheetInvisible: style="display: none"@}><td></td><td class="smallheading" style="color: #FF0000">Map Sheet</td><td><input type="text" name="MapSheet" value="{@mapSheet}" required/></td></tr>
 <tr><td></td><td class="smallheading" style="color: #FF0000"><script><!--
 	if (document.getElementById) {
 		document.write('<span id="easting">{@eastingLabel}</span>');
@@ -92,7 +92,7 @@ function setAccuracy(datID, form) {
 <tr><td></td><td class="smallheading">Map Year</td><td><input type="text" name="MapYear" value="{@mapYear}"></td></tr>
 <tr><td></td><td class="smallheading">Method</td><td>{@methodCombo}</td></tr>
 <tr><td></td><td class="smallheading">Accuracy</td><td><input type="text" name="Accuracy" value="{@accuracy}">&nbsp;m</td></tr>
-<tr><td></td><td class="smallheading" style="color: #FF0000">Locality<br />Description</td><td><textarea name="Loc" cols="40" rows="5">{@localityDesc}</textarea></td></tr>
+<tr><td></td><td class="smallheading" style="color: #FF0000">Locality<br />Description</td><td><textarea name="Loc" cols="40" rows="5" required>{@localityDesc}</textarea></td></tr>
 <tr><td></td><td class="smallheading">Country</td><td>{@countryCombo}</td></tr>
 <tr><td></td><td class="smallheading">Coordinate<br />Comments</td><td><textarea name="CoordComm" cols="40" rows="5">{@coordComm}</textarea></td></tr>
 <tr><td colspan="2" class="heading">Locality Comments</td><td><textarea name="LocComm" cols="40" rows="5">{@locComm}</textarea></td></tr>
