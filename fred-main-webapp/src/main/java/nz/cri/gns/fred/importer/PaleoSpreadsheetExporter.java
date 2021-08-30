@@ -99,22 +99,22 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             s.addSheet(SHEETNAME, it);
 
             // Leave a blank row for "headings".
-            addCellsAcross("Folder", folderList, it, "Choose one of your folders.");
+            addCellsAcross("Folder", folderList, it, "Choose one of your folders.");//fullstop will not display. Only display till last 2nd char before double-quotes
             addTextCellsAcross("Locality", it, "Choose a locality.");
 
             String sampleTypeList = s.addList("Sample Type", sampleUtil.getDrillTypes().stream().map(DrillType::getName).collect(Collectors.toList()));
-            addTextCellsAcross("Top Depth", it, "Enter the sample depth if it's from a drilling");
+            addTextCellsAcross("Top Depth", it, "Enter the sample depth if it's from a drilling.");
             addTextCellsAcross("Bottom Depth", it, "Select the accuracy of the date.");
             addCellsAcross("Sample Type", sampleTypeList, it, "Choose a Sample Type.");
 
-            addTimestampCellsAcross("Identification Date", it, "Enter an Identification Date in the format \"DD/MM/YYYY HH:MM:SS\"");
+            addTimestampCellsAcross("Identification Date", it, "Enter an Identification Date in the format \"DD/MM/YYYY HH:MM:SS\".");
 
             String dateRoundingList = s.addList("Date Rounding", new String[]{"Year", "Month"});
             addCellsAcross("Date Rounding", dateRoundingList, it, "Select the accuracy of the date.");
 
-            addTextCellsAcross("Identifier(s)", it, "Enter identifiers. ");
+            addTextCellsAcross("Identifier(s)", it, "Enter identifiers.");
 
-            addCellsAcross("Stage Start", ageList, it, "Choose the Stage Start. ");
+            addCellsAcross("Stage Start", ageList, it, "Choose the Stage Start.");
 
             addCellsAcross("Stage Start Mod", stageModList, it, "Enter the modifier for the stage: blank or '?'.");
 
@@ -128,19 +128,19 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             addCellsAcross("Lab Code", labSectionList, it, "Choose a Laboratory Code.");
             addTextCellsAcross("Lab Number", it, "Enter the number used in the laboratory for this sample.");
 
-            addTextCellsAcross("Collection Comments", it, "Enter comments about this collection. ");
+            addTextCellsAcross("Collection Comments", it, "Enter comments about this collection.");
 
             for (int i = 0; i < LAST_ROW; i++) {
                 cr(s, it);
                 it.nextColumn();
-                s.setCellsSelection(groupList, it, "Choose a Taxonomic Group", false);
+                s.setCellsSelection(groupList, it, "Choose a Taxonomic Group ", false);
                 s.setCellAsHeading();
                 s.nextColumn();
-                s.setCellsText(numColumns, it, "Type in a Tanonomic Name from the StratLex database, or enter a new name.", false);
+                s.setCellsText(numColumns, it, "Type in a Taxonomic Name from the Taxonomic Thesaurus, or enter a new name.", false);//need a space or fullstop at the end to display full sentence
                 s.setCellAsHeading();
                 s.nextColumn();
 
-                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter '*' for presence, a numeric count, count|comment, a straight comment, 'aff.' or 'cf.'", false);
+                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter '*' for presence, a numeric count, count|comment, a straight comment, 'aff.' or 'cf.' ", false);
             }
 
             s.finish();

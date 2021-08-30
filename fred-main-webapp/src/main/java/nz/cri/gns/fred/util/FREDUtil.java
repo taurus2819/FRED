@@ -430,7 +430,7 @@ public class FREDUtil {
         if (o1 == null && o2 == null) {
             return nullEquality;
         }
-        if (o1 == null ^ o2 == null) {
+        if (o1 == null || o2 == null) {
             return false;
         }
         return o1.equals(o2);

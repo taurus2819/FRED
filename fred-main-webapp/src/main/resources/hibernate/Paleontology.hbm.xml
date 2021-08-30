@@ -67,7 +67,7 @@
             outer-join="auto"
             constrained="true"
             cascade="all"
-        />
+        /> 
         <!-- bi-directional many-to-one association to LabSection -->
         <many-to-one
             name="labSection"

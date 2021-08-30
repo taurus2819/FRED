@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +28,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
@@ -51,8 +56,18 @@ import org.apache.commons.csv.CSVPrinter;
 /**
  * Was export.jsp.
  */
-public class ExportServlet     extends FREDHibernateServlet {
-
+public class ExportServlet  extends FREDHibernateServlet {
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.servlet.ExportServlet");
+    private static final String NEARBY = "nearby";
+    private static final String ABOVE = "above";
+    private static final String BELOW = "below";
+    private static final String ABOVE_TOP = "above_top";
+    private static final String ABOVE_BASE = "above_base";
+    private static final String BELOW_TOP = "below_top";
+    private static final String BELOW_BASE = "below_base";    
+    private static final String SAMPLE = "sample";
+    private static final String STRATIGRAPHIC = "stratigraphic";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -104,20 +119,33 @@ public class ExportServlet     extends FREDHibernateServlet {
             } else if (request.getParameter("sampId") != null) {
                 samples.add(sampleUtil.getSample(Integer.parseInt(
                         request.getParameter("sampId"))));
+            } else if (session.getAttribute("FRED.samples") != null && ((List<Sample>) session.getAttribute(
+                    "FRED.samples")).size() > 0) {
+                    List<Sample> samps = (List<Sample>) session.getAttribute(
+                        "FRED.samples");
+                    //use samples (if comes from simple and adv searches)
+                    for (Sample samp : samps) {
+                         FredHibernate.get().currentSession().refresh(samp);
+                         samples.add(samp);
+                    }
             } else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute(
                     "FRED.features")).size() > 0) {
-                List<Feature> features = (List<Feature>) session.getAttribute(
-                        "FRED.features");
-                for (Feature feature : features) {
-                    FredHibernate.get().currentSession().refresh(feature);
-                    if (feature.getSamples() != null) {
-                        for (Sample sample : feature.getSamples()) {
-                            samples.add(sample);
+                    List<Feature> features = (List<Feature>) session.getAttribute(
+                            "FRED.features");
+                    //use features for localityServlet
+                    for (Feature feature : features) {
+                        FredHibernate.get().currentSession().refresh(feature);
+                        Set<Sample> featSamples = feature.getSamples();
+                        if (featSamples != null && featSamples.size()>0) {
+                            for (Sample sample : featSamples) {
+                                samples.add(sample);
+                            }
                         }
                     }
-                }
             }
-
+            
+            log.log(Level.INFO, "START TIME " + new Date());
+            
             try (JspWriterImpl out = new JspWriterImpl(response.getWriter())) {
                 CSVPrinter c = new CSVPrinter(out, CSVFormat.EXCEL);
 
@@ -181,6 +209,7 @@ public class ExportServlet     extends FREDHibernateServlet {
                                 c.print(each);
                             }
                         }
+                        
                         if (stratigraphyFlag) {
                             final String[] stratigraphyHeader = new String[]{
                                 "Stratigraphic Name", "Inferred Stage Lower",
@@ -211,10 +240,9 @@ public class ExportServlet     extends FREDHibernateServlet {
                                 c.print(each);
                             }
                         }
-
                         c.println();
 
-                        for (Sample sample : samples) {
+                        for (Sample sample : samples) {                            
                             Feature feature = sample.getFeature();
                             if (featureUtil.isAllowedReadFeatureSite(user,
                                     feature)) {
@@ -322,9 +350,21 @@ public class ExportServlet     extends FREDHibernateServlet {
                                         } else {
                                             skipColumns(c, 6);
                                         }
-                                        List<? extends Relationship> nearbys = sampleUtil.getRelationships(
-                                                sample, "Sample", "nearby");
-                                        if (nearbys != null && nearbys.size() > 0) {
+                                       
+                                        Set<Relationship> nearbys  = new HashSet<>();
+                                        Set<Relationship> aboveBelows  = new HashSet<>();
+                                        for (Relationship sampleRel : sample.getRelationships()) {
+                                            if (sampleRel.getRelationType().getName().equalsIgnoreCase(SAMPLE)) {                                               
+                                                if (sampleRel.getRelationshipType().getName().equalsIgnoreCase(NEARBY)) {
+                                                    nearbys.add(sampleRel);
+                                                }
+                                                if (sampleRel.getRelationshipType().getName().equalsIgnoreCase(ABOVE) || sampleRel.getRelationshipType().getName().equalsIgnoreCase(BELOW) ) {
+                                                    aboveBelows.add(sampleRel);
+                                                }     
+                                            }                                   
+                                        }
+                                        
+                                        if (nearbys.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : nearbys) {
                                                 sb.append(SampleUtil.getRelationshipDescription(rel));
@@ -335,12 +375,9 @@ public class ExportServlet     extends FREDHibernateServlet {
                                             c.print(null);
                                         }
                                         
-                                        List<? extends Relationship> sampRels = sampleUtil.getRelationships(
-                                                sample, "Sample",
-                                                new String[]{"above", "below"});
-                                        if (nearbys != null && sampRels.size() > 0) {
+                                        if (nearbys.size() > 0 && aboveBelows.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
-                                            for (Relationship rel : sampRels) {
+                                            for (Relationship rel : aboveBelows) {
                                                 sb.append(
                                                         SampleUtil.getRelationshipDescription(rel)).append("; ");
                                             }
@@ -348,15 +385,23 @@ public class ExportServlet     extends FREDHibernateServlet {
                                         } else {
                                             c.print(null);
                                         }
-
-                                        List<? extends Relationship> stratRels = sampleUtil.getRelationships(
-                                                sample, "Stratigraphic",
-                                                new String[]{"above top",
-                                                    "above base", "below top",
-                                                    "below base"});
-                                        if (nearbys != null && stratRels.size() > 0) {
+                                        
+                                        //Stratigraphic relationships
+                                        Set<Relationship> stratBaseTops  = new HashSet<>();
+                                        for (Relationship sampleRel : sample.getRelationships()) {
+                                            if (sampleRel.getRelationType().getName().equalsIgnoreCase(STRATIGRAPHIC)) {                                                
+                                                if (sampleRel.getRelationshipType().getName().equalsIgnoreCase(ABOVE_BASE)
+                                                        || sampleRel.getRelationshipType().getName().equalsIgnoreCase(ABOVE_TOP) 
+                                                            || sampleRel.getRelationshipType().getName().equalsIgnoreCase(BELOW_TOP)                                                      
+                                                                || sampleRel.getRelationshipType().getName().equalsIgnoreCase(BELOW_BASE)) {
+                                                    stratBaseTops.add(sampleRel);
+                                                }     
+                                            }                                   
+                                        }                                    
+                                        
+                                        if (nearbys.size() > 0 && stratBaseTops.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
-                                            for (Relationship rel : stratRels) {
+                                            for (Relationship rel : stratBaseTops) {
                                                 sb.append(SampleUtil.getRelationshipDescription(rel)).append("; ");
                                             }
                                             c.print(sb.toString());
@@ -370,8 +415,7 @@ public class ExportServlet     extends FREDHibernateServlet {
                                         c.print(DBUtils.nvl(sample.getStrike()));
                                         c.print(DBUtils.nvl(sample.getFacing()));
                                         c.print(DBUtils.nvl(sample.getStratComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
-                                    }
-                                    
+                                    }                                    
                                     
                                     if (sedimentaryFlag) {
                                         c.print(((sample.getPrimaryGrainSize() != null) ? sample.getPrimaryGrainSize().getName() : ""));
@@ -413,7 +457,7 @@ public class ExportServlet     extends FREDHibernateServlet {
                             }
                         }
                         c.println();
-                    }
+                    }//end locality flag
 
                     if (adoptionFlag) {
                         c.printRecord("********");
@@ -433,40 +477,41 @@ public class ExportServlet     extends FREDHibernateServlet {
                         c.println();
 
                         for (Sample sample : samples) {
-                            for (Adoption adoption : recordUtil.getAdoptionRecords(
-                                    sample)) {
-                                if (recordUtil.isAllowedReadRecord(user,
-                                        adoption.getRecord())) {
-                                    writeLocality(
-                                            adoption.getRecord().getSample(), c);
-                                    if (!FREDUtil.isEmpty(adoption.getAdoptors())) {
-                                        StringBuilder sb = new StringBuilder();
-                                        for (Person person : adoption.getAdoptors()) {
-                                            sb.append(person.getName()).append(
-                                                    "; ");
+                            Set<Record> records = sample.getRecords();                            
+                            for (Record r : records) { 
+                                Adoption adoption = r.getAdoption(); 
+                                if (recordUtil.isAllowedReadRecord(user,r)) {                                        
+                                    writeLocality(sample, c);
+                                    if (adoption != null) {
+                                        if (!FREDUtil.isEmpty(adoption.getAdoptors())) {
+                                            StringBuilder sb = new StringBuilder();
+                                            for (Person person : adoption.getAdoptors()) {
+                                                sb.append(person.getName()).append(
+                                                        "; ");
+                                            }
+                                            c.print(sb.toString());
                                         }
-                                        c.print(sb.toString());
-                                    }
-                                    c.print(DBUtils.nvl(
+                                        c.print(DBUtils.nvl(
                                             FREDUtil.formatDateForOutput(
                                                     adoption.getAdoptionDate(),
                                                     adoption.getDateRounding())));
-                                    if (adoption.getStage() != null) {
-                                        Stage stage = adoption.getStage();
-                                        c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
-                                        c.print(DBUtils.nvl(
-                                                stage.getStageLowerMod()));
-                                        c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
-                                        c.print(DBUtils.nvl(
-                                                stage.getStageUpperMod()));
-                                        c.print(stageUtil.getNumericAgeStart(
-                                                stage));
-                                        c.print(stageUtil.getNumericAgeStop(
-                                                stage));
-                                    } else {
-                                        skipColumns(c, 6);
-                                    }
-                                    c.print(DBUtils.nvl(adoption.getComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                        if (adoption.getStage() != null) {
+                                            Stage stage = adoption.getStage();
+                                            c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
+                                            c.print(DBUtils.nvl(
+                                                    stage.getStageLowerMod()));
+                                            c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
+                                            c.print(DBUtils.nvl(
+                                                    stage.getStageUpperMod()));
+                                            c.print(stageUtil.getNumericAgeStart(
+                                                    stage));
+                                            c.print(stageUtil.getNumericAgeStop(
+                                                    stage));
+                                        } else {
+                                            skipColumns(c, 6);
+                                        }                                   
+                                        c.print(DBUtils.nvl(adoption.getComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                    }//end adoption!=null
                                     c.println();
                                 }
                             }
@@ -487,48 +532,54 @@ public class ExportServlet     extends FREDHibernateServlet {
                             "Lab Number", "Collection Comments"};
                         c.printRecord((Object[]) paleontologyHeader);
 
-                        for (Sample sample : samples) {
-                            for (Paleontology paleontology : recordUtil.getPaleontologyRecords(
-                                    sample)) {
-                                if (recordUtil.isAllowedReadRecord(user, paleontology.getRecord())) {
-                                    writeLocality(paleontology.getRecord().getSample(), c);
-                                    if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
-                                        StringBuilder sb = new StringBuilder();
-                                        for (Person person : paleontology.getIdentifiers()) {
-                                            sb.append(person.getName()).append("; ");
+                       for (Sample sample : samples) { 
+                           Set<Record> records = sample.getRecords();                            
+                           for (Record r : records) {                                                          
+                                if (recordUtil.isAllowedReadRecord(user, r)) {
+                                    writeLocality(sample, c);
+                                    Paleontology paleontology = r.getPaleontology();  
+                                    if (paleontology!= null) {
+                                        if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
+                                            StringBuilder sb = new StringBuilder();
+                                            for (Person person : paleontology.getIdentifiers()) {
+                                                sb.append(person.getName()).append("; ");
+                                            }
+                                            c.print(sb.toString());
+                                        } else {
+                                            c.print(null);
                                         }
-                                        c.print(sb.toString());
-                                    } else {
-                                        c.print(null);
-                                    }
-                                    c.print(DBUtils.nvl(
+                                        
+                                        c.print(DBUtils.nvl(
                                             FREDUtil.formatDateForOutput(
                                                     paleontology.getIdentificationDate(),
                                                     paleontology.getDateRounding())));
-                                    if (paleontology.getStage() != null) {
-                                        Stage stage = paleontology.getStage();
-                                        c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
-                                        c.print(DBUtils.nvl(stage.getStageLowerMod()));
-                                        c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
-                                        c.print(DBUtils.nvl(stage.getStageUpperMod()));
-                                        c.print(stageUtil.getNumericAgeStart(stage));
-                                        c.print(stageUtil.getNumericAgeStop(stage));
-                                    } else {
-                                        skipColumns(c, 6);
-                                    }
-                                    c.print(DBUtils.nvl(
-                                            paleontology.getStageComments()).replaceAll(
-                                                    "\\s\\s+|\\n|\\r", " "));
-                                    c.print(DBUtils.nvl(
-                                            RecordUtil.getLabNumberDescription(
-                                                    paleontology)));
-                                    c.print(DBUtils.nvl(
-                                            paleontology.getCollectionComments()).replaceAll(
-                                                    "\\s\\s+|\\n|\\r", " "));
+                                        if (paleontology.getStage() != null) {
+                                            Stage stage = paleontology.getStage();
+                                            c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
+                                            c.print(DBUtils.nvl(stage.getStageLowerMod()));
+                                            c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
+                                            c.print(DBUtils.nvl(stage.getStageUpperMod()));
+                                            c.print(stageUtil.getNumericAgeStart(stage));
+                                            c.print(stageUtil.getNumericAgeStop(stage));
+                                        } else {
+                                            skipColumns(c, 6);
+                                        }
+                                   
+                                        c.print(DBUtils.nvl(
+                                                paleontology.getStageComments()).replaceAll(
+                                                        "\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(
+                                                RecordUtil.getLabNumberDescription(
+                                                        paleontology)));
+                                        c.print(DBUtils.nvl(
+                                                paleontology.getCollectionComments()).replaceAll(
+                                                        "\\s\\s+|\\n|\\r", " "));
+
+                                    }//paleontology
                                     c.println();
                                 }
-                            }
-                        }
+                        }//record
+                        }//sample
                         c.println();
                     }
 
@@ -541,15 +592,16 @@ public class ExportServlet     extends FREDHibernateServlet {
                         List<Paleontology> paleontologies = new Vector<Paleontology>();
                         int i = 0;
                         for (Sample sample : samples) {
-                            for (Paleontology paleontology : recordUtil.getPaleontologyRecords(sample)) {
-                                if (recordUtil.isAllowedReadPalList(user,paleontology)) {
+                            for (Record r : sample.getRecords()) { 
+                                Paleontology paleontology = r.getPaleontology();                            
+                                if (paleontology != null && recordUtil.isAllowedReadPalList(user, paleontology)) {
                                     paleontologies.add(paleontology);
                                     if (++i == 250) {
                                         paleontologyMasterList.add(paleontologies);
                                         paleontologies = new Vector<Paleontology>();
                                         i = 0;
                                     }
-                                }
+                                }//recordUtil
                             }
                         }
                         if (paleontologies.size() > 0) {
@@ -559,7 +611,6 @@ public class ExportServlet     extends FREDHibernateServlet {
                         if (paleontologyMasterList.size() > 0) {
                             // These seem to be printed across the columns???
                             for (List<Paleontology> pals : paleontologyMasterList) {
-
                                 c.print("FR Number");
                                 c.print(null);
                                 for (Paleontology paleontology : pals) {
@@ -676,7 +727,7 @@ public class ExportServlet     extends FREDHibernateServlet {
                                 }
                                 c.println();
                             }
-                        }
+                        } 
                     }
 
                     new AuditUtil(FredHibernate.get().getDAOFactory()).addLogEntry(
@@ -693,6 +744,7 @@ public class ExportServlet     extends FREDHibernateServlet {
         } catch (StorageAccessException | SQLException | NamingException | HibernateException e) {
             throw new ServletException(e);
         } 
+        log.log(Level.INFO, "END TIME " + new Date());
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

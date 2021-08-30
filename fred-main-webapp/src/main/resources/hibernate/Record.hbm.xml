@@ -33,7 +33,7 @@
     <one-to-one
         name="paleontology"
 		class="nz.cri.gns.fred.hibernate.Paleontology"
-		cascade="all"
+		cascade="all"	
 		outer-join="auto"
     />
 
