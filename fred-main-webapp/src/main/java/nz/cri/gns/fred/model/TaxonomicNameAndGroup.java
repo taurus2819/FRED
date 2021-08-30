@@ -39,12 +39,23 @@ public class TaxonomicNameAndGroup implements Comparable<TaxonomicNameAndGroup> 
             if (!taxonomicGroup.equals(arg0.getTaxonomicGroup())) {
                 return taxonomicGroup.compareTo(arg0.getTaxonomicGroup());
             }
-
-            return (taxonomicName.toUpperCase()).compareTo(arg0.getTaxonomicName().toUpperCase());
+            //same group so compare taxonomic names
+            if (taxonomicName == null || arg0.getTaxonomicName() == null) {
+                if (taxonomicName != null) {
+                    return 1;
+                } 
+                if (arg0.getTaxonomicName() != null) {
+                    return -1;
+                }
+                //both null
+                return 0;
+            }
+            //both names not null
+           return (taxonomicName.toUpperCase()).compareTo(arg0.getTaxonomicName().toUpperCase());
         } catch (Exception e) { // TODO: catch what?
             log.log(Level.WARNING, null, e);
         }
-        return 0;
+        return 0; //both dates equal
     }
 
     @Override

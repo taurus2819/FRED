@@ -148,25 +148,26 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
             Date thisDate = this.getDate();
             Date thatDate = arg0.getDate();
             if (FREDUtil.equals(thisDate, thatDate, true)) {
+                //equals (include both dates null), then compare names
                 return RecordUtil.getRecordName(this).compareTo(RecordUtil.getRecordName(arg0));
             } else {
+                //dates are not both null and both dates are not equal
                 try {
+                    if (thisDate != null) {
+                        return 1; //thisDate is greater than thatDate
+                    } else {
+                        if (thatDate != null) {
+                            return -1; //thisDate is lesser thatDate
+                        }
+                    }
                     return thisDate.compareTo(thatDate);
                 } catch (Exception e) {
                     // TODO: This catches NullPointerException!
                     log.log(Level.SEVERE, null, e);
-                    if (thisDate != null) {
-                        return 1;
-                    } else {
-                        return -1;
-                    }
                 }
             }
         }
         return record.getSample().compareTo(arg0.getRecord().getSample());
     }
 
-    /*public boolean equals(Object o) {
-		return recordId != null && o instanceof Paleontology && recordId.equals(((Paleontology)o).recordId);
-	}*/
 }

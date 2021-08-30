@@ -312,7 +312,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
 	public int compareTo(nz.cri.gns.fred.model.Feature arg0) {
 		String thisName = FeatureUtil.getFeatureIdentifyingName(this);
 		String thatName = FeatureUtil.getFeatureIdentifyingName(arg0);
-		return thisName.compareTo(thatName);
+		return thisName.compareToIgnoreCase(thatName);
 	}
 	
 	@Override

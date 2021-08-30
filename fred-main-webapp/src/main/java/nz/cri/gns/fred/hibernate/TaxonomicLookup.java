@@ -41,12 +41,16 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     }
 
     public void setTaxonomicName(String taxonomicName) {
-        taxonomicName
-        .replace("`", "\\'")
-        .replace("\"", "\\'").trim();
-        this.taxonomicName = taxonomicName;
+        if (taxonomicName != null && taxonomicName.length()> 0) {
+            taxonomicName
+            .replace("`", "\\'")
+            .replace("\"", "\\'").trim();
+            this.taxonomicName = taxonomicName;
+        } else {
+            this.taxonomicName = "";
+        }
     }
-
+    
     public String getAuthor() {
         return this.author;
     }

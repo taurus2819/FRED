@@ -185,6 +185,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 samples = sampleUtil.getLightweightSamples(hq);;
                 features = featureUtil.getFeaturesBySampleSubquery(hq);
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
+                log.log(Level.INFO, "Hibernate Query " + hq);
             } else {
                 queryString = queryStringParam;
                 //Account for large number of SAMPLE_IDs provided by polygon filter
@@ -293,8 +294,8 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 //save QueryRes vector
                 session.setAttribute("FRED.samples", samples);
                 session.setAttribute("FRED.features", features);
-                session.setAttribute("FRED.queryString", queryString);
-
+                session.setAttribute("FRED.queryString", queryString);                
+                log.log(Level.INFO, "ResultList feat size " + features.size() + " sample size " + samples.size() + " query " + queryString);
                 //Navigation
                 int startIndex = (pageNum - 1) * pageSize + 1;
                 int endIndex = Math.min(numRecords, startIndex + pageSize - 1);
