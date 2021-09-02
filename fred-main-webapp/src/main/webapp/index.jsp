@@ -65,7 +65,7 @@
                     <tr>
                         <td colspan="2">
                             <p>Cite as:<br>
-                            GNS Science & Geoscience Society of New Zealand. (2020). New Zealand Fossil Record File [Data set]. GNS Science. <a href="https://doi.org/10.21420/JQQB-NK89">https://doi.org/10.21420/JQQB-NK89</a></p>
+                            GNS Science & Geoscience Society of New Zealand. (2003). New Zealand Fossil Record File [Data set]. GNS Science. <a href="https://doi.org/10.21420/JQQB-NK89">https://doi.org/10.21420/JQQB-NK89</a></p>
                         </td>
                      </tr>
 		</table>
