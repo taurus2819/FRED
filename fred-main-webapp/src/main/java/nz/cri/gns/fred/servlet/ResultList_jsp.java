@@ -295,7 +295,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 session.setAttribute("FRED.samples", samples);
                 session.setAttribute("FRED.features", features);
                 session.setAttribute("FRED.queryString", queryString);                
-                log.log(Level.INFO, "ResultList feat size " + features.size() + " sample size " + samples.size() + " query " + queryString);
+                log.log(Level.INFO, "ResultList feat size " + (features != null ? features.size() : 0) + " sample size " + (samples != null ? samples.size() : 0) + " query " + queryString);
                 //Navigation
                 int startIndex = (pageNum - 1) * pageSize + 1;
                 int endIndex = Math.min(numRecords, startIndex + pageSize - 1);

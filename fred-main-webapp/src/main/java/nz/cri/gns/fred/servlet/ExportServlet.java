@@ -144,8 +144,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                     }
             }
             
-            log.log(Level.INFO, "START TIME " + new Date());
-            
+            log.log(Level.INFO, "START TIME " + new Date());            
             try (JspWriterImpl out = new JspWriterImpl(response.getWriter())) {
                 CSVPrinter c = new CSVPrinter(out, CSVFormat.EXCEL);
 
