@@ -12,6 +12,11 @@
             <password>${env.ARTIFACTORY_KEY}</password>
             <id>snapshots</id>
         </server>
+        <server>
+            <id>Tomcat</id>
+            <username>admin</username>
+            <password>${env.tomcat_auth}</password>
+        </server>
     </servers>
     <profiles>
         <profile>
