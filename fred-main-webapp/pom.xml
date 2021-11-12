@@ -3,12 +3,12 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.3.8.0</version>
+        <version>3.3.10-SNAPSHOT</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred</artifactId>
     <packaging>war</packaging>
-    <version>3.3.8.0</version>
+    <version>3.3.10-SNAPSHOT</version>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
@@ -268,20 +268,20 @@
         </profile>        
     </profiles> 
     <scm>
-        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-main-webapp</connection>
-        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-main-webapp</developerConnection>
-        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-main-webapp</url>
+        <connection>scm:git:git@git.gns.cri.nz:applications/FRED.git/</connection>
+        <developerConnection>scm:git:git@git.gns.cri.nz:applications/FRED.git</developerConnection>
+        <url>scm:git:git@git.gns.cri.nz:applications/FRED.git</url>
     </scm>
     <distributionManagement>
         <repository>
             <id>central</id>
-            <name>GNS Private Repository</name>
-            <url>http://repo.gns.cri.nz/artifactory/libs-releases-local</url>
+            <name>GNS Release Repository</name>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release-local</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <name>libs-snapshots</name>
-            <url>http://repo.gns.cri.nz/artifactory/libs-snapshots-local</url>
+            <name>GNS Snapshot Repository</name>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
 </project>

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-top</artifactId>
-    <version>3.3.8.0</version>
+    <version>3.3.10-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>
@@ -31,13 +31,13 @@
     <distributionManagement>
         <repository>
             <id>central</id>
-            <name>GNS Private Repository</name>
-            <url>http://repo.gns.cri.nz/artifactory/libs-releases-local</url>
+            <name>GNS Release Repository</name>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release-local</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <name>libs-snapshots</name>
-            <url>http://repo.gns.cri.nz/artifactory/libs-snapshots-local</url>
+            <name>GNS Snapshot Repository</name>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
     <organization>
