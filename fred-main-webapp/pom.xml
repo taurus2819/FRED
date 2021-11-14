@@ -3,7 +3,7 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.3.10-SNAPSHOT</version>
+        <version>3.3.10</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred</artifactId>
