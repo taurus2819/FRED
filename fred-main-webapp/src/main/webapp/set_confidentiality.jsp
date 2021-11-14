@@ -140,7 +140,7 @@
 				<p><%
 				startDETable(pageContext);
 				%><table border="0" width="550">
-				<tr><td colspan="4" class="deHeading">Confidentiality Options</td></tr>
+				<tr><td colspan="4" class="deHeading">Sample Confidentiality Options</td></tr>
 				<tr><td><input type="radio" name="confidType" value="open" <%=(audit.getConfidentialFlag() == null || !audit.getConfidentialFlag()) ? "checked" : ""%> /></td><td style="text-align:left" class="heading">Open</td></tr>
 				<tr><td><input type="radio" name="confidType" value="confid" <%=(audit.getConfidentialFlag() != null && audit.getConfidentialFlag()) ? "checked" : ""%> /></td><td style="text-align:left" class="heading">Confidential&nbsp;&nbsp;</td>
 				<td style="text-align:left" class="heading">Confidential Period:&nbsp;</td>

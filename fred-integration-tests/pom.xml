@@ -3,7 +3,7 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.3.8.0</version>
+        <version>3.3.10-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>munginator</artifactId>
-            <version>0.1.0.3-SNAPSHOT</version>
+            <version>0.1.0.3</version>
         </dependency>
         
         <dependency>

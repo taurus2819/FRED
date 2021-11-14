@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.2.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <servers>
         <server>
-            <username>jenkins</username>
-            <password>${env.jenkins_auth}</password>
+            <username>gitlab</username>
+            <password>${env.ARTIFACTORY_KEY}</password>
             <id>central</id>
         </server>
         <server>
-            <username>jenkins</username>
-            <password>${env.jenkins_auth}</password>
+            <username>gitlab</username>
+            <password>${env.ARTIFACTORY_KEY}</password>
             <id>snapshots</id>
-        </server>
-        <server>
-            <username>jenkins</username>
-            <password>${env.jenkins_auth}</password>
-            <id>repo</id>
         </server>
         <server>
             <id>Tomcat</id>
@@ -23,14 +18,6 @@
             <password>${env.tomcat_auth}</password>
         </server>
     </servers>
-    <mirrors>
-        <mirror>
-            <mirrorOf>*</mirrorOf>
-            <name>repo</name>
-            <url>https://repo.gns.cri.nz/artifactory/repo</url>
-            <id>repo</id>
-        </mirror>
-    </mirrors>
     <profiles>
         <profile>
             <repositories>
@@ -39,14 +26,14 @@
                         <enabled>false</enabled>
                     </snapshots>
                     <id>central</id>
-                    <name>libs-releases</name>
-                    <url>https://repo.gns.cri.nz/artifactory/libs-releases</url>
+                    <name>gns</name>
+                    <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release</url>
                 </repository>
                 <repository>
                     <snapshots />
                     <id>snapshots</id>
-                    <name>libs-snapshots</name>
-                    <url>https://repo.gns.cri.nz/artifactory/libs-snapshots</url>
+                    <name>gns</name>
+                    <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot</url>
                 </repository>
             </repositories>
             <pluginRepositories>
@@ -55,14 +42,14 @@
                         <enabled>false</enabled>
                     </snapshots>
                     <id>central</id>
-                    <name>plugins-releases</name>
-                    <url>https://repo.gns.cri.nz/artifactory/plugins-releases</url>
+                    <name>gns</name>
+                    <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release</url>
                 </pluginRepository>
                 <pluginRepository>
                     <snapshots />
                     <id>snapshots</id>
-                    <name>plugins-snapshots</name>
-                    <url>https://repo.gns.cri.nz/artifactory/plugins-snapshots</url>
+                    <name>gns</name>
+                    <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot</url>
                 </pluginRepository>
             </pluginRepositories>
             <id>artifactory</id>
