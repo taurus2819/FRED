@@ -58,7 +58,7 @@ import org.xml.sax.SAXException;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 
-public abstract class LocalityDE extends DETemplate implements DataEntryForm {
+public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryForm {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.LocalityDE");
 
@@ -84,13 +84,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     private boolean isAllowedSave = false;
     private boolean isAllowedSubmit = false;
 
-    public LocalityDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
+    public LocalitySiteapiDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         featureUtil = new FeatureUtil(factory);
         Feature f = featureUtil.createFeature(folderID, featureType, user);
         initialise(f, folderID, user, factory, content);
     }
 
-    public LocalityDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {
+    public LocalitySiteapiDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {
         featureUtil = new FeatureUtil(factory);
         initialise(feature, folderID, user, factory, content);
         site = SiteUtil.getSite(feature);

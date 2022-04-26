@@ -36,3 +36,4 @@ nb-configuration.xml
 fred-acceptance-tests/nb-configuration.xml
 fred-integration-tests/nb-configuration.xml
 .mvn/wrapper/maven-wrapper.jar
+/fred-main-webapp/nbproject/
