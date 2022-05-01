@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -43,15 +44,22 @@ public class SiteRevampServiceClient {
     public static String getSite(int siteId ){        
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<String>(headers);
+        // TODO: need proper error handling exceptions if httpResponse
         String siteDetails = restTemplate.getForObject(GET_SITE_SERVER_URI + siteId , String.class);
         System.out.println("SiteRevampServiceClient - get operation" + siteDetails);
         return siteDetails;
     }
     
-    public static String insertSite(JsonNode siteDetails){        
+    public static String insertSite(JsonNode siteDetails){    
+        String newSiteInfo = null;
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<String>(siteDetails.toString(), headers);
-        String newSiteInfo = restTemplate.postForObject(POST_SERVICE_URL, request, String.class);
+        // TODO: need proper error handling exceptions if httpResponse
+        try{
+            newSiteInfo = restTemplate.postForObject(POST_SERVICE_URL, request, String.class);
+        }catch(RestClientException rce){
+            rce.printStackTrace();
+        }
         return newSiteInfo;
     }
     

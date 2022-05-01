@@ -1,5 +1,9 @@
 package nz.cri.gns.fred.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -21,6 +25,9 @@ import nz.cri.gns.fred.model.DatumMethod;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.SiteView;
+import nz.cri.gns.fred.site.util.SiteModel;
+import nz.cri.gns.fred.site.util.SiteModelInput;
+import nz.cri.gns.fred.site.util.SiteRevampServiceClient;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
 import nz.cri.gns.util.map.NZMG;
@@ -184,13 +191,16 @@ public class SiteModelUtil extends ModelUtil {
         }
     }
 
-    public static SiteRecord getSite(Feature feature) {
-        SiteRecord sr = null;
+    public static SiteModel getSite(Feature feature) {
+        SiteModel sm = null;
         try {
-            sr = nz.cri.gns.db.util.SiteUtil.querySite(feature.getSiteId());
+            ObjectMapper objectMapper = new ObjectMapper();
+            String existingSite = SiteRevampServiceClient.getSite(feature.getSiteId());
+            sm = objectMapper.readValue(existingSite, SiteModel.class);
+//            sm = nz.cri.gns.db.util.SiteUtil.querySite(feature.getSiteId());
         } catch (Exception ex) {
         }
-        return sr;
+        return sm;
     }
 
     public static SiteRecord getSite(Datum datum, Coordinate coord) {
@@ -217,8 +227,19 @@ public class SiteModelUtil extends ModelUtil {
      * @throws NamingException
      * @throws SQLException
      */
-    public static SiteRecord getSite(SiteRecord site) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException, SQLException, NamingException {
-        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
+    public static SiteModel getSite(SiteModelInput smi) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException, SQLException, NamingException {
+        SiteModel sm = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String inputSiteModel = objectMapper.writeValueAsString(smi);
+            System.out.println("SiteMODEL Input = " + inputSiteModel);
+            JsonNode node = objectMapper.readTree(inputSiteModel);
+            String newSite = SiteRevampServiceClient.insertSite(node);
+            sm = objectMapper.readValue(newSite, SiteModel.class);
+//        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
+        } catch (Exception ex) {
+        }
+        return sm;
     }
 
     public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {

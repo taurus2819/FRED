@@ -42,6 +42,7 @@ import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
+import nz.cri.gns.fred.util.SiteModelUtil;
 import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.html.Attributes;
@@ -75,7 +76,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
      * Temporary storage for working comments
      */
     protected String editComments;
-    private SiteRecord site;
+    private SiteModel site;
     /**
      * This allows for bad coordinates to still be re-editted
      */
@@ -93,7 +94,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
     public LocalitySiteapiDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {
         featureUtil = new FeatureUtil(factory);
         initialise(feature, folderID, user, factory, content);
-        site = SiteUtil.getSite(feature);
+        site = SiteModelUtil.getSite(feature);
         coord = SiteUtil.getFREDCoordinate(feature);
         datum = SiteUtil.getFREDDatum(feature);
     }
@@ -144,7 +145,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         feature.setRegistrationArea(fromFeature.getRegistrationArea());
         feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
         feature.setLocality(fromFeature.getLocality());
-        site = SiteUtil.getSite(fromFeature);
+        site = SiteModelUtil.getSite(fromFeature);
         coord = SiteUtil.getFREDCoordinate(fromFeature);
         datum = SiteUtil.getFREDDatum(fromFeature);
         feature.setMapYear(fromFeature.getMapYear());
@@ -309,10 +310,10 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             template.addSub("northingLabel", northingLabel);
             template.addSub("eastingLabel", eastingLabel);
 
-            SiteUtil siteUtil = new SiteUtil(factory);
+            SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
 
             template.loadUntil(out, "{@datumMethodArray}");
-            List<DatumMethod> methods = siteUtil.getSiteDatumMethods();
+            List<DatumMethod> methods = siteModelUtil.getSiteDatumMethods();
             for (DatumMethod method : methods) {
                 out.println("datumMethod[" + method.getMethodId() + "] = '" + method.getNomAccuracyXY() + "';\n");
             }
@@ -321,12 +322,12 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
             attributes = Attributes.createNameOnlyAttributes("LocMethodID");
             attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
-            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethod() > -1) ? siteUtil.getSiteDatumMethod(site.getMethod()) : null, out);
+            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethodId() > -1) ? siteModelUtil.getSiteDatumMethod(site.getMethodId()) : null, out);
 
             template.loadUntil(out, "{@countryCombo}");
             SelectBox<Country> cSelectBox = new SelectBox<Country>(featureUtil.getCountries());
             attributes = Attributes.createNameOnlyAttributes("Country");
-            cSelectBox.writeBox(attributes, "-- Choose --", null, featureUtil.getCountry((site == null) ? "NZ" : site.getCountry()), out);
+            cSelectBox.writeBox(attributes, "-- Choose --", null, featureUtil.getCountry((site == null) ? "NZ" : site.getCountryCode()), out);
 
             template.addSub("coordComm", DBUtils.nvl(feature.getCoordComments()));
             template.addSub("locComm", DBUtils.nvl(feature.getComments()));
@@ -365,10 +366,10 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         out.write("<td>#" + ((coord != null) ? coord.getEastWestString() : "") + "#</td>\n");
         out.write("<td>#" + ((coord != null) ? coord.getNorthSouthString() : "") + "#</td>\n");
         out.write("<td>" + DBUtils.nvl(feature.getMapYear()) + "</td>\n");
-        out.write("<td>" + ((site != null && site.getMethod() > -1) ? String.valueOf(site.getMethod()) : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getMethodId() > -1) ? String.valueOf(site.getMethodId()) : "") + "</td>\n");
         out.write("<td>" + ((site != null && site.getAccuracy() > -1) ? String.valueOf(site.getAccuracy()) : "") + "</td>\n");
         out.write("<td>" + DBUtils.nvl(feature.getLocality()) + "</td>\n");
-        out.write("<td>" + ((site != null && site.getCountry() != null) ? site.getCountry() : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getCountryCode() != null) ? site.getCountryCode() : "") + "</td>\n");
     }
 
     @Override
@@ -455,28 +456,30 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         } catch (NumberFormatException x) {
             //method is null (-1) by default
         }
-        site = SiteUtil.findOrMakeSiteInstance(
-                error,
-                feature.getFeatureName(),
-                feature.getOrigSystemId(),
-                feature.getOrigCoord(),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordType")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("East")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("North")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("Country")),
-                locMethodID,
-                accuracy,
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")),
-                user
-        );
-
-        if (null != site && null == feature.getOrigSystemId()) {
-            feature.setOrigSystemId(site.getOriginalId());
-        }
-        if (null != site && null == feature.getOrigCoord()) {
-            feature.setOrigCoord(site.getOriginalCoordinates());
-        }
+        
+        // TODO: this part of the code needs to be worked out
+//        site = SiteUtil.findOrMakeSiteInstance(
+//                error,
+//                feature.getFeatureName(),
+//                feature.getOrigSystemId(),
+//                feature.getOrigCoord(),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordType")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("East")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("North")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("Country")),
+//                locMethodID,
+//                accuracy,
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")),
+//                user
+//        );
+//
+//        if (null != site && null == feature.getOrigSystemId()) {
+//            feature.setOrigSystemId(site.getOriginalId());
+//        }
+//        if (null != site && null == feature.getOrigCoord()) {
+//            feature.setOrigCoord(site.getOriginalCoordinates());
+//        }
 
         //set Map Year
         try {
@@ -524,14 +527,15 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         }
         //Check the site with the site DB
         if (site != null) {
-            site.key = null;
+            //TODO: should the siteId be set to null? why? here we are creating a new site. Need to give a thought about the below line of code!!!
+            //site.key = null;
             try {
                 // SiteUtil.getSite() will find an existing site, or insert a new one if not found.
                 System.out.println("Feature info:" + feature);
                 
-                createNewSite();
-                
-                site = SiteUtil.getSite(site);
+                SiteModelInput smi = createNewSite();
+                //replace the SiteRecord with the SiteModelUtil.getSite(SiteModel)
+                site = SiteModelUtil.getSite(smi);
             } catch (IOException | SQLException | NamingException | ParserConfigurationException | SAXException e) {
                 log.log(Level.SEVERE, null, e);
                 throw new StorageAccessException(e);
@@ -541,12 +545,12 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 throw new StorageAccessException("Failed to save site");
             }
 
-            feature.setSiteId(Integer.valueOf(site.key));
+            feature.setSiteId(Integer.valueOf(site.getSiteId()));
 
             try {
                 // feature incomplete
-                SiteUtil siteUtil = new SiteUtil(factory);
-                feature.setSiteView(siteUtil.getSiteView(feature.getSiteId()));
+                SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
+                feature.setSiteView(siteModelUtil.getSiteView(feature.getSiteId()));
             } catch (StorageAccessException ex) {
                 log.log(Level.SEVERE, null, ex);
             }
@@ -559,20 +563,20 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         return feature.getFeatureId();
     }
 
-    private void createNewSite() throws IOException, JsonProcessingException {
+    private SiteModelInput createNewSite() throws IOException, JsonProcessingException {
         //            SiteModelInput(String siteName, Integer methodId, Double accuracy, String Directions,
 //               Double height, Integer heightMethodId, Double heightAccuracy, String countyCode, String comment, Integer ownerId,
 //               int epsg, String gridref, Double easting, Double northing, String latitude, String longitude, String format, String auditMsg)
         String siteName = feature.getFeatureName();
-        int methodID = site.getMethod();
+        int methodID = site.getMethodId();
         double accuracy = site.getAccuracy();
         String directions = feature.getLocality();
         double height = site.getHeight();
-        int heightMethodId = site.getHeightMethod();
+        int heightMethodId = site.getHeightMethodId();
         double heightAccuracy = site.getHeightAccuracy();
-        String countryCode = site.getCountry();
+        String countryCode = site.getCountryCode();
         String comment = feature.getComments();
-        int ownerId = site.getOwner();
+        int ownerId = site.getOwnerId();
         OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(feature.getOrigSystemId(), feature.getOrigCoord());
         int epsg = epsgInfo.getEpsg();
         String gridref = epsgInfo.getGridref();
@@ -584,13 +588,14 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 
         SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                 epsg, gridref, easting, northing, latitude, longitude, format, "new site creation");
-        ObjectMapper objectMapper = new ObjectMapper();
-        String inputSiteModel = objectMapper.writeValueAsString(smi);
-        System.out.println("SiteMODEL Input = " + inputSiteModel);
-        JsonNode node = objectMapper.readTree(inputSiteModel);
-        String newSite = SiteRevampServiceClient.insertSite(node);
-        SiteModel siteModel = objectMapper.readValue(newSite, SiteModel.class);
-        System.out.println(siteModel.toString());
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        String inputSiteModel = objectMapper.writeValueAsString(smi);
+//        System.out.println("SiteMODEL Input = " + inputSiteModel);
+//        JsonNode node = objectMapper.readTree(inputSiteModel);
+//        String newSite = SiteRevampServiceClient.insertSite(node);
+//        SiteModel siteModel = objectMapper.readValue(newSite, SiteModel.class);
+//        System.out.println(siteModel.toString());
+        return smi;
     }
 
     public int submit(int dataOriginId) throws InsufficientPrivelegesException, SQLException, IOException, StorageAccessException, DataInputException {
