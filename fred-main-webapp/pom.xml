@@ -8,7 +8,7 @@
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred</artifactId>
     <packaging>war</packaging>
-    <version>3.3.15-SNAPSHOT</version>
+    <version>3.3.11</version>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
@@ -211,6 +211,11 @@
             <version>1.2</version>
         </dependency>
         <dependency>
+            <groupId>nz.cri.gns</groupId>
+            <artifactId>munginator</artifactId>
+            <version>0.1.0.3</version>
+        </dependency>
+        <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
         <version>20180219.1</version>
@@ -270,14 +275,13 @@
     <distributionManagement>
         <repository>
             <id>central</id>
-            <name>GNS Private Repository</name>
-            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release/</url>
+            <name>GNS Release Repository</name>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release-local</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <name>libs-snapshots</name>
-            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot/</url>
+            <name>GNS Snapshot Repository</name>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
-
 </project>
