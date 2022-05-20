@@ -323,6 +323,14 @@ public class HibernateDAOFactory
     }
 
     public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException {
+        return getMatchingTaxa(str, group, matchType, maxMatches, true);
+    }
+    
+    public List<Taxon> getMatchingBadTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException {
+        return getMatchingTaxa(str, group, matchType, maxMatches, false);
+    }
+
+    public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches, boolean good) throws StorageAccessException {
         Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.TaxonomicLookup.class);
         switch (matchType) {
             case ANYWHERE:
@@ -341,7 +349,11 @@ public class HibernateDAOFactory
         if (group != null) {
             crit.add(Expression.eq("taxonomicGroup", group));
         }
-        crit.add(Expression.in("status", new String[]{"approved", "provisional"}));
+        if(good){
+            crit.add(Expression.in("status", new String[]{"approved", "provisional"}));
+        } else{
+            crit.add(Expression.in("status", new String[]{"rejected", "obsolete"}));
+        }
         crit.setMaxResults(maxMatches);
         crit.addOrder(Order.asc("taxonomicGroup.groupId"));
         crit.addOrder(Order.asc("taxonomicName"));

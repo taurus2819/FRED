@@ -170,7 +170,7 @@ public class PaleoRowProcessor extends RowProcessor {
                         case ROW_TOP_DEPTH:
                             if (!v.isEmpty()) {
                                 if (null == v.getValueNumber()) {
-                                    throw new RowImportException("Top depth needs to be a decimal point number.");
+                                    throw new RowImportException(row, v, "Top depth needs to be a decimal point number.");
                                 }
                                 topDepthMatrix.put(v.getColumnNum(), v.getValueNumber());
                             }
@@ -178,7 +178,7 @@ public class PaleoRowProcessor extends RowProcessor {
                         case ROW_BOTTOM_DEPTH:
                             if (!v.isEmpty()) {
                                 if (null == v.getValueNumber()) {
-                                    throw new RowImportException("Bottom depth needs to be a decimal point number.");
+                                    throw new RowImportException(row, v, "Bottom depth needs to be a decimal point number.");
                                 }
                                 bottomDepthMatrix.put(v.getColumnNum(), v.getValueNumber());
                             }
@@ -366,6 +366,21 @@ public class PaleoRowProcessor extends RowProcessor {
         }
 
         if (null == tx) {
+            
+            try {
+                List<Taxon> txs;
+                txs = taxonUtil.getMatchingBadTaxa(txNormStr, taxonGroup, Match.EXACT, 1);
+                if (!txs.isEmpty()) {
+                    tx = txs.get(0);
+                }
+            } catch (StorageAccessException ex) {
+                throw new RowImportException(row, "TAXON", "Cannot find this Taxonomy", ex);
+            }
+            
+            if(tx != null){
+                throw new RowImportException(row, rowValue, "This is an obsolete or rejected taxonomy.");
+            }
+            
             warnAndRequireConfirmation(row, rowValue, "Cannot find this taxon. Please carefully check the spelling and only save these records if all taxonomic names are spelled correctly.");
             tx = taxonUtil.createTaxon();
             tx.setTaxonomicGroup(taxonGroup);
