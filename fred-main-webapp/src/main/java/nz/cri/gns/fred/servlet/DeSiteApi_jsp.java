@@ -33,7 +33,7 @@ import nz.cri.gns.xss.SanitizeHttpServletRequest;
 /**
  * Was de.jsp
  */
-public class De_jsp extends FREDHibernateServlet {
+public class DeSiteApi_jsp extends FREDHibernateServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -205,8 +205,6 @@ public class De_jsp extends FREDHibernateServlet {
         } else {
             DAOFactory factory = FredHibernate.get().getDAOFactory();
             User user = (User) h.getUser(session);
-            Long userId = user.getId();
-            System.out.println("***** User **** = " + userId);
             String formType = sanitizeHttpRequest.stripAllScripts(request.getParameter("Type"));
             Integer foldId = h.paramAsInteger(request, "FoldID");
             if (null == foldId) {
@@ -220,10 +218,8 @@ public class De_jsp extends FREDHibernateServlet {
                 if (formType.equals(FREDConstants.OUTCROP) || formType.equals(FREDConstants.DRILLHOLE) || formType.equals(FREDConstants.VERTICAL_SECTION)) {
                     Integer featID = h.paramAsInteger(request, "FeatID");
                     if (featID != null) { //editing
-                        //return DataEntryFormFactory.getLocalityDataEntryForm(featID, foldId, user, factory, provider);
                         return DataEntryFormFactorySiteApi.getLocalityDataEntryForm(featID, foldId, user, factory, provider);
                     } else {
-                        //eturn DataEntryFormFactory.getLocalityDataEntryForm(formType, user, foldId, factory, provider);
                         return DataEntryFormFactorySiteApi.getLocalityDataEntryForm(formType, user, foldId, factory, provider);
                     }
                 } else if (formType.equals("Sample")) {

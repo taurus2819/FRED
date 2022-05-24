@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.importer;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +15,12 @@ import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.db.util.SiteUtil.SiteException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.site.util.OrigCoordInfoUtil;
+import nz.cri.gns.fred.site.util.SiteModel;
+import nz.cri.gns.fred.site.util.SiteModelInput;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.SampleUtil;
-import nz.cri.gns.fred.util.SiteUtil;
+import nz.cri.gns.fred.util.SiteModelUtil;
 import nz.cri.gns.munginator.Create;
 import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.Modify;
@@ -85,8 +89,15 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
                 update.set("DEPOSITION_ENV", getRowValueString(row, "INFERRED_ENVIRONMENT"));
                 update.set("COLUMN_MAP", getRowValueString(row, "MAP_SHEET"));
-                findOrCreateSite(row, update);
+                {
+                    try {
+                        findOrCreateSite(row, update);
+                    } catch (IOException ex) {
+                        Logger.getLogger(FredRowProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
                 break;
+
             case "VERTICAL_SECTION":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Vertical Section");
                 update.set("STRAT_UNIT", getRowValueString(row, "STRAT_UNIT"));
@@ -213,7 +224,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    private void findOrCreateSite(Row row, Modify update) throws RowImportException {
+    private void findOrCreateSite(Row row, Modify update) throws RowImportException, IOException {
         List<String[]> error = new ArrayList<>(); // Used in some FRED APIs.
 
         // TODO: origCoords has a particular format.
@@ -222,21 +233,43 @@ public class FredRowProcessor extends TemplateRowProcessor {
         Integer origSystemId = findOrigSystemId(row, "ORIG_SYSTEM_ID");
 
         printDebug("Searching for site... please wait...");
-        SiteRecord site = SiteUtil.findOrMakeSiteInstance(
-                error,
-                getRowValueString(row, "FEATURE_NAME"),
-                origSystemId,
-                origCoords,
-                null,
-                getRowValueString(row, "EASTING"),
-                getRowValueString(row, "NORTHING"),
-                getRowValueString(row, "LOCALITY"),
-                countryCode,
-                findMethod(row, "LOCATION_METHOD"),
-                toFloat(getRowValueDouble(row, "ACCURACY")),
-                getRowValueString(row, "MAP_SHEET"),
-                user
-        );
+//        SiteRecord site = SiteUtil.findOrMakeSiteInstance(
+//                error,
+//                getRowValueString(row, "FEATURE_NAME"),
+//                origSystemId,
+//                origCoords,
+//                null,
+//                getRowValueString(row, "EASTING"),
+//                getRowValueString(row, "NORTHING"),
+//                getRowValueString(row, "LOCALITY"),
+//                countryCode,
+//                findMethod(row, "LOCATION_METHOD"),
+//                toFloat(getRowValueDouble(row, "ACCURACY")),
+//                getRowValueString(row, "MAP_SHEET"),
+//                user
+//        );
+        
+        String siteName = getRowValueString(row, "FEATURE_NAME");
+        Integer methodID = findMethod(row, "LOCATION_METHOD");
+        Double accuracy = getRowValueDouble(row, "ACCURACY");
+        String directions = getRowValueString(row, "MAP_SHEET") + " - " + getRowValueString(row, "LOCALITY");
+        double height = -1;//site.getHeight();
+        int heightMethodId = -1; //site.getHeightMethodId();
+        double heightAccuracy = -1; //site.getHeightAccuracy();
+        String comment = directions;
+        int ownerId = Math.toIntExact(user.getId());
+        OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(origSystemId, origCoords);
+        int epsg = epsgInfo.getEpsg();
+        String gridref = epsgInfo.getGridref();
+        double easting  = epsgInfo.getEasting();
+        double northing = epsgInfo.getNorthing();
+        String latitude = epsgInfo.getLatitude();
+        String longitude = epsgInfo.getLongitude();
+        String format = epsgInfo.getFormat();
+        
+        SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
+                epsg, gridref, easting, northing, latitude, longitude, format, "new site creation");
+        SiteModel site = SiteModelUtil.getSite(smi);
 
         if (!error.isEmpty()) {
             for (String[] each : error) {
@@ -245,6 +278,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
             throw new RowImportException(row, "NORTHING", "Error creating the site: " + error.toString(), null);
         }
 
+        /*TODO: should we check if there is a site in existance already
         if (!site.existsAlready()) {
             printDebug("Site does not exist; creating a new one.");
             try {
@@ -260,8 +294,9 @@ public class FredRowProcessor extends TemplateRowProcessor {
         } else {
             printDebug("Site already exists: \"" + site.getDirections() + "\". I will not update it.");
         }
-
-        update.set("FEATURE_ID$SITE_ID", site.getId());
+        //TODO: should we check if there is a site in existance already */
+        
+        update.set("FEATURE_ID$SITE_ID", site.getSiteId());
     }
 
     private String getOrigCoords(Row row) throws RowImportException {

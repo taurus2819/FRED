@@ -40,12 +40,22 @@ public class SiteRevampServiceClient {
     private static final String POST_SERVICE_URL = "http://localhost:8080/api/v1/site";     //"http://dev-app.gns.cri.nz:9010/api/v1/site";   
     private static final String PUT_SERVICE_URL = "http://localhost:8080/api/v1/site/";    //"http://dev-app.gns.cri.nz:9010/api/v1/site/";   
     private static final String GET_CLOSETO_SERVICE_URL = "http://localhost:8080/api/v1/sites/closeto";    //"http://dev-app.gns.cri.nz:9010/api/v1/site/";   
+    private static final String GET_SITE_DETAILS_SERVER_URI = "http://localhost:8080/api/v1/sites/";  //"http://dev-app.gns.cri.nz:9010/api/v1/sites/";  
     
     public static String getSite(int siteId ){        
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<String>(headers);
         // TODO: need proper error handling exceptions if httpResponse
         String siteDetails = restTemplate.getForObject(GET_SITE_SERVER_URI + siteId , String.class);
+        System.out.println("SiteRevampServiceClient - get operation" + siteDetails);
+        return siteDetails;
+    }
+    
+    public static String getSiteDetails(int siteId){        
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<String>(headers);
+        // TODO: need proper error handling exceptions if httpResponse
+        String siteDetails = restTemplate.getForObject(GET_SITE_DETAILS_SERVER_URI + siteId + "/details", String.class);
         System.out.println("SiteRevampServiceClient - get operation" + siteDetails);
         return siteDetails;
     }

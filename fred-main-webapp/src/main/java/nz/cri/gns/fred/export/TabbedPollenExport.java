@@ -28,7 +28,8 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SiteView;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.Taxon;
-import nz.cri.gns.fred.util.SiteUtil;
+import nz.cri.gns.fred.site.util.SiteModel;
+import nz.cri.gns.fred.util.SiteModelUtil;
 import nz.cri.gns.util.map.Datum.LatLong;
 
 
@@ -463,10 +464,9 @@ public class TabbedPollenExport extends OldFormatFredExport {
             writer.write("|");
 
             SiteView sv = null;
-            if (feature.getSiteView() != null) {
+            if (feature != null) {
                 try {
-                    sv = feature.getSiteView();
-                    LatLong ll = SiteUtil.getSiteLatLong(sv);
+                    LatLong ll = SiteModelUtil.getSiteLatLong(feature);
                     writer.write(ll.getLatAsDecDegree(5) + "| " + ll.getLongAsDecDegree(5));
                 } catch (SQLException ex) {
                     Logger.getLogger(PollenExport.class.getName()).log(Level.SEVERE, null, ex);

@@ -42,7 +42,7 @@ import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
-import nz.cri.gns.fred.util.SiteUtil;
+//import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.html.Attributes;
 import nz.cri.gns.html.select.SelectBox;
@@ -81,21 +81,26 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
      */
     private Datum.Coordinate coord;
     private Datum datum;
+    private Long ownerId; // this is the User id
     private boolean isAllowedSave = false;
     private boolean isAllowedSubmit = false;
+    private int originSystemId;
+    private String origCoord;
 
     public LocalityDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         featureUtil = new FeatureUtil(factory);
         Feature f = featureUtil.createFeature(folderID, featureType, user);
         initialise(f, folderID, user, factory, content);
+        ownerId = user.getId();
     }
 
     public LocalityDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {
         featureUtil = new FeatureUtil(factory);
         initialise(feature, folderID, user, factory, content);
-        site = SiteUtil.getSite(feature);
-        coord = SiteUtil.getFREDCoordinate(feature);
-        datum = SiteUtil.getFREDDatum(feature);
+//        site = SiteUtil.getSite(feature);
+//        coord = SiteUtil.getFREDCoordinate(feature);
+//        datum = SiteUtil.getFREDDatum(feature);
+        
     }
 
     private String getLocalityFromRequest(HttpServletRequest request, ArrayList<String[]> error) {
@@ -144,9 +149,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         feature.setRegistrationArea(fromFeature.getRegistrationArea());
         feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
         feature.setLocality(fromFeature.getLocality());
-        site = SiteUtil.getSite(fromFeature);
-        coord = SiteUtil.getFREDCoordinate(fromFeature);
-        datum = SiteUtil.getFREDDatum(fromFeature);
+//        site = SiteUtil.getSite(fromFeature);
+//        coord = SiteUtil.getFREDCoordinate(fromFeature);
+//        datum = SiteUtil.getFREDDatum(fromFeature);
         feature.setMapYear(fromFeature.getMapYear());
         feature.setComments(fromFeature.getComments());
         feature.setCoordComments(fromFeature.getCoordComments());
@@ -273,7 +278,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             template.loadUntil(out, "{@regCombo}");
             SelectBox<RegistrationArea> raSelectBox = new SelectBox<RegistrationArea>(featureUtil.getRegistrationAreas());
             Attributes attributes = Attributes.createNameOnlyAttributes("RegAreaId");
-            raSelectBox.writeBox(attributes, "-- Choose --", null, (feature.getRegistrationArea() != null) ? feature.getRegistrationArea() : new SiteUtil(factory).getRegistrationArea(SiteUtil.REG_MAINLAND_NZ), out);
+//            raSelectBox.writeBox(attributes, "-- Choose --", null, (feature.getRegistrationArea() != null) ? feature.getRegistrationArea() : new SiteUtil(factory).getRegistrationArea(SiteUtil.REG_MAINLAND_NZ), out);
 
             //Metadata listing
             //template.loadUntil(out, "{@metadataList}");
@@ -309,19 +314,19 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             template.addSub("northingLabel", northingLabel);
             template.addSub("eastingLabel", eastingLabel);
 
-            SiteUtil siteUtil = new SiteUtil(factory);
+//            SiteUtil siteUtil = new SiteUtil(factory);
 
             template.loadUntil(out, "{@datumMethodArray}");
-            List<DatumMethod> methods = siteUtil.getSiteDatumMethods();
-            for (DatumMethod method : methods) {
-                out.println("datumMethod[" + method.getMethodId() + "] = '" + method.getNomAccuracyXY() + "';\n");
-            }
+//            List<DatumMethod> methods = siteUtil.getSiteDatumMethods();
+//            for (DatumMethod method : methods) {
+//                out.println("datumMethod[" + method.getMethodId() + "] = '" + method.getNomAccuracyXY() + "';\n");
+//            }
 
-            template.loadUntil(out, "{@methodCombo}");
-            SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
-            attributes = Attributes.createNameOnlyAttributes("LocMethodID");
-            attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
-            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethod() > -1) ? siteUtil.getSiteDatumMethod(site.getMethod()) : null, out);
+//            template.loadUntil(out, "{@methodCombo}");
+//            SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
+//            attributes = Attributes.createNameOnlyAttributes("LocMethodID");
+//            attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
+//            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethod() > -1) ? siteUtil.getSiteDatumMethod(site.getMethod()) : null, out);
 
             template.loadUntil(out, "{@countryCombo}");
             SelectBox<Country> cSelectBox = new SelectBox<Country>(featureUtil.getCountries());
@@ -416,6 +421,28 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 feature.setYardFrNumber(null);
             }
         }
+        
+        originSystemId = getOriginSystemId(request.getParameter("CoordType"));
+        
+        switch(this.originSystemId){
+            case 38:
+            case 71:
+            case 33:
+            case 70:
+            case 7:
+            case 67:    
+            case 68:    
+            case 74: 
+                this.origCoord = request.getParameter("East") + "|" + request.getParameter("North");
+                break;
+            case 16:
+            case 72:
+            case 17:
+            case 69:
+                this.origCoord = request.getParameter("MapSheet") + "|" + request.getParameter("East") + "|" + request.getParameter("North");
+                break;                
+                
+        }
 
         //Feature name
         feature.setFeatureName(sanitizeHttpRequest.stripAllScripts(request.getParameter("FeatName")));
@@ -455,21 +482,21 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         } catch (NumberFormatException x) {
             //method is null (-1) by default
         }
-        site = SiteUtil.findOrMakeSiteInstance(
-                error,
-                feature.getFeatureName(),
-                feature.getOrigSystemId(),
-                feature.getOrigCoord(),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordType")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("East")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("North")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("Country")),
-                locMethodID,
-                accuracy,
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")),
-                user
-        );
+//        site = SiteUtil.findOrMakeSiteInstance(
+//                error,
+//                feature.getFeatureName(),
+//                feature.getOrigSystemId(),
+//                feature.getOrigCoord(),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordType")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("East")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("North")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("Country")),
+//                locMethodID,
+//                accuracy,
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")),
+//                user
+//        );
 
         if (null != site && null == feature.getOrigSystemId()) {
             feature.setOrigSystemId(site.getOriginalId());
@@ -525,17 +552,17 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         //Check the site with the site DB
         if (site != null) {
             site.key = null;
-            try {
-                // SiteUtil.getSite() will find an existing site, or insert a new one if not found.
-                System.out.println("Feature info:" + feature);
-                
-                createNewSite();
-                
-                site = SiteUtil.getSite(site);
-            } catch (IOException | SQLException | NamingException | ParserConfigurationException | SAXException e) {
-                log.log(Level.SEVERE, null, e);
-                throw new StorageAccessException(e);
-            }
+//            try {
+//                // SiteUtil.getSite() will find an existing site, or insert a new one if not found.
+//                System.out.println("Feature info:" + feature);
+//                
+//                createNewSite();
+//                
+//                site = SiteUtil.getSite(site);
+//            } catch (IOException | SQLException | NamingException | ParserConfigurationException | SAXException e) {
+//                log.log(Level.SEVERE, null, e);
+//                throw new StorageAccessException(e);
+//            }
 
             if (site == null) {
                 throw new StorageAccessException("Failed to save site");
@@ -543,6 +570,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
             feature.setSiteId(Integer.valueOf(site.key));
 
+            /*TODO: SiteView stuff is commented as the refernce to it is removed in the model Feature.java
             try {
                 // feature incomplete
                 SiteUtil siteUtil = new SiteUtil(factory);
@@ -550,6 +578,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             } catch (StorageAccessException ex) {
                 log.log(Level.SEVERE, null, ex);
             }
+            */
         } else {
             feature.setSiteId(null);
         }
@@ -572,8 +601,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         double heightAccuracy = site.getHeightAccuracy();
         String countryCode = site.getCountry();
         String comment = feature.getComments();
-        int ownerId = site.getOwner();
-        OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(feature.getOrigSystemId(), feature.getOrigCoord());
+        int ownerId = Math.toIntExact(this.ownerId);
+        
+        OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
         int epsg = epsgInfo.getEpsg();
         String gridref = epsgInfo.getGridref();
         double easting  = epsgInfo.getEasting();
@@ -623,5 +653,64 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     }
 
     public void makePostFormHTML(PrintWriter out) throws IOException {
+    }
+
+    //orig sys values taken from ORIG_SYSTEM table
+    
+    private int getOriginSystemId(String parameter) {
+        int origSysId = 38;
+        switch(parameter){
+            case "NZMG":
+                origSysId = 38;
+                break;
+            case "NZMS260":
+                origSysId = 16;
+                break;
+            case "NZTM":
+                origSysId = 71;
+                break;
+            case "NZTopo50":
+                origSysId = 72;
+                break;
+            case "NZ Yard SthIsl":
+                origSysId = 33;
+                break;
+            case "NZ Yard NthIsl":
+                origSysId = 70;
+                break;
+            case "NZMS1 SthIsl":
+                origSysId = 17;
+                break;
+            case "NZMS1 NthIsl":
+                origSysId = 69;
+                break;
+            case "Chatham Island Grid":
+                origSysId = 7;
+                break;
+            case "Auckland Island Transverse Mercator":
+                origSysId = 67;
+                break;
+            case "Campbell Island Transverse Mercator":
+                origSysId = 68;
+                break;
+            case "New Caledonia Transverse Mercator":
+                origSysId = 74;
+                break;
+            case "NZGD49":
+                origSysId = 29;         //in the table the SYSTEM_CODE column has LL49 - is this NZGD49
+                break;
+            case "Chatham Island Datum":
+                origSysId = 30;
+                break;
+            case "NZGD2000":
+                origSysId = 28;
+                break;
+            case "WGS84":
+                origSysId = 73;
+                break;
+            default:
+                origSysId = 38;    
+        }
+        return origSysId;
     }
 }

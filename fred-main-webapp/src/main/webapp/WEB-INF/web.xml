@@ -25,6 +25,10 @@
         <servlet-name>de.jsp</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.De_jsp</servlet-class>
     </servlet>
+<!--    <servlet>
+        <servlet-name>deSiteApi.jsp</servlet-name>
+        <servlet-class>nz.cri.gns.fred.servlet.DeSiteApi_jsp</servlet-class>
+    </servlet>-->
     <servlet>
         <servlet-name>dp.jsp</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.Dp_jsp</servlet-class>

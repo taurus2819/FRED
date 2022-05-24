@@ -25,9 +25,11 @@ import nz.cri.gns.fred.model.DatumMethod;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.SiteView;
+import nz.cri.gns.fred.site.util.SiteDetailed;
 import nz.cri.gns.fred.site.util.SiteModel;
 import nz.cri.gns.fred.site.util.SiteModelInput;
 import nz.cri.gns.fred.site.util.SiteRevampServiceClient;
+import static nz.cri.gns.fred.site.util.SiteRevampServiceClient.getSiteDetails;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
 import nz.cri.gns.util.map.NZMG;
@@ -98,13 +100,14 @@ public class SiteModelUtil extends ModelUtil {
         return fredDAO.get(siteId, nz.cri.gns.fred.hibernate.SiteView.class);
     }
 
-    public static int getMasterfile(Feature feature) throws SQLException, NamingException {
+    public static int getMasterfile(Feature feature) throws SQLException, NamingException, IOException {
         boolean isBacklog = FeatureUtil.isBacklogFeature(feature);
         switch (feature.getRegistrationArea().getRegAreaId().intValue()) {
             case REG_MAINLAND_NZ:
-                NorthingEasting nzmgCoord = (NorthingEasting) getSiteCoordinate(new NZMG(), feature.getSiteView());
+                NorthingEasting nzmgCoord = (NorthingEasting) getSiteCoordinate(feature);
                 double easting = nzmgCoord.getEastWest();
                 double northing = nzmgCoord.getNorthSouth();
+                
                 if (easting <= 2810000 && northing >= 6250000) {
                     return (isBacklog) ? MASTERFILE_NTH_NI_BACKLOG : MASTERFILE_NTH_NI;
                 }
@@ -154,51 +157,37 @@ public class SiteModelUtil extends ModelUtil {
         return (isBacklog) ? MASTERFILE_OFFSHORE_BACKLOG : MASTERFILE_OFFSHORE;
     }
 
-    private static Datum.Coordinate getSiteCoordinate(Datum datum, SiteView siteView) throws SQLException, NamingException {
-        Datum.LatLong ll = getSiteLatLong(siteView);
-        if (ll == null) {
-            return null;
-        }
-        return datum.convertFromNZGD49(ll);
+    private static NorthingEasting getSiteCoordinate(Feature feature) throws IOException {
+        NorthingEasting ne;
+        SiteModel sm = getSite(feature);
+        JsonNode origCoord = sm.getOrigCoord();
+        ne = new NorthingEasting(origCoord.get("northing").asDouble(), origCoord.get("easting").asDouble());
+        return ne;
     }
 
-    public static Datum.LatLong getSiteLatLong(SiteView siteView) throws SQLException, NamingException {
-        return new Datum.LatLong(siteView.getLatitude(), siteView.getLongitude());
+    public static Datum.LatLong getSiteLatLong(Feature feature) throws SQLException, NamingException, IOException {
+        SiteModel sm = getSite(feature);
+        return new Datum.LatLong(sm.getLat(), sm.getLon());
     }
 
-    public static String getFrNumberMapSheet(Feature feature) throws SQLException, NamingException {
-        RegistrationArea area = feature.getRegistrationArea();
-
-        Datum.LatLong ll = getSiteLatLong(feature.getSiteView());
-
-        //Try and make this into a NZMS260 coord
-        TruncNorthingEasting tne = null;
-        try {
-            tne = (TruncNorthingEasting) new NZMS260().convertFromNZGD49(ll);
-        } catch (Exception e) {
-        }
-
-        if (tne != null && NZMS260.isValidMapSheet(tne.getMapSheet())) {
-            return tne.getMapSheet();
-        } else if (!(area.getCode().equals("NZ") || area.getCode().equals("OT"))) {
-            return area.getCode();
-        } else {
-            DecimalFormat format = new DecimalFormat("00");
-            String mapSheet = ((ll.getNorthSouth() > 0) ? "N" : "S") + ((ll.getEastWest() > 0) ? "E" : "W")
-                    + format.format(Math.floor(Math.abs(ll.getNorthSouth())));
-            format.applyPattern("000");
-            return mapSheet + format.format(Math.floor(Math.abs(ll.getEastWest())));
-        }
+    public static String getFrNumberMapSheet(Feature feature) throws IOException {
+        //get the NZMS260 coord - us the /details api from the site api. This provides the NZMS260 sheet 
+        SiteDetailed siteDetailed = getSiteDetails(feature.getSiteId());
+        System.out.println("SiteDetailed = " + siteDetailed);
+        
+        return null;
     }
 
-    public static SiteModel getSite(Feature feature) {
+    public static SiteModel getSite(Feature feature) throws IOException {
         SiteModel sm = null;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String existingSite = SiteRevampServiceClient.getSite(feature.getSiteId());
             sm = objectMapper.readValue(existingSite, SiteModel.class);
 //            sm = nz.cri.gns.db.util.SiteUtil.querySite(feature.getSiteId());
-        } catch (Exception ex) {
+        } catch (JsonProcessingException e) {
+                System.out.println(e.getClass().getName() + 
+                " : " + e.getOriginalMessage());
         }
         return sm;
     }
@@ -217,7 +206,7 @@ public class SiteModelUtil extends ModelUtil {
     }
 
     /**
-     * Gets an appropriate record from the DB for the given site, inserting if
+     * inserts an appropriate record from the Site API for the given site , inserting if
      * necessary
      *
      * @throws IOException
@@ -226,20 +215,51 @@ public class SiteModelUtil extends ModelUtil {
      * @throws ParserConfigurationException
      * @throws NamingException
      * @throws SQLException
+     * 
+     * return a SiteModel
      */
-    public static SiteModel getSite(SiteModelInput smi) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException, SQLException, NamingException {
+    public static SiteModel getSite(SiteModelInput smi) throws IOException {
         SiteModel sm = null;
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String inputSiteModel = objectMapper.writeValueAsString(smi);
-            System.out.println("SiteMODEL Input = " + inputSiteModel);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String inputSiteModel = objectMapper.writeValueAsString(smi);
+        System.out.println("SiteMODEL Input = " + inputSiteModel);
+        try {            
             JsonNode node = objectMapper.readTree(inputSiteModel);
             String newSite = SiteRevampServiceClient.insertSite(node);
             sm = objectMapper.readValue(newSite, SiteModel.class);
 //        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
-        } catch (Exception ex) {
+        } catch (JsonProcessingException e) {
+                System.out.println(e.getClass().getName() + 
+                " : " + e.getOriginalMessage());
         }
         return sm;
+    }
+    
+    /**
+     * inserts an appropriate record from the Site API for the given site , inserting if
+     * necessary
+     *
+     * @throws IOException
+     * @throws SAXException
+     * @throws FactoryConfigurationError
+     * @throws ParserConfigurationException
+     * @throws NamingException
+     * @throws SQLException
+     * 
+     * return a SiteModel
+     */
+    public static SiteDetailed getSiteDetails(int siteId) throws IOException  {
+        SiteDetailed sd = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        String detailedSite = SiteRevampServiceClient.getSiteDetails(siteId);
+        try {           
+            System.out.println("DetailedSite ** = " + detailedSite);
+            sd = objectMapper.readValue(detailedSite, SiteDetailed.class);
+        } catch (JsonProcessingException e) {
+                System.out.println(e.getClass().getName() + 
+                " : " + e.getOriginalMessage());
+        }
+        return sd;
     }
 
     public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {
@@ -292,133 +312,135 @@ public class SiteModelUtil extends ModelUtil {
      *
      * @returns A populated SiteRecord, either brand new or an existing one.
      */
-    public static SiteRecord findOrMakeSiteInstance(
-            List<String[]> error,
-            String featureName,
-            Integer origSystemId,
-            String origCoords, // TODO: unused?
-            String datumStr, // Please leave null. Use origSystemId.
-            String east,
-            String north,
-            String locality,
-            String country,
-            Integer locationMethodId,
-            Float accuracy,
-            String mapSheet,
-            User user
-    ) {
-        if (null == user) {
-            throw new NullPointerException();
-        }
-
-        SiteRecord site; // return me.
-
-        try {
-
-            /* This is based on refactored existing code. Some behaviour has changed. -mikevdg */
-            // try to re-use any existing site details.
-            // take 1- try the well name
-            site = SiteModelUtil.getSite(featureName);
-
-            Datum datum;
-            if (null == datumStr) {
-                datum = DatumFactory.createDatum(origSystemId);
-            } else {
-                // This is a source of bugs. Don't use this.
-                datum = DatumFactory.createDatum(datumStr);
-            }
-
-            if (null == site && !(hasData(east) || hasData(north))) {
-                error.add(new String[]{"Coordinate", "Coordinate is required"});
-                return null;
-            }
-
-            Datum.Coordinate coord = null;
-            if (hasData(east) && hasData(north)) {
-                try {
-                    if (datum.isMapSheetSystem()) {
-                        int precision = east.length();
-                        if (north.length() != precision) {
-                            error.add(new String[]{"Coordinate", "Truncated coordinates different lengths"});
-                        } else if ((precision > 0 && precision < 3) || precision > 4) {
-                            error.add(new String[]{"Coordinate", "Length of truncated coordinates must be 3 or 4"});
-                        } else {
-                            // WTF!? This is not a problem that needs reflection as a solution.
-                            coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(
-                                    new Class[]{double.class, double.class, String.class, int.class}).newInstance(
-                                            new Object[]{
-                                                new Double(north),
-                                                new Double(east),
-                                                mapSheet,
-                                                precision});
-                        }
-                    } else {
-                        coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(
-                                new Class[]{double.class, double.class}).newInstance(
-                                        new Object[]{
-                                            new Double(north),
-                                            new Double(east)});
-                    }
-                } catch (NumberFormatException e) {
-                    error.add(new String[]{"Coordinate", "Non numeric coordinate entered"});
-                } catch (IllegalArgumentException | InstantiationException | SecurityException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                    error.add(new String[]{"Coordinate", e.getMessage()});
-                }
-            }
-
-            if (null == coord) {
-                return site;
-            }
-
-            if (!datum.coordinateAcceptable(coord)) {
-                error.add(new String[]{"Coordinate", "Coordinates not of correct type"});
-            }
-
-            if (null == site) {
-                site = SiteModelUtil.getSite(datum, coord);
-            }
-
-            if (null == site) {
-                // Make a new one.
-                site = new SiteRecord();
-            }
-
-            if (null == origSystemId || null == origCoords) {
-                try {
-                    // TODO: This set the original coordinates from the datum, but we also have origCoords?
-                    site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                } catch (Exception e) {
-                    log.log(Level.INFO, null, e);
-                    error.add(new String[]{"Coordinate", "Datum is invalid. " + e.getMessage()});
-                }
-            } else {
-                site.setOriginal(origSystemId, origCoords);
-            }
-
-            try {
-                site.setLatLong(datum.convertToNZGD49(coord));
-            } catch (Exception e) {
-                log.log(Level.INFO, null, e);
-                error.add(new String[]{"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
-            }
-
-            site.setDirections(locality);
-            site.setCountry(country);
-            site.setOwner(user.getId().intValue());
-
-            if (null != locationMethodId) {
-                site.setMethod(locationMethodId);
-            }
-            if (null != accuracy) {
-                site.setAccuracy(accuracy);
-            }
-        } catch (Exception x) {
-            error.add(new String[]{"Coordinate", x.getMessage()});
-            site = null;
-        }
-        return site;
-    }
-
+//    public static SiteModel findOrMakeSiteInstance(
+//            List<String[]> error,
+//            String featureName,
+//            Integer origSystemId,
+//            String origCoords, // TODO: unused?
+//            String datumStr, // Please leave null. Use origSystemId.
+//            String east,
+//            String north,
+//            String locality,
+//            String country,
+//            Integer locationMethodId,
+//            Float accuracy,
+//            String mapSheet,
+//            User user
+//    ) {
+//        if (null == user) {
+//            throw new NullPointerException();
+//        }
+//
+//        SiteModel site; // return me.
+//
+//        try {
+//
+//            /* This is based on refactored existing code. Some behaviour has changed. -mikevdg */
+//            // try to re-use any existing site details.
+//            // take 1- try the well name
+//            //TODO: getSitebyWellName - this code needs to be worked out - Prashanth
+//            site = SiteModel.getSite(featureName);
+//
+//            Datum datum;
+//            if (null == datumStr) {
+//                datum = DatumFactory.createDatum(origSystemId);
+//            } else {
+//                // This is a source of bugs. Don't use this.
+//                datum = DatumFactory.createDatum(datumStr);
+//            }
+//
+//            if (null == site && !(hasData(east) || hasData(north))) {
+//                error.add(new String[]{"Coordinate", "Coordinate is required"});
+//                return null;
+//            }
+//
+//            Datum.Coordinate coord = null;
+//            if (hasData(east) && hasData(north)) {
+//                try {
+//                    if (datum.isMapSheetSystem()) {
+//                        int precision = east.length();
+//                        if (north.length() != precision) {
+//                            error.add(new String[]{"Coordinate", "Truncated coordinates different lengths"});
+//                        } else if ((precision > 0 && precision < 3) || precision > 4) {
+//                            error.add(new String[]{"Coordinate", "Length of truncated coordinates must be 3 or 4"});
+//                        } else {
+//                            // WTF!? This is not a problem that needs reflection as a solution.
+//                            coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(
+//                                    new Class[]{double.class, double.class, String.class, int.class}).newInstance(
+//                                            new Object[]{
+//                                                new Double(north),
+//                                                new Double(east),
+//                                                mapSheet,
+//                                                precision});
+//                        }
+//                    } else {
+//                        coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(
+//                                new Class[]{double.class, double.class}).newInstance(
+//                                        new Object[]{
+//                                            new Double(north),
+//                                            new Double(east)});
+//                    }
+//                } catch (NumberFormatException e) {
+//                    error.add(new String[]{"Coordinate", "Non numeric coordinate entered"});
+//                } catch (IllegalArgumentException | InstantiationException | SecurityException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+//                    error.add(new String[]{"Coordinate", e.getMessage()});
+//                }
+//            }
+//
+//            if (null == coord) {
+//                return site;
+//            }
+//
+//            if (!datum.coordinateAcceptable(coord)) {
+//                error.add(new String[]{"Coordinate", "Coordinates not of correct type"});
+//            }
+//
+//            //TODO: if site exists - plan is not to check if there is an existing site - Prashanth
+////            if (null == site) {
+////                site = SiteModelUtil.getSite(datum, coord);
+////            }
+//
+//            if (null == site) {
+//                // Make a new one.
+//                site = new SiteModel();
+//            }
+//
+//            if (null == origSystemId || null == origCoords) {
+//                try {
+//                    // TODO: This set the original coordinates from the datum, but we also have origCoords?
+//                    site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+//                } catch (Exception e) {
+//                    log.log(Level.INFO, null, e);
+//                    error.add(new String[]{"Coordinate", "Datum is invalid. " + e.getMessage()});
+//                }
+//            } else {
+//                site.setOriginal(origSystemId, origCoords);
+//            }
+//
+//            try {
+//                site.setLatLong(datum.convertToNZGD49(coord));
+//            } catch (Exception e) {
+//                log.log(Level.INFO, null, e);
+//                error.add(new String[]{"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
+//            }
+//
+//            site.setDirections(locality);
+//            site.setCountry(country);
+//            site.setOwner(user.getId().intValue());
+//
+//            if (null != locationMethodId) {
+//                site.setMethod(locationMethodId);
+//            }
+//            if (null != accuracy) {
+//                site.setAccuracy(accuracy);
+//            }
+//        } catch (Exception x) {
+//            error.add(new String[]{"Coordinate", x.getMessage()});
+//            site = null;
+//        }
+//        return site;
+//    }
+    
     /**
      * Return the saved version of the SiteRecord. The original is not modified,
      * so only use the returned value.

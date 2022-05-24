@@ -44,7 +44,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Person person;
     private Folder masterFile;
     private Audit auditTable;
-    private SiteView siteView;
+//    private SiteView siteView;
     private RegistrationArea registrationArea;
     private Set<Sample> samples;
     private Set<Folder> folders;
@@ -251,13 +251,13 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.auditTable = auditTable;
    }
 
-    public SiteView getSiteView() {
-        return this.siteView;
-    }
-
-    public void setSiteView(SiteView siteView) {
-        this.siteView = siteView;
-   }
+//    public SiteView getSiteView() {
+//        return this.siteView;
+//    }
+//
+//    public void setSiteView(SiteView siteView) {
+//        this.siteView = siteView;
+//   }
     
     public RegistrationArea getRegistrationArea() {
         return this.registrationArea;

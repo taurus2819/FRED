@@ -146,7 +146,7 @@
     <!-- Associations -->
 
     <!-- bi-directional many-to-one association to SiteView -->
-    <many-to-one
+<!--    <many-to-one
         name="siteView"
         class="nz.cri.gns.fred.hibernate.SiteView"
         not-null="false"
@@ -155,7 +155,7 @@
         cascade="none"
     >
         <column name="SITE_ID" />
-    </many-to-one>
+    </many-to-one>-->
     <!-- bi-directional many-to-one association to Person -->
     <many-to-one
         name="person"

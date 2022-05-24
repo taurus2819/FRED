@@ -28,8 +28,9 @@ import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.Taxon;
+import nz.cri.gns.fred.site.util.SiteModel;
 import nz.cri.gns.fred.util.FREDUtil;
-import nz.cri.gns.fred.util.SiteUtil;
+import nz.cri.gns.fred.util.SiteModelUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 
@@ -83,7 +84,8 @@ public class TaxaReport extends AbstractReport {
         for (Sample sample : samples) {
             Feature feature = sample.getFeature();
             System.out.println(feature.getFrNumber().getFrNumber());
-            SiteRecord site = SiteUtil.getSite(feature);
+//            SiteRecord site = SiteUtil.getSite(feature);
+            SiteModel site = SiteModelUtil.getSite(feature);
             boolean single = feature.getSamples().size() == 1;
             localities.println(
                     feature.getFrNumber().getFrNumber()
@@ -92,9 +94,9 @@ public class TaxaReport extends AbstractReport {
                     + "\","
                     + feature.getFeatureType()
                     + ","
-                    + site.getLatAsDouble()
+                    + site.getLat()
                     + ","
-                    + site.getLonAsDouble()
+                    + site.getLon()
                     + ","
                     + ((single) ? "" : (sample.getTopDepth() + "-" + sample.getBottomDepth()))
                     + ","
