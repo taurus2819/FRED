@@ -228,7 +228,8 @@ public class FredRowProcessor extends TemplateRowProcessor {
         List<String[]> error = new ArrayList<>(); // Used in some FRED APIs.
 
         // TODO: origCoords has a particular format.
-        String origCoords = getRowValueString(row, "NORTHING") + "|" + getRowValueString(row, "EASTING");
+//        String origCoords = getRowValueString(row, "NORTHING") + "|" + getRowValueString(row, "EASTING");
+        String origCoords = null;
         String countryCode = findCountryId(row, "COUNTRY");
         Integer origSystemId = findOrigSystemId(row, "ORIG_SYSTEM_ID");
 
@@ -248,6 +249,26 @@ public class FredRowProcessor extends TemplateRowProcessor {
 //                getRowValueString(row, "MAP_SHEET"),
 //                user
 //        );
+        switch(origSystemId){
+            case 29:
+            case 38:
+            case 71:
+            case 33:
+            case 70:
+            case 7:
+            case 67:    
+            case 68:    
+            case 74: 
+                origCoords = getRowValueString(row, "EASTING") + "|" + getRowValueString(row, "NORTHING");
+                break;
+            case 16:
+            case 72:
+            case 17:
+            case 69:
+                origCoords = getRowValueString(row, "MAP_SHEET") + "|" + getRowValueString(row, "EASTING") + "|" + getRowValueString(row, "NORTHING");
+                break;                
+                
+        }
         
         String siteName = getRowValueString(row, "FEATURE_NAME");
         Integer methodID = findMethod(row, "LOCATION_METHOD");
@@ -261,8 +282,8 @@ public class FredRowProcessor extends TemplateRowProcessor {
         OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(origSystemId, origCoords);
         int epsg = epsgInfo.getEpsg();
         String gridref = epsgInfo.getGridref();
-        double easting  = epsgInfo.getEasting();
-        double northing = epsgInfo.getNorthing();
+        Double easting  = epsgInfo.getEasting();
+        Double northing = epsgInfo.getNorthing();
         String latitude = epsgInfo.getLatitude();
         String longitude = epsgInfo.getLongitude();
         String format = epsgInfo.getFormat();

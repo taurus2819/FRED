@@ -431,6 +431,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         originSystemId = getOriginSystemId(request.getParameter("CoordType"));
         
         switch(this.originSystemId){
+            case 29:
             case 38:
             case 71:
             case 33:
