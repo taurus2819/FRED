@@ -626,14 +626,15 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
         int epsg = epsgInfo.getEpsg();
         String gridref = epsgInfo.getGridref();
-        double easting  = epsgInfo.getEasting();
-        double northing = epsgInfo.getNorthing();
+        Double easting  = epsgInfo.getEasting();
+        Double northing = epsgInfo.getNorthing();
         String latitude = epsgInfo.getLatitude();
         String longitude = epsgInfo.getLongitude();
         String format = epsgInfo.getFormat();
+        String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
 
         SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy.doubleValue(), directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
-                epsg, gridref, easting, northing, latitude, longitude, format, "new site creation");
+                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg);
 //        ObjectMapper objectMapper = new ObjectMapper();
 //        String inputSiteModel = objectMapper.writeValueAsString(smi);
 //        System.out.println("SiteMODEL Input = " + inputSiteModel);
