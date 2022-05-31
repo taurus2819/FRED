@@ -129,7 +129,7 @@
 					//--></script><%
 				} catch (Exception e) {
                                                                             log.log(Level.WARNING, null, e);
-                                                                            errorMessage = "An Error has occured: " + e.toString();
+                                                                            errorMessage = "An Error has occurred: " + e.toString();
 				}
 			}
 			

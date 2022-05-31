@@ -172,7 +172,7 @@
 
 		%><p><img src="<%=imageURL%>" width="480" height="580" alt="Backlog Status Map" border="0" <%=((masterfileId == -1) ? "usemap=\"#FPMap0\"" : "")%>/></p><%
 	} catch (Exception e) {
-		%><p>An error has occured while generating the map. Please try again</p><%
+		%><p>An error has occurred while generating the map. Please try again</p><%
 	}
 	%></p><%
 	

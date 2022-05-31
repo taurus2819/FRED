@@ -127,9 +127,9 @@
                     <td colspan="3">
                         <a href="template.xlsm?CODE=FRED_OUTCROP">
                             <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
-                            <b>Outcrop Import Spreadsheet</b>
+                            <b>Outcrop samples import spreadsheet</b>
                        </a>
-                       <span style="float:right;">&nbsp;&nbsp;<b><a href="FRED_static.zip">Static FRED template&nbsp;&nbsp;<img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" style=" vertical-align: middle;"/></a></span>
+                       <span style="float:right;">&nbsp;&nbsp;<b><a href="FRED_static.zip">Static import template&nbsp;&nbsp;<img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" style=" vertical-align: middle;"/></a></span>
                    </td>
                 </tr>
                 <%--
@@ -145,7 +145,7 @@
                    <td colspan="3">
                         <a href="template.xlsm?CODE=FRED_DRILL_HOLE">
                             <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
-                            <b>Drill Hole Import Spreadsheet</b>
+                            <b>Drill hole samples import spreadsheet</b>
                        </a>
                    </td>
                 </tr>
@@ -153,13 +153,13 @@
                    <td colspan="3">
                         <a href="template.xlsm?CODE=FRED_PALEO">
                             <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
-                            <b>Paleo Import Spreadsheet</b>
+                            <b>Paleo import spreadsheet</b>
                        </a>
                    </td>
                 </tr>
 	<tr><td>&nbsp;</td></tr>
 
-                <tr class="midColour"><td colspan="3"><b>Upload one of these spreadsheets</b> (but not the static FRED template). </td></tr>
+                <tr class="midColour"><td colspan="3"><b>Upload one of these spreadsheets</b> (but not the Static import template). </td></tr>
                 <tr class="lightColour">     
                      <td colspan="3">
                         <form action="xlsUploader" method="post" enctype="multipart/form-data">

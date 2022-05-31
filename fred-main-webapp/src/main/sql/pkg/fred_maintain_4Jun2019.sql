@@ -110,7 +110,7 @@ AS
       SELECT user_id FROM folder_view WHERE folder_id = MFID;
   BEGIN
     SELECT name INTO MFName FROM folder WHERE folder_id = MFID;
-    EmailString := 'A change has occured in the ' || MFName || ' masterfile as listed below:' || CHR(10) || CHR(10) ||
+    EmailString := 'A change has occurred in the ' || MFName || ' masterfile as listed below:' || CHR(10) || CHR(10) ||
      'User' || CHR(9) || CHR(9) || 'Feature Name' || CHR(9) || 'Action' || CHR(10);
     FOR CRow IN Feat_Cur LOOP
       EmailString := EmailString || CRow.Submitted_By || CHR(9) || CRow.Feature_Name || CHR(9) || CHR(9) || CRow.Type || CHR(10);

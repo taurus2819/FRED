@@ -168,7 +168,7 @@
                                             log.info("Map rendered");	
 					} catch (Exception e) {
 						e.printStackTrace();
-						%>An error occured while generating this map. Please try again later.<%
+						%>An error occurred while generating this map. Please try again later.<%
 					}
 				} else {
 					//not in NZ
