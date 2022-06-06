@@ -311,7 +311,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 
                 //Accuracy etc
                 template.addSub("mapYear", DBUtils.nvl(feature.getMapYear()));
-                template.addSub("accuracy", (site.getAccuracy() == -1F) ? "" : String.valueOf(site.getAccuracy()));
+                template.addSub("accuracy", (site.getAccuracy() == null) ? "" : String.valueOf(site.getAccuracy()));
                 template.addSub("localityDesc", DBUtils.nvl(feature.getLocality()));
             }
             template.addSub("northingLabel", northingLabel);
@@ -329,7 +329,11 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
             attributes = Attributes.createNameOnlyAttributes("LocMethodID");
             attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
-            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethodId() > -1) ? siteModelUtil.getSiteDatumMethod(site.getMethodId()) : null, out);
+            if(site.getMethodId() != null){
+                dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethodId() > -1) ? siteModelUtil.getSiteDatumMethod(site.getMethodId()) : null, out);
+            } else {
+                dSelectBox.writeBox(attributes, "-- Choose --", null, siteModelUtil.getSiteDatumMethod(0), out);
+            }
 
             template.loadUntil(out, "{@countryCombo}");
             SelectBox<Country> cSelectBox = new SelectBox<Country>(featureUtil.getCountries());
