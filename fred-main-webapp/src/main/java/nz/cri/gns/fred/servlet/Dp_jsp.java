@@ -170,7 +170,7 @@ public class Dp_jsp extends FREDHibernateServlet {
 
             out.write("<table style=\"margin-left:20px; width:550px;\" border=\"0\">\n");
             out.write("\t\t\t<tr><td class=\"deHeading\">SQL Data Error</td></tr>\n");
-            out.write("\t\t\t<tr><td>A Database error has occured: ");
+            out.write("\t\t\t<tr><td>A Database error has occurred: ");
             out.print(e.getMessage());
             out.write("</td></tr>");
 

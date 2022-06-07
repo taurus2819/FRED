@@ -189,7 +189,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             }
         }
         if (errFlag) {
-            throw new IllegalStateException("An error has occured. Not all localities have been removed/deleted");
+            throw new IllegalStateException("An error has occurred. Not all localities have been removed/deleted");
         }
     }
 
