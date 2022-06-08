@@ -77,16 +77,16 @@ deploy-uat:
     tomcat7:redeploy -s .mvn/settings.xml"
   - "./mvnw $MAVEN_CLI_OPTS clean verify -Puat -s .mvn/settings.xml"
   when: manual
-pages:
-  stage: deploy
-  script:
-    - mv target/site/ public/
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
-  only:
-    - master
+#pages:
+#  stage: deploy
+#  script:
+#    - mv target/site/ public/
+#  artifacts:
+#    paths:
+#      - public
+#    expire_in: 30 days
+#  only:
+#    - master
 #Todo
 #sast:
 #  stage: test
