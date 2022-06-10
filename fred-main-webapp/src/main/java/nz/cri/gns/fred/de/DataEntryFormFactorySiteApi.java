@@ -23,10 +23,10 @@ public class DataEntryFormFactorySiteApi {
         String featureType = feature.getFeatureType();
         if (featureType.equals(FREDConstants.OUTCROP)) {
             return new OutcropLocalitySiteApiDE(feature, folderID, user, factory, provider);
-//        } else if (featureType.equals(FREDConstants.DRILLHOLE)) {
-//            return new DrillholeLocalityDE(feature, folderID, user, factory, provider);
-//        } else if (featureType.equals(FREDConstants.VERTICAL_SECTION)) {
-//            return new VertSectLocalityDE(feature, folderID, user, factory, provider);
+        } else if (featureType.equals(FREDConstants.DRILLHOLE)) {
+            return new DrillholeLocalitySiteApiDE(feature, folderID, user, factory, provider);
+        } else if (featureType.equals(FREDConstants.VERTICAL_SECTION)) {
+            return new VertSectLocalitySiteApiDE(feature, folderID, user, factory, provider);
         } else {
             throw new DataInputException("Feature Type", "Invalid");
         }
@@ -35,10 +35,10 @@ public class DataEntryFormFactorySiteApi {
     public static LocalitySiteapiDE getLocalityDataEntryForm(String type, User user, int folderID, DAOFactory factory, ContentProvider provider) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
         if (type.equals(FREDConstants.OUTCROP)) {
             return new OutcropLocalitySiteApiDE(user, folderID, factory, provider);
-//        } else if (type.equals(FREDConstants.DRILLHOLE)) {
-//            return new DrillholeLocalityDE(user, folderID, factory, provider);
-//        } else if (type.equals(FREDConstants.VERTICAL_SECTION)) {
-//            return new VertSectLocalityDE(user, folderID, factory, provider);
+        } else if (type.equals(FREDConstants.DRILLHOLE)) {
+            return new DrillholeLocalitySiteApiDE(user, folderID, factory, provider);
+        } else if (type.equals(FREDConstants.VERTICAL_SECTION)) {
+            return new VertSectLocalitySiteApiDE(user, folderID, factory, provider);
         } else {
             throw new DataInputException("Feature Type", "Invalid");
         }
