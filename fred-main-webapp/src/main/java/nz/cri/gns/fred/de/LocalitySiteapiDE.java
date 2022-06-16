@@ -329,9 +329,9 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
             attributes = Attributes.createNameOnlyAttributes("LocMethodID");
             attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
-            if(site.getMethodId() != null){
-                dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethodId() > -1) ? siteModelUtil.getSiteDatumMethod(site.getMethodId()) : null, out);
-            } else {
+            if(site != null && site.getMethodId() > -1){
+                dSelectBox.writeBox(attributes, "-- Choose --", null, siteModelUtil.getSiteDatumMethod(site.getMethodId()), out);
+            } else if(site != null && site.getMethodId() == null){
                 dSelectBox.writeBox(attributes, "-- Choose --", null, siteModelUtil.getSiteDatumMethod(0), out);
             }
 
