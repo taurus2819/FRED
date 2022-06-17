@@ -287,6 +287,10 @@ public class TaxonomicUtil extends ModelUtil {
         return fredDAO.getMatchingTaxa(str, group, matchType, maxMatches);
     }
 
+    public List<Taxon> getMatchingBadTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException {
+        return fredDAO.getMatchingBadTaxa(str, group, matchType, maxMatches);
+    }
+
     public List<TaxonomicGroup> getMatchingTaxonomicGroups(String str, Match matchType, int maxMatches) throws StorageAccessException {
         return fredDAO.getMatchingTaxonomicGroups(str, matchType, maxMatches);
     }
