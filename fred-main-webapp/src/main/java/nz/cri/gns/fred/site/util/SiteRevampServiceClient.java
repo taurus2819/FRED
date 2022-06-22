@@ -42,6 +42,7 @@ public class SiteRevampServiceClient {
     // private static final String GET_CLOSETO_SERVICE_URL = "http://localhost:8080/api/v1/sites/closeto";
     // private static final String GET_SITE_DETAILS_SERVER_URI = "http://localhost:8080/api/v1/sites/";
     
+    //using the site service running from the portainer
    private static final String GET_SITE_SERVER_URI = "http://dev-app.gns.cri.nz:9010/site/api/v1/sites/";   
    private static final String POST_SERVICE_URL = "http://dev-app.gns.cri.nz:9010/site/api/v1/site";   
    private static final String PUT_SERVICE_URL = "http://dev-app.gns.cri.nz:9010/site/api/v1/site/";   
