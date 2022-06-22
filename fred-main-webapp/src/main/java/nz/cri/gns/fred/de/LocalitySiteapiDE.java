@@ -329,9 +329,11 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
             attributes = Attributes.createNameOnlyAttributes("LocMethodID");
             attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
-            if(site != null && site.getMethodId() > -1){
+            if(site != null && site.getMethodId() != null){
                 dSelectBox.writeBox(attributes, "-- Choose --", null, siteModelUtil.getSiteDatumMethod(site.getMethodId()), out);
-            } else if(site != null && site.getMethodId() == null){
+            }else if(site != null && site.getMethodId() == null){
+                dSelectBox.writeBox(attributes, "-- Choose --", null, siteModelUtil.getSiteDatumMethod(0), out);
+            }else if(site == null){
                 dSelectBox.writeBox(attributes, "-- Choose --", null, siteModelUtil.getSiteDatumMethod(0), out);
             }
 
@@ -479,16 +481,18 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         feature.setLocality(locality);
 
         // Site
-        Float accuracy = null;
+        Double accuracy = null;
         if (request.getParameter("Accuracy").length() > 0) {
-            accuracy = Float.parseFloat(request.getParameter("Accuracy"));
+            accuracy = Double.parseDouble(request.getParameter("Accuracy"));
+        }else{
+            accuracy = 0.0;                    
         }
 
         Integer locMethodID = null;
         try {
-            locMethodID = Integer.parseInt(request.getParameter("LocMethodID"));
+            locMethodID = Integer.parseInt(request.getParameter("LocMethodID").equals("-")? "0": request.getParameter("LocMethodID"));
         } catch (NumberFormatException x) {
-            //method is null (-1) by default
+            x.printStackTrace();
         }
         
         String countryCode = request.getParameter("Country");
@@ -513,44 +517,45 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 //                user
 //        );
         SiteModelInput smi = null;
-        try {
-            smi = createNewSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
-            site = SiteModelUtil.getSite(smi);
-        } catch (IOException  e) {
-                log.log(Level.SEVERE, null, e);
+        if(site == null ){
             try {
-                throw new StorageAccessException(e);
-            } catch (StorageAccessException ex) {
-                Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+                smi = createNewSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
+                site = SiteModelUtil.getSite(smi);
+            } catch (IOException  e) {
+                    log.log(Level.SEVERE, null, e);
+                try {
+                    throw new StorageAccessException(e);
+                } catch (StorageAccessException ex) {
+                    Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                }
+
+
+            if (null != site && null == feature.getOrigSystemId()) {
+                feature.setOrigSystemId(this.originSystemId);
             }
+            if (null != site && null == feature.getOrigCoord()) {
+                //caused by: java.sql.BatchUpdateException: ORA-12899: value too large for column "FR"."FEATURE"."ORIG_COORD" (actual: 69, maximum: 36)
+                feature.setOrigCoord(this.origCoord);  //feature.setOrigCoord(site.getOrigCoord().toString()); trying to store the json value, but getting BatchUpdateException
             }
-        
 
-        if (null != site && null == feature.getOrigSystemId()) {
-            feature.setOrigSystemId(this.originSystemId);
-        }
-        if (null != site && null == feature.getOrigCoord()) {
-            //caused by: java.sql.BatchUpdateException: ORA-12899: value too large for column "FR"."FEATURE"."ORIG_COORD" (actual: 69, maximum: 36)
-            feature.setOrigCoord(this.origCoord);  //feature.setOrigCoord(site.getOrigCoord().toString()); trying to store the json value, but getting BatchUpdateException
-        }
-
-        //set Map Year
-        try {
-            if (sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")) != null && !sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")).equals("")) {
-                feature.setMapYear(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear"))));
-            } else {
-                feature.setMapYear(null);
+            //set Map Year
+            try {
+                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")) != null && !sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")).equals("")) {
+                    feature.setMapYear(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear"))));
+                } else {
+                    feature.setMapYear(null);
+                }
+            } catch (NumberFormatException e) {
+                error.add(new String[]{"Map Year", "Map Year not numeric"});
             }
-        } catch (NumberFormatException e) {
-            error.add(new String[]{"Map Year", "Map Year not numeric"});
+
+            feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
+            feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
+
+            editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
+            editComments = sanitizeHttpRequest.stripAllScripts(editComments);
         }
-
-        feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
-        feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
-
-        editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
-        editComments = sanitizeHttpRequest.stripAllScripts(editComments);
-
         if (error.size() > 0) {
             throw new DataInputException(error);
         }
@@ -616,12 +621,15 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         return feature.getFeatureId();
     }
 
-    private SiteModelInput createNewSite(String featName, String description, Float accuracy, Integer locMethodId, String countryCode, String comments) throws IOException, JsonProcessingException {
+    private SiteModelInput createNewSite(String featName, String description, Double accuracy, Integer locMethodId, String countryCode, String comments) throws IOException, JsonProcessingException {
         //            SiteModelInput(String siteName, Integer methodId, Double accuracy, String Directions,
 //               Double height, Integer heightMethodId, Double heightAccuracy, String countyCode, String comment, Integer ownerId,
 //               int epsg, String gridref, Double easting, Double northing, String latitude, String longitude, String format, String auditMsg)
         String siteName = featName;
-        int methodID = locMethodId;
+        int methodID = 0;
+        if(locMethodId != null){
+            methodID = locMethodId;
+        }            
         String directions = description;
         double height = -1;//site.getHeight();
         int heightMethodId = -1; //site.getHeightMethodId();
@@ -638,7 +646,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         String format = epsgInfo.getFormat();
         String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
 
-        SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy.doubleValue(), directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
+        SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                 epsg, gridref, easting, northing, latitude, longitude, format, auditMsg);
 //        ObjectMapper objectMapper = new ObjectMapper();
 //        String inputSiteModel = objectMapper.writeValueAsString(smi);

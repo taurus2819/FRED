@@ -211,6 +211,11 @@
             <version>1.6.1</version>
             <type>pom</type>
         </dependency>
+                <dependency>
+            <groupId>nz.cri.gns</groupId>
+            <artifactId>munginator</artifactId>
+            <version>0.1.0.4</version>
+        </dependency>
     </dependencies>
     
     <modules>
