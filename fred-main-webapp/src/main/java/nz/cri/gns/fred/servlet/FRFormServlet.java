@@ -373,7 +373,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
 			if (sm != null) {
 //				sv = feature.getSiteView();
 				LatLong ll = SiteModelUtil.getSiteLatLong(feature);
-				PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (WGS84)"}, bodyFonts);
 			}
 			PDFUtil.addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Method", ((sm != null) ? String.valueOf(sm.getMethodId()) : null)}, bodyFonts);

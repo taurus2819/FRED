@@ -161,7 +161,8 @@ public class SiteModelUtil extends ModelUtil {
         NorthingEasting ne;
         SiteModel sm = getSite(feature);
         JsonNode origCoord = sm.getOrigCoord();
-        ne = new NorthingEasting(origCoord.get("northing").asDouble(), origCoord.get("easting").asDouble());
+//        ne = new NorthingEasting(origCoord.get("northing").asDouble(), origCoord.get("easting").asDouble());
+        ne = new NorthingEasting(sm.getLat(), sm.getLon());
         return ne;
     }
 

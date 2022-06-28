@@ -84,6 +84,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID$FIELD_NUMBER", featureName);
                 update.set("FEATURE_ID$ORIG_COORD", getOrigCoords(row));
                 update.set("FEATURE_ID$ORIG_SYSTEM_ID", findOrigSystemId(row, "ORIG_SYSTEM_ID"));
+//                update.set("FEATURE_ID$COORD_COMMENTS", getRowValueString(row, "COORD_COMMENTS"));
                 update.set("FEATURE_ID$LOCALITY", getRowValueString(row, "LOCALITY"));
                 update.set("STRAT_UNIT", getRowValueString(row, "STRAT_UNIT"));
                 update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
@@ -272,12 +273,14 @@ public class FredRowProcessor extends TemplateRowProcessor {
         
         String siteName = getRowValueString(row, "FEATURE_NAME");
         Integer methodID = findMethod(row, "LOCATION_METHOD");
+        methodID = (methodID != null) ? methodID : 0;
         Double accuracy = getRowValueDouble(row, "ACCURACY");
-        String directions = getRowValueString(row, "MAP_SHEET") + " - " + getRowValueString(row, "LOCALITY");
+        accuracy = (accuracy != null) ? accuracy : 0.0;
+        String directions = (getRowValueString(row, "MAP_SHEET") != null ) ? (getRowValueString(row, "MAP_SHEET") + " - " + getRowValueString(row, "LOCALITY")) : (getRowValueString(row, "LOCALITY"));
         double height = -1;//site.getHeight();
         int heightMethodId = -1; //site.getHeightMethodId();
         double heightAccuracy = -1; //site.getHeightAccuracy();
-        String comment = directions;
+        String comment = directions;   //getRowValueString(row, "COORD_COMMENTS");
         int ownerId = Math.toIntExact(user.getId());
         OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(origSystemId, origCoords);
         int epsg = epsgInfo.getEpsg();
