@@ -20,8 +20,8 @@
 %><%@page import="nz.cri.gns.fred.model.SiteView"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
-%><%@page import="nz.cri.gns.fred.util.SiteUtil"
-%><%!	
+%><%@page import="nz.cri.gns.fred.util.SiteModelUtil"%>
+<%@page import="nz.cri.gns.fred.site.util.SiteModel"%><%!	
         private static final Logger log = Logger.getLogger("locality_map.jsp");
         
         @Override
@@ -85,9 +85,9 @@
 	if (featId != null) {
 		Feature feature = featureUtil.getFeature(Integer.parseInt(featId));
 		if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
-			SiteView sv = feature.getSiteView();
+			SiteModel sv = SiteModelUtil.getSite(feature);
 			if (sv != null) {               
-				LatLong ll = SiteUtil.getSiteLatLong(sv);
+				LatLong ll = SiteModelUtil.getSiteLatLong(feature);
 				Coordinate nzms260Coord = null;
 
 //				try {
