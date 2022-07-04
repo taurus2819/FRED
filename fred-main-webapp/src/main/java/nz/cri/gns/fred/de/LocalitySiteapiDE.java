@@ -605,13 +605,9 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 
             feature.setSiteId(Integer.valueOf(site.getSiteId()));
 
-//            try {
-//                // feature incomplete
-//                SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
-//                feature.setSiteView(siteModelUtil.getSiteView(feature.getSiteId()));
-//            } catch (StorageAccessException ex) {
-//                log.log(Level.SEVERE, null, ex);
-//            }
+            // feature incomplete
+            SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
+            feature.setSiteView(siteModelUtil.getSiteView(feature.getSiteId()));
         } else {
             feature.setSiteId(null);
         }

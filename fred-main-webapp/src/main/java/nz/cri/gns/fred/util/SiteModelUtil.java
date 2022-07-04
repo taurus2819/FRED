@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,8 @@ import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.DatumMethod;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.RegistrationArea;
-import nz.cri.gns.fred.model.SiteView;
+//import nz.cri.gns.fred.model.SiteView;
+import nz.cri.gns.fred.hibernate.SiteView;
 import nz.cri.gns.fred.site.util.SiteDetailed;
 import nz.cri.gns.fred.site.util.SiteModel;
 import nz.cri.gns.fred.site.util.SiteModelInput;
@@ -37,6 +39,7 @@ import nz.cri.gns.util.map.NZMS260;
 import nz.cri.gns.util.map.NorthingEasting;
 import nz.cri.gns.util.map.TruncNorthingEasting;
 import nz.cri.gns.util.map.Datum.Coordinate;
+import org.json.JSONObject;
 
 import org.xml.sax.SAXException;
 
@@ -96,8 +99,50 @@ public class SiteModelUtil extends ModelUtil {
         this.fredDAO = factory.getFredDAO();
     }
 
-    public SiteView getSiteView(int siteId) throws StorageAccessException {
-        return fredDAO.get(siteId, nz.cri.gns.fred.hibernate.SiteView.class);
+    public static SiteView getSiteView(int siteId) {
+        //return fredDAO.get(siteId, nz.cri.gns.fred.hibernate.SiteView.class);
+        //ADD loadSiteDetails(int siteId) from the QueryService in PetLab
+        SiteView siteView = new SiteView();
+        String siteDetailed = getSiteDetails(siteId);
+        siteView.setSiteId(siteId);
+        
+        try {
+            JSONObject siteJson = new JSONObject(siteDetailed);
+            JSONObject siteModelJson = siteJson.getJSONObject("model");
+            
+            siteView.setSiteName(siteModelJson.getString("siteName"));
+            siteView.setLatitude(siteModelJson.getDouble("lat"));
+            siteView.setLongitude(siteModelJson.getDouble("lon"));
+            siteView.setDirections(siteModelJson.getString("directions"));            
+            siteView.setCountryName(siteModelJson.getString("countryCode"));
+            if(!siteModelJson.isNull("methodId"))    {
+                siteView.setMethodId(siteModelJson.getInt("methodId"));
+            }
+            if(!siteModelJson.isNull("accuracy"))    {
+                siteView.setHeight(siteModelJson.getDouble("accuracy"));
+            }
+            if(!siteModelJson.isNull("height"))    {
+                siteView.setHeight(siteModelJson.getDouble("height"));
+            }
+            if(siteJson.has("island") && !siteJson.isNull("island")){
+                siteView.setIsland(siteJson.getJSONObject("island").getString("name"));
+            }
+            if(siteJson.has("nzms262Sheet") && !siteJson.isNull("nzms262Sheet")){
+                siteView.setNzms262Sheet(siteJson.getString("nzms262Sheet"));
+            }
+            if(siteJson.has("nzms260Sheet") && !siteJson.isNull("nzms260Sheet")){
+                siteView.setNzms260Sheet(siteJson.getString("nzms260Sheet"));
+            }
+            if(siteJson.has("topo50Sheet") && !siteJson.isNull("topo50Sheet")){
+                siteView.setTopo50Sheet(siteJson.getString("topo50Sheet"));
+            }
+            if(siteJson.has("qmapsheet") && !siteJson.isNull("qmapsheet")){
+                siteView.setQmapSheet(siteJson.getString("qmapsheet"));
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(SiteModelUtil.class.getName()).log(Level.SEVERE, "Site details unavailable");
+        }
+        return siteView;
     }
 
     public static int getMasterfile(Feature feature) throws SQLException, NamingException, IOException {
@@ -172,11 +217,9 @@ public class SiteModelUtil extends ModelUtil {
     }
 
     public static String getFrNumberMapSheet(Feature feature) throws IOException {
-        //get the NZMS260 coord - us the /details api from the site api. This provides the NZMS260 sheet 
-        SiteDetailed siteDetailed = getSiteDetails(feature.getSiteId());
-        System.out.println("SiteDetailed = " + siteDetailed);
-        
-        return null;
+        //get the NZMS260 coord - use the /details api from the site api. This provides the NZMS260 sheet 
+        SiteView sv = getSiteView(feature.getSiteId());        
+        return sv.getNzms260Sheet();
     }
 
     public static SiteModel getSite(Feature feature) throws IOException {
@@ -249,19 +292,19 @@ public class SiteModelUtil extends ModelUtil {
      * 
      * return a SiteModel
      */
-    public static SiteDetailed getSiteDetails(int siteId) throws IOException  {
-        SiteDetailed sd = null;
-        ObjectMapper objectMapper = new ObjectMapper();
-        String detailedSite = SiteRevampServiceClient.getSiteDetails(siteId);
-        try {           
-            System.out.println("DetailedSite ** = " + detailedSite);
-            sd = objectMapper.readValue(detailedSite, SiteDetailed.class);
-        } catch (JsonProcessingException e) {
-                System.out.println(e.getClass().getName() + 
-                " : " + e.getOriginalMessage());
-        }
-        return sd;
-    }
+//    public static String getSiteDetails(int siteId) throws IOException  {
+//        SiteDetailed sd = null;
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        String detailedSite = SiteRevampServiceClient.getSiteDetails(siteId);
+//        try {           
+//            System.out.println("DetailedSite ** = " + detailedSite);
+//            sd = objectMapper.readValue(detailedSite, String.class);
+//        } catch (JsonProcessingException e) {
+//                System.out.println(e.getClass().getName() + 
+//                " : " + e.getOriginalMessage());
+//        }
+//        return sd;
+//    }
 
     public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {
         return fredDAO.get(methodId, nz.cri.gns.fred.hibernate.DatumMethod.class);
