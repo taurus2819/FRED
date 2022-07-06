@@ -38,18 +38,20 @@ public class SiteRevampServiceClient {
     private static final Logger log  = Logger.getLogger(SiteRevampServiceClient.class.getName());
     private static RestTemplate restTemplate = new RestTemplate(); 
     private static HttpHeaders headers = new HttpHeaders();
-//     private static final String GET_SITE_SERVER_URI = "http://localhost:8080/site/api/v1/sites/";    
-//     private static final String POST_SERVICE_URL = "http://localhost:8080/site/api/v1/site";   
-//     private static final String PUT_SERVICE_URL = "http://localhost:8080/site/api/v1/site/";
-//     private static final String GET_CLOSETO_SERVICE_URL = "http://localhost:8080/site/api/v1/sites/closeto";
-//     private static final String GET_SITE_DETAILS_SERVER_URI = "http://localhost:8080/site/api/v1/sites/";
+     private static final String GET_SITE_SERVER_URI = "http://localhost:8080/site/api/v1/sites/";    
+     private static final String POST_SERVICE_URL = "http://localhost:8080/site/api/v1/site";   
+     private static final String PUT_SERVICE_URL = "http://localhost:8080/site/api/v1/site/";
+     private static final String GET_CLOSETO_SERVICE_URL = "http://localhost:8080/site/api/v1/sites/closeto";
+     private static final String GET_SITE_DETAILS_SERVER_URI = "http://localhost:8080/site/api/v1/sites/";
+     private static final String GET_SITE_QUERY_MAPSHEETS_SERVER_URI = "http://localhost:8080/site/api/v1/sites/";
+     private static final String GET_ISLANDS_SERVER_URI = "http://localhost:8080/site/api/v1/islands";
     
     //using the site service running from the portainer
-   private static final String GET_SITE_SERVER_URI = "http://dev-app.gns.cri.nz:9010/site/api/v1/sites/";   
-   private static final String POST_SERVICE_URL = "http://dev-app.gns.cri.nz:9010/site/api/v1/site";   
-   private static final String PUT_SERVICE_URL = "http://dev-app.gns.cri.nz:9010/site/api/v1/site/";   
-   private static final String GET_CLOSETO_SERVICE_URL = "http://dev-app.gns.cri.nz:9010/site/api/v1/site/";   
-   private static final String GET_SITE_DETAILS_SERVER_URI = "http://dev-app.gns.cri.nz:9010/site/api/v1/sites/"; 
+//   private static final String GET_SITE_SERVER_URI = "http://dev-app.gns.cri.nz:9010/site/api/v1/sites/";   
+//   private static final String POST_SERVICE_URL = "http://dev-app.gns.cri.nz:9010/site/api/v1/site";   
+//   private static final String PUT_SERVICE_URL = "http://dev-app.gns.cri.nz:9010/site/api/v1/site/";   
+//   private static final String GET_CLOSETO_SERVICE_URL = "http://dev-app.gns.cri.nz:9010/site/api/v1/site/";   
+//   private static final String GET_SITE_DETAILS_SERVER_URI = "http://dev-app.gns.cri.nz:9010/site/api/v1/sites/"; 
     
     public static String getSite(int siteId ){        
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -92,6 +94,21 @@ public class SiteRevampServiceClient {
         String[] siteDetails = restTemplate.getForObject(GET_CLOSETO_SERVICE_URL + "?easting=" + easting + "&northing=" + northing + "&metres=" + distance + "&EPSG=" + epsg, String[].class);
         System.out.println("SiteRevampServiceClient - closeTo operation" + siteDetails);
         return siteDetails;
+    }
+
+    public static String getSpatialFilter(String spatialFilter) {
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<String>(headers);
+        // TODO: need proper error handling exceptions if httpResponse
+        return restTemplate.getForObject(GET_SITE_QUERY_MAPSHEETS_SERVER_URI + "/query/mapsheets?" + spatialFilter, String.class);
+    }
+
+    public static String getIslands() {
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<String>(headers);
+        // TODO: need proper error handling exceptions if httpResponse
+        System.out.println("");
+        return restTemplate.getForObject(GET_ISLANDS_SERVER_URI, String.class);
     }
     
     class SiteDataType{

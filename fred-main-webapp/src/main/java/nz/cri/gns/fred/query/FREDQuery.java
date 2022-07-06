@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import nz.cri.gns.core.NameableAndIdentifiable;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.KeyValueObject;
@@ -32,6 +36,7 @@ import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FredDAO;
+import nz.cri.gns.fred.hibernate.Island;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.BedThickness;
@@ -52,6 +57,7 @@ import nz.cri.gns.fred.model.Weathering;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.UserUtil;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.util.SiteModelUtil;
 
 public class FREDQuery extends HqlQuery implements NumberSource {
 
@@ -97,14 +103,15 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         f[0] = new BasicTextField("s.feature.featureName", "Feature Name");
         f[1] = new PossibleValueField("s.feature.featureType", "Feature Type", getFeatureTypes());
         f[2] = new PossibleValueField("s.feature.masterFile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
-        f[3] = new BasicTextField("s.feature.siteView.nzmgSheet", "NZMS260 Sheet");
-        f[4] = new PossibleValueField("s.feature.siteView.qmapSheet", "QMap Sheet", getQMapSheets());
-        f[5] = new PossibleValueField("s.feature.siteView.countryCode", "Country", getValues("FROM Country AS c", Country.class));
-        f[6] = new PossibleValueField("s.feature.siteView.island", "Island", getSQLValues("SELECT DISTINCT name as n, name FROM sc.island ORDER BY UPPER(name)"));
-        f[7] = new BasicNumberField("s.feature.siteView.nzmgEast", "NZMG Easting");
-        f[8] = new BasicNumberField("s.feature.siteView.nzmgNorth", "NZMG Northing");
-        f[9] = new BasicNumberField("s.feature.siteView.latitude", "Latitude");
-        f[10] = new BasicNumberField("s.feature.siteView.longitude", "Longitude");
+        f[3] = new BasicTextField("SITE_API.NZMG_SHEET", "NZMS260 Sheet");
+        f[4] = new PossibleValueField("SITE_API.QMAP_SHEET", "QMap Sheet", getQMapSheets());
+        f[5] = new PossibleValueField("SITE_API.COUNTRY_CODE", "Country", getValues("FROM Country AS c", Country.class));
+//        f[6] = new PossibleValueField("SITE_API.ISLAND", "Island", getSQLValues("SELECT DISTINCT name as n, name FROM sc.island ORDER BY UPPER(name)"));
+        f[6] = new PossibleValueField("SITE_API.ISLAND", "Island", getIslands());
+        f[7] = new BasicNumberField("SITE_API.NZMG_EAST", "NZMG Easting");
+        f[8] = new BasicNumberField("SITE_API.NZMG_NORTH", "NZMG Northing");
+        f[9] = new BasicNumberField("SITE_API.LATITUDE", "Latitude");
+        f[10] = new BasicNumberField("SITE_API.LONGITUDE", "Longitude");
         f[11] = new BasicTextField("s.feature.locality", "Locality");
         f[12] = new BasicTextField("s.feature.coordComments", "Coordinate Comments");
         f[13] = new BasicTextField("s.feature.comments", "Locality Comments");
@@ -236,7 +243,42 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 
     public String getHQLQuery() throws InvalidOperatorException, InvalidValueException {
         //return super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
-        return super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
+        String hqlQuery = super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
+        String debugQuery = hqlQuery;
+        //fetch SITE ID list from API here and embed into HQL query
+        if (hqlQuery.contains("SITE_API")) {
+            String patternString = "SITE_API.([A-Z0-9_]+) = '([A-Za-z0-9\\s]+)'";
+            String patternTemplateString = "SITE_API.%s = '%s'";
+            Pattern pattern = Pattern.compile(patternString);
+            Matcher m = pattern.matcher(hqlQuery);      
+            boolean match = false;
+            List<Integer> siteIds = new ArrayList<>();
+            while(m.find())    {   //TODO concatenate multiple spatial queries
+                match = true;
+                System.err.println("Attribute: " + m.group(1));
+                System.err.println("Value: " + m.group(2));
+                siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
+                System.err.println(String.format("# of sites: %d \n%s", siteIds.size(), siteIds));
+                
+                String idList = siteIds.subList(0, Math.min(1000, siteIds.size()))    //TODO - fix by splitting request into sections (JDBC limit of 1000 items per list)
+                .stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(",")); 
+                
+                hqlQuery = hqlQuery.replaceAll(String.format(patternTemplateString, m.group(1), m.group(2)), String.format("s.feature.siteId IN (%s)", idList)); 
+                System.err.println(String.format("hqlQuery: %s", hqlQuery));
+                
+                System.err.println(String.format("===>debugQuery (pre): %s", debugQuery));
+                System.err.println(String.format("Regex #1: %s, Regex #2: %s", m.group(1), m.group(2)));
+                debugQuery = debugQuery.replaceAll(String.format(patternTemplateString, m.group(1), m.group(2)), String.format("s.feature.siteId IN (%s)", idList.substring(0,10))); 
+                System.err.println(String.format("===>debugQuery (post): %s", debugQuery));
+            }
+            if(!match)    {
+                hqlQuery = hqlQuery.replaceAll(patternString, "1=1");
+            }
+        }
+        
+        return hqlQuery;
     }
 
     protected final <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz, Object... parameters) {
@@ -259,6 +301,10 @@ public class FREDQuery extends HqlQuery implements NumberSource {
             Logger.getLogger(FREDQuery.class.getName()).log(Level.SEVERE, null, e);
         }
         return options;
+    }
+    
+    private List<Island> getIslands() {
+        return SiteModelUtil.getIslands();
     }
 
     protected List<KeyValueObject> getFeatureTypes() {

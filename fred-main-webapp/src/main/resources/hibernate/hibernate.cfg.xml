@@ -55,7 +55,7 @@
         <mapping resource="hibernate/SecurityClass.hbm.xml"/>
         <mapping resource="hibernate/SedimentaryFeatureType.hbm.xml"/>
         <mapping resource="hibernate/SentTo.hbm.xml"/>
-        <mapping resource="hibernate/SiteView.hbm.xml"/>
+        <!--<mapping resource="hibernate/SiteView.hbm.xml"/>-->
         <mapping resource="hibernate/Stage.hbm.xml"/>
         <mapping resource="hibernate/StratigraphicUnit.hbm.xml"/>
         <mapping resource="hibernate/TaxonomicGroup.hbm.xml"/>

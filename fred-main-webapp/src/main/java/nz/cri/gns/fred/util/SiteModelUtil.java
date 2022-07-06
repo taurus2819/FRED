@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,12 +23,12 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
+import nz.cri.gns.fred.hibernate.Island;
 import nz.cri.gns.fred.model.DatumMethod;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.RegistrationArea;
 //import nz.cri.gns.fred.model.SiteView;
 import nz.cri.gns.fred.hibernate.SiteView;
-import nz.cri.gns.fred.site.util.SiteDetailed;
 import nz.cri.gns.fred.site.util.SiteModel;
 import nz.cri.gns.fred.site.util.SiteModelInput;
 import nz.cri.gns.fred.site.util.SiteRevampServiceClient;
@@ -39,6 +40,7 @@ import nz.cri.gns.util.map.NZMS260;
 import nz.cri.gns.util.map.NorthingEasting;
 import nz.cri.gns.util.map.TruncNorthingEasting;
 import nz.cri.gns.util.map.Datum.Coordinate;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.xml.sax.SAXException;
@@ -110,11 +112,17 @@ public class SiteModelUtil extends ModelUtil {
             JSONObject siteJson = new JSONObject(siteDetailed);
             JSONObject siteModelJson = siteJson.getJSONObject("model");
             
-            siteView.setSiteName(siteModelJson.getString("siteName"));
+            if(!siteModelJson.isNull("siteName")){
+                siteView.setSiteName(siteModelJson.getString("siteName"));
+            }
             siteView.setLatitude(siteModelJson.getDouble("lat"));
             siteView.setLongitude(siteModelJson.getDouble("lon"));
-            siteView.setDirections(siteModelJson.getString("directions"));            
-            siteView.setCountryName(siteModelJson.getString("countryCode"));
+            if(!siteModelJson.isNull("directions")){
+                siteView.setDirections(siteModelJson.getString("directions")); 
+            }
+            if(!siteModelJson.isNull("countryCode")){
+                siteView.setCountryName(siteModelJson.getString("countryCode"));
+            }
             if(!siteModelJson.isNull("methodId"))    {
                 siteView.setMethodId(siteModelJson.getInt("methodId"));
             }
@@ -277,6 +285,70 @@ public class SiteModelUtil extends ModelUtil {
                 " : " + e.getOriginalMessage());
         }
         return sm;
+    }
+    
+    public static List<Island> getIslands(){
+        List<Island> islands = new ArrayList<>();
+        
+        String response = SiteRevampServiceClient.getIslands();
+        try {
+            JSONArray siteModelArray = new JSONArray(response);
+            JSONObject fullObject;
+            for (int val = 0; val < siteModelArray.length(); val++) {
+                fullObject = siteModelArray.getJSONObject(val);
+                Island island = new Island();
+                island.setName(fullObject.getString("name"));
+                islands.add(island);
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(SiteModelUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return islands;
+    }
+    
+    
+    public static List<Integer> requestSitesBySpatialFilter(String spatialFilter) {                
+        
+        spatialFilter = spatialFilter.replaceAll("QMAP_SHEET","qmapSheet");
+        spatialFilter = spatialFilter.replaceAll("NZMG_SHEET","nzmgSheet");
+        spatialFilter = spatialFilter.replaceAll("ISLAND","island");
+        spatialFilter = spatialFilter.replaceAll(";","&");
+            
+        String response = SiteRevampServiceClient.getSpatialFilter(spatialFilter);
+            
+        List<Integer> siteIdList = new ArrayList<>();
+        try {
+            JSONArray siteModelArray = new JSONArray(response);
+            JSONObject fullObject;
+            for (int val = 0; val < siteModelArray.length(); val++) {
+                fullObject = siteModelArray.getJSONObject(val);
+                siteIdList.add(Integer.parseInt(fullObject.get("siteId").toString()));
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(SiteModelUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return siteIdList;        
+    }
+    
+    /**
+     * For performance reasons, only Site IDs are returned from the API for filter queries.
+     * @param jsonString
+     * @return
+     * @throws ParseException
+     * @throws IOException 
+     */
+    private static List<Integer> parseIds(String jsonString) throws ParseException, IOException {
+        //System.err.println("Site response: " + jsonString);
+        JSONArray siteModelArray = new JSONArray(jsonString);
+        List<Integer> siteIdList = new ArrayList<>();
+        JSONObject fullObject;
+        for (int val = 0; val < siteModelArray.length(); val++) {
+            fullObject = siteModelArray.getJSONObject(val);
+            siteIdList.add(Integer.parseInt(fullObject.get("siteId").toString()));
+        }
+        
+        return siteIdList;
     }
     
     /**
