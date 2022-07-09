@@ -241,9 +241,14 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         return null;
     }
 
-    public String getHQLQuery() throws InvalidOperatorException, InvalidValueException {
+    public String getHQLQuery(String type, String query) throws InvalidOperatorException, InvalidValueException {
         //return super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
-        String hqlQuery = super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
+        String hqlQuery;
+        if("Adv".equals(type)){
+            hqlQuery = super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
+        }else{
+            hqlQuery = query;
+        }
         String debugQuery = hqlQuery;
         //fetch SITE ID list from API here and embed into HQL query
         if (hqlQuery.contains("SITE_API")) {

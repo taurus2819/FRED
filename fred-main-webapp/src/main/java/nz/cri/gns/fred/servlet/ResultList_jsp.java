@@ -181,7 +181,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 }
                 FREDQuery query = FREDUtil.getFREDQuery(state);
                 queryString = query.getQueryAsString();
-                String hq = query.getHQLQuery();
+                String hq = query.getHQLQuery("Adv", "");
                 samples = sampleUtil.getLightweightSamples(hq);;
                 features = featureUtil.getFeaturesBySampleSubquery(hq);
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
@@ -261,7 +261,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                     sampHqlStr.append(") AND (squirrelAge.wideTopAge < ");
                     sampHqlStr.append(sqWideAgeFrom);
                     sampHqlStr.append(") ");
-
+                    
                     // Show this to the user.
                     StringBuilder s = new StringBuilder(queryString);
                     s.append(" AND Consensus narrow age from  ");
@@ -275,14 +275,18 @@ public class ResultList_jsp extends FREDHibernateServlet {
                     queryString = s.toString();
                     
                 }
+                
+                FREDQuery query = FREDUtil.getFREDQuery(state);
+//                queryString = query.getQueryAsString();
+                String hq = query.getHQLQuery("simple", sampHqlStr.toString());
 
                 String sampHql = sampHqlStr.toString();
-
+                
                 //if polygon vertices are set, apply spatial filter
                 if (idString != null && idString.length() > 0) {
-                    samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), sampHql);
+                    samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
                 } else {
-                    samples = sampleUtil.getLightweightSamples(sampHql);
+                    samples = sampleUtil.getLightweightSamples(hq);
                 }
                 features = featureUtil.getFeaturesBySampleSubquery(samples);
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());

@@ -67,11 +67,11 @@
 		var palListFlag = false;
 		with (form) {
 			if (Map.value.length > 0) {
-				whereSQL = whereSQL + "s.feature.siteView.nzmgSheet = '" + Map.value.toUpperCase() + "' AND ";
+				whereSQL = whereSQL + "SITE_API.NZMG_SHEET = '" + Map.value.toUpperCase() + "' AND ";
 				queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
 			}
 			if (QMap.value != "-") {
-				whereSQL = whereSQL + "s.feature.siteView.qmapSheet LIKE '%" + QMap.value + "%' AND ";
+				whereSQL = whereSQL + "SITE_API.QMAP_SHEET LIKE '" + QMap.value + "' AND ";
 				queryString = queryString + "QMAP Sheet LIKE '%" + QMap.value + "%' AND ";
 			}
 			if (FieldNum.value.length > 0) {
