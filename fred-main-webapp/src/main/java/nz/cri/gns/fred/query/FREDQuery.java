@@ -43,7 +43,7 @@ import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
-import nz.cri.gns.fred.model.Country;
+import nz.cri.gns.fred.hibernate.Country;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FossilGroup;
@@ -105,6 +105,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         f[2] = new PossibleValueField("s.feature.masterFile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
         f[3] = new BasicTextField("SITE_API.NZMG_SHEET", "NZMS260 Sheet");
         f[4] = new PossibleValueField("SITE_API.QMAP_SHEET", "QMap Sheet", getQMapSheets());
+//        f[5] = new PossibleValueField("SITE_API.COUNTRY_CODE", "Country", getCountry("SELECT DISTINCT COUNTRY_CODE, COUNTRY_NAME, COUNTRY_DIAL_CODE FROM mis.country ORDER ORDER BY UPPER(COUNTRY_NAME)"));
         f[5] = new PossibleValueField("SITE_API.COUNTRY_CODE", "Country", getValues("FROM Country AS c", Country.class));
 //        f[6] = new PossibleValueField("SITE_API.ISLAND", "Island", getSQLValues("SELECT DISTINCT name as n, name FROM sc.island ORDER BY UPPER(name)"));
         f[6] = new PossibleValueField("SITE_API.ISLAND", "Island", getIslands());
@@ -251,6 +252,10 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         }
         String debugQuery = hqlQuery;
         System.out.println("HQLQUERY = " + hqlQuery);
+        if(hqlQuery.contains("SITE_API.COUNTRY_CODE"))
+        {
+            hqlQuery = "SELECT DISTINCT s.sampleId FROM Sample AS s WHERE (s.audit.status = 'approved' AND s.feature.audit.status = 'approved') AND (  SITE_API.ISLAND = 'Auckland Island')";
+        }
         //fetch SITE ID list from API here and embed into HQL query
         if (hqlQuery.contains("SITE_API")) {
             String patternString = "SITE_API.([A-Z0-9_]+) = '([A-Za-z0-9\\s]+)'";
@@ -303,6 +308,22 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         try (Connection conn = FREDUtil.getConnection(); Statement statement = conn.createStatement(); ResultSet rs = statement.executeQuery(sql)) {
             while (rs.next()) {
                 options.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+            }
+        } catch (Exception e) { // TODO: But no exceptions are thrown?
+            Logger.getLogger(FREDQuery.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return options;
+    }
+    
+    protected List<KeyValueObject> getCountry(String sql) {
+        ArrayList<KeyValueObject> options = new ArrayList<>();
+        try (Connection conn = FREDUtil.getMISConnection(); Statement statement = conn.createStatement(); ResultSet rs = statement.executeQuery(sql)) {
+            while (rs.next()) {
+                Country country = new Country(rs.getString(1), rs.getString(2), rs.getInt(3));
+//                options.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+                String countryName = country.getName();
+//                options.add(new KeyValueObject("NZ", "New Zealand"));
+                options.add(new KeyValueObject(countryName, countryName));
             }
         } catch (Exception e) { // TODO: But no exceptions are thrown?
             Logger.getLogger(FREDQuery.class.getName()).log(Level.SEVERE, null, e);
