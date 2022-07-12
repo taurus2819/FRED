@@ -250,18 +250,21 @@ public class FREDQuery extends HqlQuery implements NumberSource {
             hqlQuery = query;
         }
         String debugQuery = hqlQuery;
+        System.out.println("HQLQUERY = " + hqlQuery);
         //fetch SITE ID list from API here and embed into HQL query
         if (hqlQuery.contains("SITE_API")) {
             String patternString = "SITE_API.([A-Z0-9_]+) = '([A-Za-z0-9\\s]+)'";
             String patternTemplateString = "SITE_API.%s = '%s'";
             Pattern pattern = Pattern.compile(patternString);
-            Matcher m = pattern.matcher(hqlQuery);      
+            Matcher m = pattern.matcher(hqlQuery); 
+            System.out.println("Attribute: " + m.group(1) + ", " + "Value: " + m.group(2));
             boolean match = false;
             List<Integer> siteIds = new ArrayList<>();
             while(m.find())    {   //TODO concatenate multiple spatial queries
                 match = true;
                 System.err.println("Attribute: " + m.group(1));
                 System.err.println("Value: " + m.group(2));
+                System.out.println("Attribute: " + m.group(1) + ", " + "Value: " + m.group(2));
                 siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
                 System.err.println(String.format("# of sites: %d \n%s", siteIds.size(), siteIds));
                 
@@ -308,7 +311,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         return options;
     }
     
-    private List<Island> getIslands() {
+    protected List<Island> getIslands() {
         return SiteModelUtil.getIslands();
     }
 
