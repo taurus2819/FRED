@@ -257,7 +257,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
             String patternTemplateString = "SITE_API.%s = '%s'";
             Pattern pattern = Pattern.compile(patternString);
             Matcher m = pattern.matcher(hqlQuery); 
-            System.out.println("Attribute: " + m.group(1) + ", " + "Value: " + m.group(2));
             boolean match = false;
             List<Integer> siteIds = new ArrayList<>();
             while(m.find())    {   //TODO concatenate multiple spatial queries
