@@ -250,26 +250,37 @@ public class FredRowProcessor extends TemplateRowProcessor {
 //                getRowValueString(row, "MAP_SHEET"),
 //                user
 //        );
+
         switch(origSystemId){
-            case 29:
-            case 38:
-            case 71:
-            case 33:
-            case 70:
-            case 7:
-            case 67:    
-            case 68:    
-            case 74: 
-                origCoords = getRowValueString(row, "EASTING") + "|" + getRowValueString(row, "NORTHING");
+            case 29: //lat|lng
+            case 30:
+            case 28:
+            case 73:
+//                this.origCoord = request.getParameter("North") + "|" + request.getParameter("East");
+                origCoords = getRowValueString(row, "NORTHING") + "|" +  getRowValueString(row, "EASTING") ;
+                System.out.println("OrigCoord = " + origCoords);
                 break;
+            case 33: //easting|northing
+            case 38: //easting|northing
+            case 7: //easting|northing
+            case 67: //easting|northing
+            case 68: //easting|northing
+            case 70: //easting|northing
+            case 71: //easting|northing
+            case 74: //easting|northing
+//                this.origCoord = request.getParameter("East") + "|" + request.getParameter("North"); 
+                origCoords = getRowValueString(row, "EASTING") + "|" + getRowValueString(row, "NORTHING");
+                System.out.println("OrigCoord = " + origCoords);
+                break;            
             case 16:
             case 72:
             case 17:
             case 69:
+//                this.origCoord = request.getParameter("MapSheet") + "|" + request.getParameter("East") + "|" + request.getParameter("North");
                 origCoords = getRowValueString(row, "MAP_SHEET") + "|" + getRowValueString(row, "EASTING") + "|" + getRowValueString(row, "NORTHING");
-                break;                
-                
-        }
+                System.out.println("OrigCoord = " + origCoords);
+                break;            
+        }        
         
         String siteName = getRowValueString(row, "FEATURE_NAME");
         Integer methodID = findMethod(row, "LOCATION_METHOD");
