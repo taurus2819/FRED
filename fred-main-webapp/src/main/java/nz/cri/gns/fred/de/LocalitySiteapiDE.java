@@ -435,24 +435,32 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         feature.setFeatureName(sanitizeHttpRequest.stripAllScripts(request.getParameter("FeatName")));
         
         originSystemId = getOriginSystemId(request.getParameter("CoordType"));
-        
+        //easting : longitude;  northing: latitude
         switch(this.originSystemId){
-            case 29:
-            case 38:
-            case 71:
-            case 33:
-            case 70:
-            case 7:
-            case 67:    
-            case 68:    
-            case 74: 
-                this.origCoord = request.getParameter("East") + "|" + request.getParameter("North");
+            case 29: //lat|lng
+            case 30:
+            case 28:
+            case 73:
+                this.origCoord = request.getParameter("North") + "|" + request.getParameter("East");
+                System.out.println("OrigCoord = " + this.origCoord);
                 break;
+            case 33: //easting|northing
+            case 38: //easting|northing
+            case 7: //easting|northing
+            case 67: //easting|northing
+            case 68: //easting|northing
+            case 70: //easting|northing
+            case 71: //easting|northing
+            case 74: //easting|northing
+                this.origCoord = request.getParameter("East") + "|" + request.getParameter("North");                
+                System.out.println("OrigCoord = " + this.origCoord);
+                break;            
             case 16:
             case 72:
             case 17:
             case 69:
                 this.origCoord = request.getParameter("MapSheet") + "|" + request.getParameter("East") + "|" + request.getParameter("North");
+                System.out.println("OrigCoord = " + this.origCoord);
                 break;                
                 
         }
