@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.*;
 import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.fred.de.DataEntryForm;
-import nz.cri.gns.fred.de.DataEntryFormFactory;
+import nz.cri.gns.fred.de.DataEntryFormFactorySiteApi;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -230,18 +230,18 @@ public class De_jsp extends FREDHibernateServlet {
                     Integer sampID = h.paramAsInteger(request, "SampID");
 
                     if (sampID != null) { //editing
-                        return DataEntryFormFactory.getSampleDataEntryForm(sampID, foldId, user, factory, provider);
+                        return DataEntryFormFactorySiteApi.getSampleDataEntryForm(sampID, foldId, user, factory, provider);
                     } else {
                         Integer featID = h.paramAsInteger(request, "FeatID");
-                        return DataEntryFormFactory.getSampleDataEntryForm(user, featID, foldId, factory, provider);
+                        return DataEntryFormFactorySiteApi.getSampleDataEntryForm(user, featID, foldId, factory, provider);
                     }
                 } else {
                     Integer recID = h.paramAsInteger(request, "RecID");
                     if (recID != null) { //editing
-                        return DataEntryFormFactory.getRecordDataEntryForm(recID, foldId, user, factory, provider);
+                        return DataEntryFormFactorySiteApi.getRecordDataEntryForm(recID, foldId, user, factory, provider);
                     } else {
                         Integer sampID = h.paramAsInteger(request, "SampID");
-                        return DataEntryFormFactory.getRecordDataEntryForm(formType, user, sampID, foldId, factory, provider);
+                        return DataEntryFormFactorySiteApi.getRecordDataEntryForm(formType, user, sampID, foldId, factory, provider);
                     }
                 }
             } catch (DataInputException | IOException | IllegalArgumentException | InsufficientPrivelegesException | SQLException | StorageAccessException e) {

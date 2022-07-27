@@ -84,7 +84,7 @@ public class SiteRevampServiceClient {
         return newSiteInfo;
     }
     
-    public static void updateSite(JSONObject existingSiteDetails, int siteId){
+    public static void updateSite(JsonNode existingSiteDetails, int siteId){
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<String>(existingSiteDetails.toString(), headers);
         restTemplate.put(PUT_SERVICE_URL + siteId, request, String.class);

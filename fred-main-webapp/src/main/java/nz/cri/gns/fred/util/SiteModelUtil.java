@@ -287,6 +287,20 @@ public class SiteModelUtil extends ModelUtil {
         return sm;
     }
     
+    public static void updateSite(Integer siteId, SiteModelInput smi) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String inputSiteModel = objectMapper.writeValueAsString(smi);
+        System.out.println("SiteMODEL Input = " + inputSiteModel);
+        try {            
+            JsonNode node = objectMapper.readTree(inputSiteModel);
+            SiteRevampServiceClient.updateSite(node, siteId);
+//        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
+        } catch (JsonProcessingException e) {
+                System.out.println(e.getClass().getName() + 
+                " : " + e.getOriginalMessage());
+        }
+    }
+    
     public static List<Island> getIslands(){
         List<Island> islands = new ArrayList<>();
         

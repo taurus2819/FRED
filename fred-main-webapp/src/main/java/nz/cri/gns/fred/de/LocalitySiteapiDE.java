@@ -534,11 +534,9 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 try {
                     throw new StorageAccessException(e);
                 } catch (StorageAccessException ex) {
-                    Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                }
-
-
+            }
             if (null != site && null == feature.getOrigSystemId()) {
                 feature.setOrigSystemId(this.originSystemId);
             }
@@ -546,24 +544,48 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 //caused by: java.sql.BatchUpdateException: ORA-12899: value too large for column "FR"."FEATURE"."ORIG_COORD" (actual: 69, maximum: 36)
                 feature.setOrigCoord(this.origCoord);  //feature.setOrigCoord(site.getOrigCoord().toString()); trying to store the json value, but getting BatchUpdateException
             }
-
-            //set Map Year
+        } else if(site.getSiteId() > 0){  
             try {
-                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")) != null && !sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")).equals("")) {
-                    feature.setMapYear(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear"))));
-                } else {
-                    feature.setMapYear(null);
-                }
-            } catch (NumberFormatException e) {
-                error.add(new String[]{"Map Year", "Map Year not numeric"});
+            //this means a site is already existing; trying to update the site info
+                int ownerId = Math.toIntExact(this.ownerId);
+                OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+                int epsg = epsgInfo.getEpsg();
+                String gridref = epsgInfo.getGridref();
+                Double easting  = epsgInfo.getEasting();
+                Double northing = epsgInfo.getNorthing();
+                String latitude = epsgInfo.getLatitude();
+                String longitude = epsgInfo.getLongitude();
+                String format = epsgInfo.getFormat();
+                String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;
+                System.out.println("Audit msg - Updating the site info : " + auditMsg);
+                smi = updateSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
+                SiteModelUtil.updateSite(site.getSiteId(),smi);
+            } catch (IOException ex) {
+                Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
             }
+            feature.setOrigSystemId(this.originSystemId);
+            feature.setOrigCoord(this.origCoord); 
+        }
+
+            
+
+        //set Map Year
+        try {
+            if (sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")) != null && !sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")).equals("")) {
+                feature.setMapYear(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear"))));
+            } else {
+                feature.setMapYear(null);
+            }
+        } catch (NumberFormatException e) {
+            error.add(new String[]{"Map Year", "Map Year not numeric"});
+        }
 
             feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
             feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
 
             editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
             editComments = sanitizeHttpRequest.stripAllScripts(editComments);
-        }
+        
         if (error.size() > 0) {
             throw new DataInputException(error);
         }
@@ -610,6 +632,23 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 //            if (site == null) {
 //                throw new StorageAccessException("Failed to save site");
 //            }
+            if(site.getSiteId() > 0){  //this means a site is already existing; trying to update the site info 
+//                String countryCode = request.getParameter("Country");
+//                String siteName = request.getParameter("FeatName");
+//                String locDescr = request.getParameter("Loc");
+//                String locComms = request.getParameter("LocComm");
+                int ownerId = Math.toIntExact(this.ownerId);
+                OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+                int epsg = epsgInfo.getEpsg();
+                String gridref = epsgInfo.getGridref();
+                Double easting  = epsgInfo.getEasting();
+                Double northing = epsgInfo.getNorthing();
+                String latitude = epsgInfo.getLatitude();
+                String longitude = epsgInfo.getLongitude();
+                String format = epsgInfo.getFormat();
+                String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
+                System.out.println("Audit msg - Updating the site info : " + auditMsg);
+            }
 
             feature.setSiteId(Integer.valueOf(site.getSiteId()));
 
@@ -659,6 +698,36 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 //        String newSite = SiteRevampServiceClient.insertSite(node);
 //        SiteModel siteModel = objectMapper.readValue(newSite, SiteModel.class);
 //        System.out.println(siteModel.toString());
+        return smi;
+    }
+    
+    private SiteModelInput updateSite(String featName, String description, Double accuracy, Integer locMethodId, String countryCode, String comments) throws IOException, JsonProcessingException {
+        //            SiteModelInput(String siteName, Integer methodId, Double accuracy, String Directions,
+//               Double height, Integer heightMethodId, Double heightAccuracy, String countyCode, String comment, Integer ownerId,
+//               int epsg, String gridref, Double easting, Double northing, String latitude, String longitude, String format, String auditMsg)
+        String siteName = featName;
+        int methodID = 0;
+        if(locMethodId != null){
+            methodID = locMethodId;
+        }            
+        String directions = description;
+        double height = -1;//site.getHeight();
+        int heightMethodId = -1; //site.getHeightMethodId();
+        double heightAccuracy = -1; //site.getHeightAccuracy();
+        String comment = comments;
+        int ownerId = Math.toIntExact(this.ownerId);
+        OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+        int epsg = epsgInfo.getEpsg();
+        String gridref = epsgInfo.getGridref();
+        Double easting  = epsgInfo.getEasting();
+        Double northing = epsgInfo.getNorthing();
+        String latitude = epsgInfo.getLatitude();
+        String longitude = epsgInfo.getLongitude();
+        String format = epsgInfo.getFormat();
+        String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
+
+        SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
+                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg);
         return smi;
     }
 
