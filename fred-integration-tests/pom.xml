@@ -3,7 +3,7 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.3.15-SNAPSHOT</version>
+        <version>3.3.16-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -164,6 +164,13 @@
             <classifier>classes</classifier>
             <type>jar</type>
             <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>nz.cri.gns</groupId>
+            <artifactId>munginator</artifactId>
+            <version>0.1.0.3</version>
         </dependency>
         
         <dependency>
