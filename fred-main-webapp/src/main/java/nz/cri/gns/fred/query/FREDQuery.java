@@ -251,10 +251,10 @@ public class FREDQuery extends HqlQuery implements NumberSource {
             hqlQuery = query;
         }
         String debugQuery = hqlQuery;
-        System.out.println("HQLQUERY = " + hqlQuery);
+//        System.out.println("HQLQUERY = " + hqlQuery);
         if(hqlQuery.contains("SITE_API.COUNTRY_CODE"))
         {
-            hqlQuery = "SELECT DISTINCT s.sampleId FROM Sample AS s WHERE (s.audit.status = 'approved' AND s.feature.audit.status = 'approved') AND (  SITE_API.ISLAND = 'Auckland Island')";
+            hqlQuery = "SELECT DISTINCT s.sampleId FROM Sample AS s WHERE (s.audit.status = 'approved' AND s.feature.audit.status = 'approved')";
         }
         //fetch SITE ID list from API here and embed into HQL query
         if (hqlQuery.contains("SITE_API")) {
@@ -268,7 +268,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
                 match = true;
                 System.err.println("Attribute: " + m.group(1));
                 System.err.println("Value: " + m.group(2));
-                System.out.println("Attribute: " + m.group(1) + ", " + "Value: " + m.group(2));
+//                System.out.println("Attribute: " + m.group(1) + ", " + "Value: " + m.group(2));
                 siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
                 System.err.println(String.format("# of sites: %d \n%s", siteIds.size(), siteIds));
                 

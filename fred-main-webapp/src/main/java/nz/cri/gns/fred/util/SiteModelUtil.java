@@ -274,7 +274,6 @@ public class SiteModelUtil extends ModelUtil {
         SiteModel sm = null;
         ObjectMapper objectMapper = new ObjectMapper();
         String inputSiteModel = objectMapper.writeValueAsString(smi);
-        System.out.println("SiteMODEL Input = " + inputSiteModel);
         try {            
             JsonNode node = objectMapper.readTree(inputSiteModel);
             String newSite = SiteRevampServiceClient.insertSite(node);
@@ -290,7 +289,6 @@ public class SiteModelUtil extends ModelUtil {
     public static void updateSite(Integer siteId, SiteModelInput smi) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         String inputSiteModel = objectMapper.writeValueAsString(smi);
-        System.out.println("SiteMODEL Input = " + inputSiteModel);
         try {            
             JsonNode node = objectMapper.readTree(inputSiteModel);
             SiteRevampServiceClient.updateSite(node, siteId);

@@ -286,8 +286,8 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             //Metadata listing
             //template.loadUntil(out, "{@metadataList}");
             //Site setup
-            String eastingLabel = "Easting**";
-            String northingLabel = "Northing**";
+            String eastingLabel = "Easting";
+            String northingLabel = "Northing";
 
             if (site == null || coord == null || datum == null) {
                 template.addSub("isNZMG", "yes");
@@ -390,11 +390,11 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         reinitialise(factory);
         ArrayList<String[]> error = new ArrayList<>();
 
-        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()){
-            for (String value : entry.getValue()){
-                System.out.println("Get Parameters = " + value);
-            }
-        }
+//        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()){
+//            for (String value : entry.getValue()){
+//                System.out.println("Get Parameters = " + value);
+//            }
+//        }
 
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
@@ -442,7 +442,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             case 28:
             case 73:
                 this.origCoord = request.getParameter("North") + "|" + request.getParameter("East");
-                System.out.println("OrigCoord = " + this.origCoord);
                 break;
             case 33: //easting|northing
             case 38: //easting|northing
@@ -452,15 +451,13 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             case 70: //easting|northing
             case 71: //easting|northing
             case 74: //easting|northing
-                this.origCoord = request.getParameter("East") + "|" + request.getParameter("North");                
-                System.out.println("OrigCoord = " + this.origCoord);
+                this.origCoord = request.getParameter("East") + "|" + request.getParameter("North");   
                 break;            
             case 16:
             case 72:
             case 17:
             case 69:
                 this.origCoord = request.getParameter("MapSheet") + "|" + request.getParameter("East") + "|" + request.getParameter("North");
-                System.out.println("OrigCoord = " + this.origCoord);
                 break;                
                 
         }
@@ -544,7 +541,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 //caused by: java.sql.BatchUpdateException: ORA-12899: value too large for column "FR"."FEATURE"."ORIG_COORD" (actual: 69, maximum: 36)
                 feature.setOrigCoord(this.origCoord);  //feature.setOrigCoord(site.getOrigCoord().toString()); trying to store the json value, but getting BatchUpdateException
             }
-        } else if(site.getSiteId() > 0){  
+        } else if(site.getSiteId() > 0){  //updating an existing record(site values)
             try {
             //this means a site is already existing; trying to update the site info
                 int ownerId = Math.toIntExact(this.ownerId);
@@ -557,7 +554,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 String longitude = epsgInfo.getLongitude();
                 String format = epsgInfo.getFormat();
                 String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;
-                System.out.println("Audit msg - Updating the site info : " + auditMsg);
+//                System.out.println("Audit msg - Updating the site info : " + auditMsg);
                 smi = updateSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
                 SiteModelUtil.updateSite(site.getSiteId(),smi);
             } catch (IOException ex) {
@@ -615,43 +612,25 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         }
         //Check the site with the site DB
         if (site != null) {
-            //TODO: should the siteId be set to null? why? here we are creating a new site. Need to give a thought about the below line of code!!!
-            //site.key = null;
-//            try {
-//                // SiteUtil.getSite() will find an existing site, or insert a new one if not found.
-//                System.out.println("Feature info:" + feature);
-//                
-//                SiteModelInput smi = createNewSite();
-//                //replace the SiteRecord with the SiteModelUtil.getSite(SiteModel)
-//                site = SiteModelUtil.getSite(smi);
-//            } catch (IOException | SQLException | NamingException | ParserConfigurationException | SAXException e) {
-//                log.log(Level.SEVERE, null, e);
-//                throw new StorageAccessException(e);
-//            }
-//
-//            if (site == null) {
-//                throw new StorageAccessException("Failed to save site");
-//            }
-            if(site.getSiteId() > 0){  //this means a site is already existing; trying to update the site info 
+//            if(site.getSiteId() > 0){  //this means a site is already existing; trying to update the site info 
 //                String countryCode = request.getParameter("Country");
 //                String siteName = request.getParameter("FeatName");
 //                String locDescr = request.getParameter("Loc");
 //                String locComms = request.getParameter("LocComm");
-                int ownerId = Math.toIntExact(this.ownerId);
-                OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
-                int epsg = epsgInfo.getEpsg();
-                String gridref = epsgInfo.getGridref();
-                Double easting  = epsgInfo.getEasting();
-                Double northing = epsgInfo.getNorthing();
-                String latitude = epsgInfo.getLatitude();
-                String longitude = epsgInfo.getLongitude();
-                String format = epsgInfo.getFormat();
-                String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
-                System.out.println("Audit msg - Updating the site info : " + auditMsg);
-            }
+//                int ownerId = Math.toIntExact(this.ownerId);
+//                OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+//                int epsg = epsgInfo.getEpsg();
+//                String gridref = epsgInfo.getGridref();
+//                Double easting  = epsgInfo.getEasting();
+//                Double northing = epsgInfo.getNorthing();
+//                String latitude = epsgInfo.getLatitude();
+//                String longitude = epsgInfo.getLongitude();
+//                String format = epsgInfo.getFormat();
+//                String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
+//                System.out.println("Audit msg - Updating the site info : " + auditMsg);
+//            }
 
             feature.setSiteId(Integer.valueOf(site.getSiteId()));
-
             // feature incomplete
             SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
             feature.setSiteView(siteModelUtil.getSiteView(feature.getSiteId()));
@@ -665,9 +644,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
     }
 
     private SiteModelInput createNewSite(String featName, String description, Double accuracy, Integer locMethodId, String countryCode, String comments) throws IOException, JsonProcessingException {
-        //            SiteModelInput(String siteName, Integer methodId, Double accuracy, String Directions,
-//               Double height, Integer heightMethodId, Double heightAccuracy, String countyCode, String comment, Integer ownerId,
-//               int epsg, String gridref, Double easting, Double northing, String latitude, String longitude, String format, String auditMsg)
         String siteName = featName;
         int methodID = 0;
         if(locMethodId != null){
@@ -691,20 +667,10 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 
         SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                 epsg, gridref, easting, northing, latitude, longitude, format, auditMsg);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String inputSiteModel = objectMapper.writeValueAsString(smi);
-//        System.out.println("SiteMODEL Input = " + inputSiteModel);
-//        JsonNode node = objectMapper.readTree(inputSiteModel);
-//        String newSite = SiteRevampServiceClient.insertSite(node);
-//        SiteModel siteModel = objectMapper.readValue(newSite, SiteModel.class);
-//        System.out.println(siteModel.toString());
         return smi;
     }
     
     private SiteModelInput updateSite(String featName, String description, Double accuracy, Integer locMethodId, String countryCode, String comments) throws IOException, JsonProcessingException {
-        //            SiteModelInput(String siteName, Integer methodId, Double accuracy, String Directions,
-//               Double height, Integer heightMethodId, Double heightAccuracy, String countyCode, String comment, Integer ownerId,
-//               int epsg, String gridref, Double easting, Double northing, String latitude, String longitude, String format, String auditMsg)
         String siteName = featName;
         int methodID = 0;
         if(locMethodId != null){
