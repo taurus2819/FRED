@@ -1,94 +1,77 @@
-# You can override the included template(s) by including variable overrides
-# See https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#priority-of-environment-variables
 variables:
-  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
-    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
-    -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true
-    -DdeployAtEnd=true"
-  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-  GIT_DEPTH: '0'
-image: openjdk:8
+  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "--batch-mode -ntp --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+  GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  GIT_STRATEGY: clone
+  TZ: "Pacific/Auckland"
+
+image: maven:3-openjdk-8
+
 stages:
-- build
-- test
-- run
-- package
-- deploy
+  - build
+  - test
+  - release
+  - deploy
+
+default:
+  before_script:
+    - cp $settings_xml ~/.m2/settings.xml
+    
 initial-build:
   tags:
-  - docker
+    - docker
   stage: build
-  script: "./mvnw $MAVEN_CLI_OPTS clean install -s .mvn/settings.xml"
-code-quality:
-  tags:
-  - docker
-  stage: build
-  script: "./mvnw $MAVEN_CLI_OPTS checkstyle:checkstyle -s .mvn/settings.xml"
-  # artifacts:
-  #   paths:
-  #     - target/site/
-# sonarqube-check:
-#   tags:
-#   - docker
-#   stage: build
-#   cache:
-#     key: "${CI_JOB_NAME}"
-#     paths:
-#     - ".sonar/cache"
-#   script: "./mvnw $MAVEN_CLI_OPTS compile sonar:sonar -Dsonar.host.url=$SONAR_HOST_URL
-#     -Dsonar.login=$SONAR_TOKEN -s .mvn/settings.xml"
-#   allow_failure: true
-#   only:
-# - master
+  except:
+    - master
+  script: 
+    - mvn $MAVEN_CLI_OPTS -Pjenkins-build clean deploy
+    
 integration-tests:
   tags:
-  - docker
+    - docker
   stage: test
-  script: "./mvnw $MAVEN_CLI_OPTS integration-test -s .mvn/settings.xml"
+  script: 
+    - mvn $MAVEN_CLI_OPTS integration-test
   artifacts:
+    paths:
+      - public
+    expire_in: 1 week
     reports:
       junit:
-      - fred-main-webapp/target/surefire-reports/TEST-*.xml
-      - fred-acceptance-tests/target/failsafe-reports/TEST-*.xml
-artifactory-deploy:
+        - fred-main-webapp/target/surefire-reports/TEST-*.xml
+        - fred-acceptance-tests/target/failsafe-reports/TEST-*.xml
+         
+release:
   tags:
-  - docker
-  stage: package
-  script: "./mvnw $MAVEN_CLI_OPTS -Dmaven.test.skip=true -Pjenkins-build deploy -s
-    .mvn/settings.xml"
+    - docker
+  stage: release
+  only:
+    - master
+  script:
+    - git config user.name "\"$GITLAB_USER_NAME\""
+    - git config user.email "\"$GITLAB_USER_EMAIL\""
+    - git config http.sslverify false
+    - git remote set-url --push origin "https://gitlab-project-token:$release_token@git.gns.cri.nz/$CI_PROJECT_PATH.git"
+    - git config pull.ff only
+    - cp $settings_xml ~/.m2/settings.xml
+    - mvn $MAVEN_CLI_OPTS gitflow:release-start
+    - mvn $MAVEN_CLI_OPTS gitflow:release-finish
+
 deploy-dev:
   tags:
-  - docker
+    - docker
   stage: deploy
   script:
-  - "./mvnw $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_dev_url:$tomcat_paleo_port/manager/text
-    tomcat7:redeploy -s .mvn/settings.xml"
-  - "./mvnw $MAVEN_CLI_OPTS clean verify -Pdevelopment -s .mvn/settings.xml"
+    - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_dev_url:$tomcat_paleo_port/manager/text tomcat7:redeploy
+    - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
   when: manual
+  
 deploy-uat:
   tags:
-  - docker
+    - docker
   stage: deploy
   script:
-  - "./mvnw $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_uat_url:$tomcat_paleo_port/manager/text
-    tomcat7:redeploy -s .mvn/settings.xml"
-  - "./mvnw $MAVEN_CLI_OPTS clean verify -Puat -s .mvn/settings.xml"
+    - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_uat_url:$tomcat_paleo_port/manager/text tomcat7:redeploy
+    - mvn $MAVEN_CLI_OPTS clean verify -Puat
   when: manual
-#pages:
-#  stage: deploy
-#  script:
-#    - mv target/site/ public/
-#  artifacts:
-#    paths:
-#      - public
-#    expire_in: 30 days
-#  only:
-#    - master
-#Todo
-#sast:
-#  stage: test
-#include:
-#- template: Security/SAST.gitlab-ci.yml
