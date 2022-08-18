@@ -5,7 +5,7 @@
     <groupId>nz.cri.gns.fred</groupId>
     <!--<artifactId>fred-extranet-acceptance</artifactId>-->
     <artifactId>fred-acceptance-tests</artifactId>
-    <version>3.3.16</version>
+    <version>3.3.17-SNAPSHOT</version>
     <name>FRED Acceptance Tests</name>
     
     <properties>

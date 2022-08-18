@@ -62,7 +62,7 @@ import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryForm {
 
-    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.LocalityDE");
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.LocalitySiteDE");
 
     public static final String comboNull = "-";
     protected DAOFactory factory;

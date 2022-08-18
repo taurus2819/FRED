@@ -8,7 +8,7 @@
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred</artifactId>
     <packaging>war</packaging>
-    <version>3.3.16</version>
+    <version>3.3.17-SNAPSHOT</version>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
