@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.de;
 
+import java.io.IOException;
 import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -8,13 +9,13 @@ import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.website.ContentProvider;
 
-public class VertSectLocalityDE extends DrillholeLocalityDE {
+public class VertSectLocalitySiteApiDE extends DrillholeLocalitySiteApiDE {
 
-	public VertSectLocalityDE(User user, int folderID, DAOFactory factory, ContentProvider provider) throws StorageAccessException, InsufficientPrivelegesException {
+	public VertSectLocalitySiteApiDE(User user, int folderID, DAOFactory factory, ContentProvider provider) throws StorageAccessException, InsufficientPrivelegesException {
 		super(user, folderID, factory, provider, FREDConstants.VERTICAL_SECTION);
 	}
 
-	public VertSectLocalityDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider provider) throws InsufficientPrivelegesException, StorageAccessException, DataInputException {
+	public VertSectLocalitySiteApiDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider provider) throws InsufficientPrivelegesException, StorageAccessException, DataInputException, IOException {
 		super(feature, folderID, user, factory, provider, FREDConstants.VERTICAL_SECTION);
 	}
 

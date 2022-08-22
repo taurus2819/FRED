@@ -14,6 +14,7 @@ import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SiteView;
 import nz.cri.gns.fred.util.FeatureUtil;
+import nz.cri.gns.fred.util.SiteModelUtil;
 
 public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Cloneable {
 
@@ -252,9 +253,14 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
    }
 
     public SiteView getSiteView() {
-        return this.siteView;
+        System.err.println("Get site view called.");
+        if(siteView == null)    {
+            //load Site details from API. This might need more thoughts to make sure performance is ok
+            siteView = SiteModelUtil.getSiteView(siteId);
+        }
+        return siteView;
     }
-
+//
     public void setSiteView(SiteView siteView) {
         this.siteView = siteView;
    }

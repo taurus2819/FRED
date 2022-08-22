@@ -203,6 +203,12 @@ public class FREDUtil {
         DataSource source = (DataSource) context.lookup("java:comp/env/jdbc/fr");
         return source.getConnection();
     }
+    
+    public static Connection getMISConnection() throws NamingException, SQLException {
+        InitialContext context = new InitialContext();
+        DataSource source = (DataSource) context.lookup("java:comp/env/jdbc/mis");
+        return source.getConnection();
+    }
 
     public static String getPetWellLink(Feature feature) throws NamingException, SQLException {
         if (feature.getFeatureName() == null) {

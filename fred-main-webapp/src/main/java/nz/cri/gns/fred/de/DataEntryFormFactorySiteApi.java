@@ -16,36 +16,36 @@ import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 
-public class DataEntryFormFactory {
+public class DataEntryFormFactorySiteApi {
 
-    public static LocalityDE getLocalityDataEntryForm(int featureID, int folderID, User user, DAOFactory factory, ContentProvider provider) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
+    public static LocalitySiteapiDE getLocalityDataEntryForm(int featureID, int folderID, User user, DAOFactory factory, ContentProvider provider) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
         Feature feature = new FeatureUtil(factory).getFeature(featureID);
         String featureType = feature.getFeatureType();
         if (featureType.equals(FREDConstants.OUTCROP)) {
-            return new OutcropLocalityDE(feature, folderID, user, factory, provider);
+            return new OutcropLocalitySiteApiDE(feature, folderID, user, factory, provider);
         } else if (featureType.equals(FREDConstants.DRILLHOLE)) {
-            return new DrillholeLocalityDE(feature, folderID, user, factory, provider);
+            return new DrillholeLocalitySiteApiDE(feature, folderID, user, factory, provider);
         } else if (featureType.equals(FREDConstants.VERTICAL_SECTION)) {
-            return new VertSectLocalityDE(feature, folderID, user, factory, provider);
+            return new VertSectLocalitySiteApiDE(feature, folderID, user, factory, provider);
         } else {
             throw new DataInputException("Feature Type", "Invalid");
         }
     }
 
-    public static LocalityDE getLocalityDataEntryForm(String type, User user, int folderID, DAOFactory factory, ContentProvider provider) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
+    public static LocalitySiteapiDE getLocalityDataEntryForm(String type, User user, int folderID, DAOFactory factory, ContentProvider provider) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
         if (type.equals(FREDConstants.OUTCROP)) {
-            return new OutcropLocalityDE(user, folderID, factory, provider);
+            return new OutcropLocalitySiteApiDE(user, folderID, factory, provider);
         } else if (type.equals(FREDConstants.DRILLHOLE)) {
-            return new DrillholeLocalityDE(user, folderID, factory, provider);
+            return new DrillholeLocalitySiteApiDE(user, folderID, factory, provider);
         } else if (type.equals(FREDConstants.VERTICAL_SECTION)) {
-            return new VertSectLocalityDE(user, folderID, factory, provider);
+            return new VertSectLocalitySiteApiDE(user, folderID, factory, provider);
         } else {
             throw new DataInputException("Feature Type", "Invalid");
         }
     }
 
-    public static LocalityDE copyLocalityDataEntryForm(int copyID, int toID, int folderId, User user, DAOFactory factory, ContentProvider provider) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
-        LocalityDE toLoc = getLocalityDataEntryForm(toID, folderId, user, factory, provider);
+    public static LocalitySiteapiDE copyLocalityDataEntryForm(int copyID, int toID, int folderId, User user, DAOFactory factory, ContentProvider provider) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
+        LocalitySiteapiDE toLoc = getLocalityDataEntryForm(toID, folderId, user, factory, provider);
         toLoc.copyFrom(copyID);
         return toLoc;
     }

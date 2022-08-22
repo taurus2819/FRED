@@ -17,11 +17,11 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 
-public class OutcropLocalityDE extends LocalityDE {
+public class OutcropLocalitySiteApiDE extends LocalitySiteapiDE {
 
     private SampleDE sampleDE;
 
-    public OutcropLocalityDE(User user, int folderID, DAOFactory factory, ContentProvider content) throws SQLException, IOException, DataInputException, StorageAccessException, InsufficientPrivelegesException {
+    public OutcropLocalitySiteApiDE(User user, int folderID, DAOFactory factory, ContentProvider content) throws SQLException, IOException, DataInputException, StorageAccessException, InsufficientPrivelegesException {
         super(user, folderID, FREDConstants.OUTCROP, factory, content);
         sampleDE = new SampleDE(user, feature, folderID, factory, content, true);
         sampleDE.setOutcropSample(true);
@@ -32,7 +32,7 @@ public class OutcropLocalityDE extends LocalityDE {
      *
      * @throws StorageAccessException
      */
-    public OutcropLocalityDE(Feature feature, int folderId, User user, DAOFactory factory, ContentProvider content) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
+    public OutcropLocalitySiteApiDE(Feature feature, int folderId, User user, DAOFactory factory, ContentProvider content) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
         super(feature, folderId, user, factory, content);
         if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
             throw new DataInputException("Feature Type", "Invalid");

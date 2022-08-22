@@ -20,8 +20,8 @@
 %><%@page import="nz.cri.gns.fred.model.SiteView"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
-%><%@page import="nz.cri.gns.fred.util.SiteUtil"
-%><%!	
+%><%@page import="nz.cri.gns.fred.util.SiteModelUtil"%>
+<%@page import="nz.cri.gns.fred.site.util.SiteModel"%><%!	
         private static final Logger log = Logger.getLogger("locality_map.jsp");
         
         @Override
@@ -85,9 +85,9 @@
 	if (featId != null) {
 		Feature feature = featureUtil.getFeature(Integer.parseInt(featId));
 		if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
-			SiteView sv = feature.getSiteView();
+			SiteModel sv = SiteModelUtil.getSite(feature);
 			if (sv != null) {               
-				LatLong ll = SiteUtil.getSiteLatLong(sv);
+				LatLong ll = SiteModelUtil.getSiteLatLong(feature);
 				Coordinate nzms260Coord = null;
 
 //				try {
@@ -99,8 +99,8 @@
 
                         if (nzms260Coord == null) {
 			try {
-                        Datum datum = SiteUtil.getFREDDatum(feature);
-                        Coordinate coord = SiteUtil.getFREDCoordinate(feature);
+                        Datum datum = SiteModelUtil.getFREDDatum(feature);
+                        Coordinate coord = SiteModelUtil.getFREDCoordinate(feature);
                         Datum nzmgDatum = DatumFactory.createDatum("NZMG");
                         Datum.Coordinate nzmgCoord = null;
                         if (!datum.getName().equals("NZMG")) {
@@ -153,13 +153,13 @@
 								}
 						}
 						%></tr>
-						<tr class="lightColour"><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr>
+						<tr class="lightColour"><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (WGS84)"%></td></tr>
 						<tr class="lightColour"><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr>
-						<tr class="lightColour"><td class="heading">Method</td><td><%=((sv != null && sv.getMethod() != null) ? sv.getMethod() : "&nbsp;")%></td></tr>
+						<tr class="lightColour"><td class="heading">Method</td><td><%=((sv != null && sv.getMethodId() != null) ? sv.getMethodId() : "&nbsp;")%></td></tr>
 						<tr class="lightColour"><td class="heading">Accuracy</td><td><%=((sv != null && sv.getAccuracy() != null) ? "&#177;" + String.valueOf(sv.getAccuracy()) + " m" : "&nbsp;")%></td></tr><%
 						if (featureUtil.isAllowedReadFeature(user, feature)) {
 							%><tr class="lightColour"><td class="heading">Locality</td><td><%=DBUtils.nvl(feature.getLocality())%></td></tr>
-							<tr class="lightColour"><td class="heading">Country</td><td><%=((sv != null && sv.getCountryName() != null) ? sv.getCountryName() : "&nbsp;")%></td></tr>
+							<tr class="lightColour"><td class="heading">Country</td><td><%=((sv != null && sv.getCountryCode() != null) ? sv.getCountryCode() : "&nbsp;")%></td></tr>
 							<tr class="lightColour"><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
 						}
 						%></table>

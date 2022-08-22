@@ -43,7 +43,7 @@ import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
-import nz.cri.gns.fred.util.SiteUtil;
+import nz.cri.gns.fred.util.SiteModelUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.jsp.ExtranetTemplate;
 import nz.cri.gns.util.map.Datum;
@@ -246,10 +246,10 @@ public class ExportServlet  extends FREDHibernateServlet {
                             if (featureUtil.isAllowedReadFeatureSite(user,
                                     feature)) {
                                 writeLocality(sample, c);
-                                SiteView sv = feature.getSiteView();
+//                                SiteView sv = feature.getSiteView();
                                 if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
-                                    Datum datum = SiteUtil.getFREDDatum(feature);
-                                    Coordinate coord = SiteUtil.getFREDCoordinate(
+                                    Datum datum = SiteModelUtil.getFREDDatum(feature);
+                                    Coordinate coord = SiteModelUtil.getFREDCoordinate(
                                             feature);
                                     c.print(datum.getHumanStringFor(coord).replaceAll(
                                             "Geographic ", ""));
@@ -263,8 +263,8 @@ public class ExportServlet  extends FREDHibernateServlet {
                                     } catch (Exception e) {
                                         skipColumns(c, 2);
                                     }
-                                    if (sv != null) {
-                                        LatLong ll = SiteUtil.getSiteLatLong(sv);
+                                    if (feature.getOrigCoord() != null) {        //(sv != null) {
+                                        LatLong ll = SiteModelUtil.getSiteLatLong(feature);
                                         c.print(ll.getLatAsDecDegree(5));
                                         c.print(ll.getLongAsDecDegree(5));
                                     } else {
@@ -274,15 +274,19 @@ public class ExportServlet  extends FREDHibernateServlet {
                                         skipColumns(c, 5);
                                 }
                                 c.print(DBUtils.nvl(feature.getMapYear()));
-                                c.print(((sv != null) ? DBUtils.nvl(
-                                        sv.getMethod()) : ""));
-                                c.print(((sv != null) ? DBUtils.nvl(
-                                        sv.getAccuracy()) : ""));
+                                
+                                //TODO: needs some work to be done here
+//                                c.print(((sv != null) ? DBUtils.nvl(
+//                                        sv.getMethod()) : ""));
+//                                c.print(((sv != null) ? DBUtils.nvl(
+//                                        sv.getAccuracy()) : ""));
 
                                 if (featureUtil.isAllowedReadFeature(user,feature)) {
                                     c.print(DBUtils.nvl(feature.getLocality()).replaceAll(
                                             "\\s\\s+|\\n|\\r", " "));
-                                    c.print(((sv != null) ? sv.getCountryName() : ""));
+                                    
+                                    //TODO: needs some work to be done here
+//                                    c.print(((sv != null) ? sv.getCountryName() : ""));
                                     c.print(DBUtils.nvl(
                                             feature.getCoordComments()).replaceAll(
                                                     "\\s\\s+|\\n|\\r", " "));

@@ -39,7 +39,6 @@ import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.PDFUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
-import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
@@ -64,6 +63,8 @@ import com.lowagie.text.pdf.PdfPageEvent;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import nz.cri.gns.fred.FREDHibernateServlet;
+import nz.cri.gns.fred.site.util.SiteModel;
+import nz.cri.gns.fred.util.SiteModelUtil;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent {
@@ -328,7 +329,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
 		writeHeader(record.getSample().getFeature(), document, RecordUtil.getRecordType(record));
 	}
 	
-	private void writeLocality(Feature feature, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
+	private void writeLocality(Feature feature, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException, IOException {
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(bodyTableWidth);
@@ -354,8 +355,8 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
 			PDFUtil.addCells(table, new String[] {featTypeLbl, feature.getFeatureName()}, bodyFonts);
 			PDFUtil.addCell(table, "Original Grid Reference", fonts[1]);
 			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
-				Datum datum = SiteUtil.getFREDDatum(feature);
-				Coordinate coord = SiteUtil.getFREDCoordinate(feature);
+				Datum datum = SiteModelUtil.getFREDDatum(feature);
+				Coordinate coord = SiteModelUtil.getFREDCoordinate(feature);
 				PDFUtil.addCell(table, datum.getHumanStringFor(coord).replaceAll("Geographic ", ""), fonts[0]);
 				if (!datum.getName().equals("NZMG")) {
 					try {
@@ -367,21 +368,22 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
 			} else {
 				PDFUtil.addCell(table, "", fonts[0]);
 			}
-			SiteView sv = null;
-			if (feature.getSiteView() != null) {
-				sv = feature.getSiteView();
-				LatLong ll = SiteUtil.getSiteLatLong(sv);
-				PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
+//			SiteView sv = null;
+                        SiteModel sm = SiteModelUtil.getSite(feature);
+			if (sm != null) {
+//				sv = feature.getSiteView();
+				LatLong ll = SiteModelUtil.getSiteLatLong(feature);
+				PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (WGS84)"}, bodyFonts);
 			}
 			PDFUtil.addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Method", ((sv != null) ? sv.getMethod() : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Accuracy", ((sv != null && sv.getAccuracy() != null) ? String.valueOf(sv.getAccuracy()) + " m" : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Method", ((sm != null) ? String.valueOf(sm.getMethodId()) : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Accuracy", ((sm != null && sm.getAccuracy() != null) ? String.valueOf(sm.getAccuracy()) + " m" : null)}, bodyFonts);
 
 			if (featureUtil.isAllowedReadFeature(user, feature)) {
                             // Convert HTML code back to String here
                             String cleanedLocalityString = StringEscapeUtils.unescapeHtml4(feature.getLocality());
 				PDFUtil.addCells(table, new String[] {"Locality", cleanedLocalityString}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {"Country", ((sv != null) ? sv.getCountryName() : null)}, bodyFonts);	
+				PDFUtil.addCells(table, new String[] {"Country", ((sm != null) ? sm.getCountryCode(): null)}, bodyFonts);	
 				PDFUtil.addCells(table, new String[] {"Coordinate Comments", feature.getCoordComments()}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Locality Comments", feature.getComments()}, bodyFonts);
 				if (!featType.equals(FREDConstants.OUTCROP)) {

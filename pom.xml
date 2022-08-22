@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-top</artifactId>
-    <version>3.3.15-SNAPSHOT</version>
+    <version>3.3.17-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>
@@ -32,12 +32,12 @@
         <repository>
             <id>central</id>
             <name>GNS Release Repository</name>
-            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release-local</url>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
             <name>GNS Snapshot Repository</name>
-            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot-local</url>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot</url>
         </snapshotRepository>
     </distributionManagement>
     <organization>
@@ -142,6 +142,45 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <version>1.16.0</version>
+                <configuration>
+                    <fetchRemote>false</fetchRemote>
+                    <gitFlowConfig>
+                        <productionBranch>master</productionBranch>
+                        <developmentBranch>master</developmentBranch>
+                    </gitFlowConfig>
+                    <commitMessages>
+                        <releaseFinishMessage>[ci skip] Update for next development version</releaseFinishMessage>
+                    </commitMessages>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>block-vulnerable-log4j-versions</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.apache.logging.log4j:log4j-core:(,2.16.0)</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>		
         </plugins>                
     </build>
@@ -211,7 +250,7 @@
             <version>1.6.1</version>
             <type>pom</type>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>munginator</artifactId>
             <version>0.1.0.4</version>

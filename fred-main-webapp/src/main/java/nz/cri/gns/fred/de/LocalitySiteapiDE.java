@@ -1,5 +1,9 @@
 package nz.cri.gns.fred.de;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -8,11 +12,13 @@ import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
@@ -30,11 +36,15 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.UserFolder;
+import nz.cri.gns.fred.site.util.OrigCoordInfoUtil;
+import nz.cri.gns.fred.site.util.SiteModel;
+import nz.cri.gns.fred.site.util.SiteModelInput;
+import nz.cri.gns.fred.site.util.SiteRevampServiceClient;
 import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
-import nz.cri.gns.fred.util.SiteUtil;
+import nz.cri.gns.fred.util.SiteModelUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.html.Attributes;
 import nz.cri.gns.html.select.SelectBox;
@@ -50,9 +60,9 @@ import org.xml.sax.SAXException;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 
-public abstract class LocalityDE extends DETemplate implements DataEntryForm {
+public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryForm {
 
-    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.LocalityDE");
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.LocalitySiteDE");
 
     public static final String comboNull = "-";
     protected DAOFactory factory;
@@ -67,7 +77,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
      * Temporary storage for working comments
      */
     protected String editComments;
-    private SiteRecord site;
+    private SiteModel site;
     /**
      * This allows for bad coordinates to still be re-editted
      */
@@ -75,19 +85,24 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     private Datum datum;
     private boolean isAllowedSave = false;
     private boolean isAllowedSubmit = false;
+    private String origCoord;
+    private int originSystemId;
+    private long ownerId;
 
-    public LocalityDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
+    public LocalitySiteapiDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         featureUtil = new FeatureUtil(factory);
         Feature f = featureUtil.createFeature(folderID, featureType, user);
         initialise(f, folderID, user, factory, content);
+        ownerId = user.getId();
     }
 
-    public LocalityDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {
+    public LocalitySiteapiDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException, IOException {
         featureUtil = new FeatureUtil(factory);
         initialise(feature, folderID, user, factory, content);
-        site = SiteUtil.getSite(feature);
-        coord = SiteUtil.getFREDCoordinate(feature);
-        datum = SiteUtil.getFREDDatum(feature);
+        site = SiteModelUtil.getSite(feature);
+        coord = SiteModelUtil.getFREDCoordinate(feature);
+        datum = SiteModelUtil.getFREDDatum(feature);
+        ownerId = user.getId();
     }
 
     private String getLocalityFromRequest(HttpServletRequest request, ArrayList<String[]> error) {
@@ -131,14 +146,15 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         this.copyFeature = fromFeature;
     }
 
-    protected void getFromDatabase(Feature fromFeature) throws InsufficientPrivelegesException {
+    protected void getFromDatabase(Feature fromFeature) throws InsufficientPrivelegesException, IOException {
         //set fields
         feature.setRegistrationArea(fromFeature.getRegistrationArea());
         feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
         feature.setLocality(fromFeature.getLocality());
-        site = SiteUtil.getSite(fromFeature);
-        coord = SiteUtil.getFREDCoordinate(fromFeature);
-        datum = SiteUtil.getFREDDatum(fromFeature);
+        feature.getSiteId();
+        site = SiteModelUtil.getSite(fromFeature);      //TODO: get the site from Site api by passing the siteId obtained from FRED feature
+        coord = SiteModelUtil.getFREDCoordinate(fromFeature);
+        datum = SiteModelUtil.getFREDDatum(fromFeature);
         feature.setMapYear(fromFeature.getMapYear());
         feature.setComments(fromFeature.getComments());
         feature.setCoordComments(fromFeature.getCoordComments());
@@ -265,7 +281,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             template.loadUntil(out, "{@regCombo}");
             SelectBox<RegistrationArea> raSelectBox = new SelectBox<RegistrationArea>(featureUtil.getRegistrationAreas());
             Attributes attributes = Attributes.createNameOnlyAttributes("RegAreaId");
-            raSelectBox.writeBox(attributes, "-- Choose --", null, (feature.getRegistrationArea() != null) ? feature.getRegistrationArea() : new SiteUtil(factory).getRegistrationArea(SiteUtil.REG_MAINLAND_NZ), out);
+            raSelectBox.writeBox(attributes, "-- Choose --", null, (feature.getRegistrationArea() != null) ? feature.getRegistrationArea() : new SiteModelUtil(factory).getRegistrationArea(SiteModelUtil.REG_MAINLAND_NZ), out);
 
             //Metadata listing
             //template.loadUntil(out, "{@metadataList}");
@@ -295,16 +311,16 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
                 //Accuracy etc
                 template.addSub("mapYear", DBUtils.nvl(feature.getMapYear()));
-                template.addSub("accuracy", (site.getAccuracy() == -1F) ? "" : String.valueOf(site.getAccuracy()));
+                template.addSub("accuracy", (site.getAccuracy() == null) ? "" : String.valueOf(site.getAccuracy()));
                 template.addSub("localityDesc", DBUtils.nvl(feature.getLocality()));
             }
             template.addSub("northingLabel", northingLabel);
             template.addSub("eastingLabel", eastingLabel);
 
-            SiteUtil siteUtil = new SiteUtil(factory);
+            SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
 
             template.loadUntil(out, "{@datumMethodArray}");
-            List<DatumMethod> methods = siteUtil.getSiteDatumMethods();
+            List<DatumMethod> methods = siteModelUtil.getSiteDatumMethods();
             for (DatumMethod method : methods) {
                 out.println("datumMethod[" + method.getMethodId() + "] = '" + method.getNomAccuracyXY() + "';\n");
             }
@@ -313,12 +329,18 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
             attributes = Attributes.createNameOnlyAttributes("LocMethodID");
             attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
-            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethod() > -1) ? siteUtil.getSiteDatumMethod(site.getMethod()) : null, out);
+            if(site != null && site.getMethodId() != null){
+                dSelectBox.writeBox(attributes, "-- Choose --", null, siteModelUtil.getSiteDatumMethod(site.getMethodId()), out);
+            }else if(site != null && site.getMethodId() == null){
+                dSelectBox.writeBox(attributes, "-- Choose --", null, siteModelUtil.getSiteDatumMethod(0), out);
+            }else if(site == null){
+                dSelectBox.writeBox(attributes, "-- Choose --", null, siteModelUtil.getSiteDatumMethod(0), out);
+            }
 
             template.loadUntil(out, "{@countryCombo}");
             SelectBox<Country> cSelectBox = new SelectBox<Country>(featureUtil.getCountries());
             attributes = Attributes.createNameOnlyAttributes("Country");
-            cSelectBox.writeBox(attributes, "-- Choose --", null, featureUtil.getCountry((site == null) ? "NZ" : site.getCountry()), out);
+            cSelectBox.writeBox(attributes, "-- Choose --", null, featureUtil.getCountry((site == null) ? "NZ" : site.getCountryCode()), out);
 
             template.addSub("coordComm", DBUtils.nvl(feature.getCoordComments()));
             template.addSub("locComm", DBUtils.nvl(feature.getComments()));
@@ -357,10 +379,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         out.write("<td>#" + ((coord != null) ? coord.getEastWestString() : "") + "#</td>\n");
         out.write("<td>#" + ((coord != null) ? coord.getNorthSouthString() : "") + "#</td>\n");
         out.write("<td>" + DBUtils.nvl(feature.getMapYear()) + "</td>\n");
-        out.write("<td>" + ((site != null && site.getMethod() > -1) ? String.valueOf(site.getMethod()) : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getMethodId() > -1) ? String.valueOf(site.getMethodId()) : "") + "</td>\n");
         out.write("<td>" + ((site != null && site.getAccuracy() > -1) ? String.valueOf(site.getAccuracy()) : "") + "</td>\n");
         out.write("<td>" + DBUtils.nvl(feature.getLocality()) + "</td>\n");
-        out.write("<td>" + ((site != null && site.getCountry() != null) ? site.getCountry() : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getCountryCode() != null) ? site.getCountryCode() : "") + "</td>\n");
     }
 
     @Override
@@ -411,6 +433,34 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
         //Feature name
         feature.setFeatureName(sanitizeHttpRequest.stripAllScripts(request.getParameter("FeatName")));
+        
+        originSystemId = getOriginSystemId(request.getParameter("CoordType"));
+        //easting : longitude;  northing: latitude
+        switch(this.originSystemId){
+            case 29: //lat|lng
+            case 30:
+            case 28:
+            case 73:
+                this.origCoord = request.getParameter("North") + "|" + request.getParameter("East");
+                break;
+            case 33: //easting|northing
+            case 38: //easting|northing
+            case 7: //easting|northing
+            case 67: //easting|northing
+            case 68: //easting|northing
+            case 70: //easting|northing
+            case 71: //easting|northing
+            case 74: //easting|northing
+                this.origCoord = request.getParameter("East") + "|" + request.getParameter("North");   
+                break;            
+            case 16:
+            case 72:
+            case 17:
+            case 69:
+                this.origCoord = request.getParameter("MapSheet") + "|" + request.getParameter("East") + "|" + request.getParameter("North");
+                break;                
+                
+        }
 
         //Registration area
         String registrationAreaId = sanitizeHttpRequest.stripAllScripts(request.getParameter("RegAreaId"));
@@ -436,39 +486,85 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         feature.setLocality(locality);
 
         // Site
-        Float accuracy = null;
+        Double accuracy = null;
         if (request.getParameter("Accuracy").length() > 0) {
-            accuracy = Float.parseFloat(request.getParameter("Accuracy"));
+            accuracy = Double.parseDouble(request.getParameter("Accuracy"));
+        }else{
+            accuracy = 0.0;                    
         }
 
         Integer locMethodID = null;
         try {
-            locMethodID = Integer.parseInt(request.getParameter("LocMethodID"));
+            locMethodID = Integer.parseInt(request.getParameter("LocMethodID").equals("-")? "0": request.getParameter("LocMethodID"));
         } catch (NumberFormatException x) {
-            //method is null (-1) by default
+            x.printStackTrace();
         }
-        site = SiteUtil.findOrMakeSiteInstance(
-                error,
-                feature.getFeatureName(),
-                feature.getOrigSystemId(),
-                feature.getOrigCoord(),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordType")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("East")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("North")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")),
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("Country")),
-                locMethodID,
-                accuracy,
-                sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")),
-                user
-        );
+        
+        String countryCode = request.getParameter("Country");
+        String siteName = request.getParameter("FeatName");
+        String locDescr = request.getParameter("Loc");
+        String locComms = request.getParameter("LocComm");
+        
+        // TODO: this part of the code needs to be worked out
+//        site = SiteModelUtil.findOrMakeSiteInstance(
+//                error,
+//                feature.getFeatureName(),
+//                feature.getOrigSystemId(),
+//                feature.getOrigCoord(),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordType")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("East")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("North")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")),
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("Country")),
+//                locMethodID,
+//                accuracy,
+//                sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")),
+//                user
+//        );
+        SiteModelInput smi = null;
+        if(site == null ){
+            try {
+                smi = createNewSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
+                site = SiteModelUtil.getSite(smi);
+            } catch (IOException  e) {
+                    log.log(Level.SEVERE, null, e);
+                try {
+                    throw new StorageAccessException(e);
+                } catch (StorageAccessException ex) {
+                        Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            if (null != site && null == feature.getOrigSystemId()) {
+                feature.setOrigSystemId(this.originSystemId);
+            }
+            if (null != site && null == feature.getOrigCoord()) {
+                //caused by: java.sql.BatchUpdateException: ORA-12899: value too large for column "FR"."FEATURE"."ORIG_COORD" (actual: 69, maximum: 36)
+                feature.setOrigCoord(this.origCoord);  //feature.setOrigCoord(site.getOrigCoord().toString()); trying to store the json value, but getting BatchUpdateException
+            }
+        } else if(site.getSiteId() > 0){  //updating an existing record(site values)
+            try {
+            //this means a site is already existing; trying to update the site info
+                int ownerId = Math.toIntExact(this.ownerId);
+                OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+                int epsg = epsgInfo.getEpsg();
+                String gridref = epsgInfo.getGridref();
+                Double easting  = epsgInfo.getEasting();
+                Double northing = epsgInfo.getNorthing();
+                String latitude = epsgInfo.getLatitude();
+                String longitude = epsgInfo.getLongitude();
+                String format = epsgInfo.getFormat();
+                String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;
+//                System.out.println("Audit msg - Updating the site info : " + auditMsg);
+                smi = updateSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
+                SiteModelUtil.updateSite(site.getSiteId(),smi);
+            } catch (IOException ex) {
+                Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            feature.setOrigSystemId(this.originSystemId);
+            feature.setOrigCoord(this.origCoord); 
+        }
 
-        if (null != site && null == feature.getOrigSystemId()) {
-            feature.setOrigSystemId(site.getOriginalId());
-        }
-        if (null != site && null == feature.getOrigCoord()) {
-            feature.setOrigCoord(site.getOriginalCoordinates());
-        }
+            
 
         //set Map Year
         try {
@@ -481,12 +577,12 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             error.add(new String[]{"Map Year", "Map Year not numeric"});
         }
 
-        feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
-        feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
+            feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
+            feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
 
-        editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
-        editComments = sanitizeHttpRequest.stripAllScripts(editComments);
-
+            editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
+            editComments = sanitizeHttpRequest.stripAllScripts(editComments);
+        
         if (error.size() > 0) {
             throw new DataInputException(error);
         }
@@ -504,7 +600,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                     getFromDatabase(copyFeature);
                     copyFeature = null;
                 }
-            } catch (InsufficientPrivelegesException | StorageAccessException e) {
+            } catch (InsufficientPrivelegesException | StorageAccessException | IOException e) {
             }
         }
 
@@ -516,28 +612,28 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         }
         //Check the site with the site DB
         if (site != null) {
-            site.key = null;
-            try {
-                // SiteUtil.getSite() will find an existing site, or insert a new one if not found.
-                site = SiteUtil.getSite(site);
-            } catch (IOException | SQLException | NamingException | ParserConfigurationException | SAXException e) {
-                log.log(Level.SEVERE, null, e);
-                throw new StorageAccessException(e);
-            }
+//            if(site.getSiteId() > 0){  //this means a site is already existing; trying to update the site info 
+//                String countryCode = request.getParameter("Country");
+//                String siteName = request.getParameter("FeatName");
+//                String locDescr = request.getParameter("Loc");
+//                String locComms = request.getParameter("LocComm");
+//                int ownerId = Math.toIntExact(this.ownerId);
+//                OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+//                int epsg = epsgInfo.getEpsg();
+//                String gridref = epsgInfo.getGridref();
+//                Double easting  = epsgInfo.getEasting();
+//                Double northing = epsgInfo.getNorthing();
+//                String latitude = epsgInfo.getLatitude();
+//                String longitude = epsgInfo.getLongitude();
+//                String format = epsgInfo.getFormat();
+//                String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
+//                System.out.println("Audit msg - Updating the site info : " + auditMsg);
+//            }
 
-            if (site == null) {
-                throw new StorageAccessException("Failed to save site");
-            }
-
-            feature.setSiteId(Integer.valueOf(site.key));
-
-            try {
-                // feature incomplete
-                SiteUtil siteUtil = new SiteUtil(factory);
-                feature.setSiteView(siteUtil.getSiteView(feature.getSiteId()));
-            } catch (StorageAccessException ex) {
-                log.log(Level.SEVERE, null, ex);
-            }
+            feature.setSiteId(Integer.valueOf(site.getSiteId()));
+            // feature incomplete
+            SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
+            feature.setSiteView(siteModelUtil.getSiteView(feature.getSiteId()));
         } else {
             feature.setSiteId(null);
         }
@@ -545,6 +641,60 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         featureUtil.saveFeature(feature, user, editComments, dataOriginId);
 
         return feature.getFeatureId();
+    }
+
+    private SiteModelInput createNewSite(String featName, String description, Double accuracy, Integer locMethodId, String countryCode, String comments) throws IOException, JsonProcessingException {
+        String siteName = featName;
+        int methodID = 0;
+        if(locMethodId != null){
+            methodID = locMethodId;
+        }            
+        String directions = description;
+        double height = -1;//site.getHeight();
+        int heightMethodId = -1; //site.getHeightMethodId();
+        double heightAccuracy = -1; //site.getHeightAccuracy();
+        String comment = comments;
+        int ownerId = Math.toIntExact(this.ownerId);
+        OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+        int epsg = epsgInfo.getEpsg();
+        String gridref = epsgInfo.getGridref();
+        Double easting  = epsgInfo.getEasting();
+        Double northing = epsgInfo.getNorthing();
+        String latitude = epsgInfo.getLatitude();
+        String longitude = epsgInfo.getLongitude();
+        String format = epsgInfo.getFormat();
+        String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
+
+        SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
+                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg);
+        return smi;
+    }
+    
+    private SiteModelInput updateSite(String featName, String description, Double accuracy, Integer locMethodId, String countryCode, String comments) throws IOException, JsonProcessingException {
+        String siteName = featName;
+        int methodID = 0;
+        if(locMethodId != null){
+            methodID = locMethodId;
+        }            
+        String directions = description;
+        double height = -1;//site.getHeight();
+        int heightMethodId = -1; //site.getHeightMethodId();
+        double heightAccuracy = -1; //site.getHeightAccuracy();
+        String comment = comments;
+        int ownerId = Math.toIntExact(this.ownerId);
+        OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+        int epsg = epsgInfo.getEpsg();
+        String gridref = epsgInfo.getGridref();
+        Double easting  = epsgInfo.getEasting();
+        Double northing = epsgInfo.getNorthing();
+        String latitude = epsgInfo.getLatitude();
+        String longitude = epsgInfo.getLongitude();
+        String format = epsgInfo.getFormat();
+        String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
+
+        SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
+                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg);
+        return smi;
     }
 
     public int submit(int dataOriginId) throws InsufficientPrivelegesException, SQLException, IOException, StorageAccessException, DataInputException {
@@ -577,5 +727,62 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     }
 
     public void makePostFormHTML(PrintWriter out) throws IOException {
+    }
+
+    private int getOriginSystemId(String parameter) {
+        int origSysId = 38;
+        switch(parameter){
+            case "NZMG":
+                origSysId = 38;
+                break;
+            case "NZMS260":
+                origSysId = 16;
+                break;
+            case "NZTM":
+                origSysId = 71;
+                break;
+            case "NZTopo50":
+                origSysId = 72;
+                break;
+            case "NZ Yard SthIsl":
+                origSysId = 33;
+                break;
+            case "NZ Yard NthIsl":
+                origSysId = 70;
+                break;
+            case "NZMS1 SthIsl":
+                origSysId = 17;
+                break;
+            case "NZMS1 NthIsl":
+                origSysId = 69;
+                break;
+            case "Chatham Island Grid":
+                origSysId = 7;
+                break;
+            case "Auckland Island Transverse Mercator":
+                origSysId = 67;
+                break;
+            case "Campbell Island Transverse Mercator":
+                origSysId = 68;
+                break;
+            case "New Caledonia Transverse Mercator":
+                origSysId = 74;
+                break;
+            case "NZGD49":
+                origSysId = 29;         //in the table the SYSTEM_CODE column has LL49 - is this NZGD49
+                break;
+            case "Chatham Island Datum":
+                origSysId = 30;
+                break;
+            case "NZGD2000":
+                origSysId = 28;
+                break;
+            case "WGS84":
+                origSysId = 73;
+                break;
+            default:
+                origSysId = 38;    
+        }
+        return origSysId;
     }
 }

@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.util;
 
 import java.beans.IntrospectionException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -257,7 +258,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
         int masterfileId = -1;
         try {
-            masterfileId = SiteUtil.getMasterfile(feature);
+            masterfileId = SiteModelUtil.getMasterfile(feature);
         } catch (Exception e) {
             throw new StorageAccessException(e);
         }
@@ -759,7 +760,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
      * @throws NamingException
      * @throws SQLException
      */
-    public void approveBacklogFeature(Feature feature, User user) throws InsufficientPrivelegesException, StorageAccessException, SQLException, NamingException {
+    public void approveBacklogFeature(Feature feature, User user) throws InsufficientPrivelegesException, StorageAccessException, SQLException, NamingException, IOException {
         //Put it back in the correct folder
         if (!hasMasterfileRights(user, feature, UserFolder.FOLDER_APPROVE_RIGHT)) {
             throw new InsufficientPrivelegesException();
@@ -785,7 +786,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             }
         } catch (Exception e) {
         }
-        feature.setMasterFile(fredDAO.get(SiteUtil.getMasterfile(feature), nz.cri.gns.fred.hibernate.Folder.class));
+        feature.setMasterFile(fredDAO.get(SiteModelUtil.getMasterfile(feature), nz.cri.gns.fred.hibernate.Folder.class));
         fredDAO.saveOrUpdate(audit);
         fredDAO.saveOrUpdate(feature);
     }
@@ -820,8 +821,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
      *
      * @param feature
      */
-    public FrNumber getNextAvailableFrNumber(Feature feature) throws SQLException, NamingException, StorageAccessException {
-        String mapSheet = SiteUtil.getFrNumberMapSheet(feature);
+    public FrNumber getNextAvailableFrNumber(Feature feature) throws SQLException, NamingException, StorageAccessException, IOException {
+        String mapSheet = SiteModelUtil.getFrNumberMapSheet(feature);
         return getNextAvailableFrNumber(mapSheet);
     }
 

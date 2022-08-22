@@ -20,21 +20,21 @@ import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
-public class DrillholeLocalityDE extends LocalityDE {
+public class DrillholeLocalitySiteApiDE extends LocalitySiteapiDE {
 
-    public DrillholeLocalityDE(User user, int folderID, DAOFactory factory, ContentProvider provider) throws SQLException, IOException, DataInputException, StorageAccessException, InsufficientPrivelegesException {
+    public DrillholeLocalitySiteApiDE(User user, int folderID, DAOFactory factory, ContentProvider provider) throws SQLException, IOException, DataInputException, StorageAccessException, InsufficientPrivelegesException {
         this(user, folderID, factory, provider, FREDConstants.DRILLHOLE);
     }
 
-    protected DrillholeLocalityDE(User user, int folderID, DAOFactory factory, ContentProvider provider, String localityType) throws StorageAccessException, InsufficientPrivelegesException {
+    protected DrillholeLocalitySiteApiDE(User user, int folderID, DAOFactory factory, ContentProvider provider, String localityType) throws StorageAccessException, InsufficientPrivelegesException {
         super(user, folderID, localityType, factory, provider);
     }
 
-    public DrillholeLocalityDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider provider) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
+    public DrillholeLocalitySiteApiDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider provider) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
         this(feature, folderID, user, factory, provider, FREDConstants.DRILLHOLE);
     }
 
-    protected DrillholeLocalityDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider provider, String localityType) throws InsufficientPrivelegesException, StorageAccessException, DataInputException {
+    protected DrillholeLocalitySiteApiDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider provider, String localityType) throws InsufficientPrivelegesException, StorageAccessException, DataInputException, IOException {
         super(feature, folderID, user, factory, provider);
         if (!feature.getFeatureType().equals(localityType)) {
             throw new DataInputException("Feature Type", "Invalid");
@@ -42,7 +42,7 @@ public class DrillholeLocalityDE extends LocalityDE {
     }
 
     @Override
-    protected void getFromDatabase(Feature fromFeature) throws InsufficientPrivelegesException {
+    protected void getFromDatabase(Feature fromFeature) throws InsufficientPrivelegesException, IOException {
         super.getFromDatabase(feature);
         //set drillhole or vs fields fields
         feature.setPerson(fromFeature.getPerson());

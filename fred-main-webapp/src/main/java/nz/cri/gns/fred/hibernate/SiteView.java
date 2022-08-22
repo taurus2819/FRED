@@ -41,7 +41,13 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
 
     /** nullable persistent field */
     private String nzms262Sheet;
-
+    
+    /** nullable persistent field */
+    private String nzms260Sheet;
+    
+    /** nullable persistent field */
+    private String topo50Sheet;
+    
     /** nullable persistent field */
     private String island;
 
@@ -88,7 +94,7 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
     private Set<Feature> features;
 
     /** full constructor */
-    public SiteView(Integer siteId, String siteName, Double latitude, Double longitude, String countryCode, String countryName, String nzmgSheet, Double nzmgEast, Double nzmgNorth, String qmapSheet, String nzms262Sheet, String island, Integer methodId, String method, Double accuracy, String directions, Integer origSystemId, String coordSystem, String origCoord, Double height, Integer heightMethodId, String heightMethod, Double heightAccuracy, Integer ownerId, String owner) {
+    public SiteView(Integer siteId, String siteName, Double latitude, Double longitude, String countryCode, String countryName, String nzmgSheet, Double nzmgEast, Double nzmgNorth, String qmapSheet, String nzms262Sheet, String nzms260Sheet, String topo50Sheet, String island, Integer methodId, String method, Double accuracy, String directions, Integer origSystemId, String coordSystem, String origCoord, Double height, Integer heightMethodId, String heightMethod, Double heightAccuracy, Integer ownerId, String owner) {
     	this.siteId = siteId;
     	this.siteName = siteName;
     	this.latitude = latitude;
@@ -100,6 +106,8 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
     	this.nzmgNorth = nzmgNorth;
     	this.qmapSheet = qmapSheet;
     	this.nzms262Sheet = nzms262Sheet;
+    	this.nzms260Sheet = nzms260Sheet;
+    	this.topo50Sheet = topo50Sheet;
     	this.island = island;
     	this.methodId = methodId;
     	this.method = method;
@@ -208,6 +216,22 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
 		return nzms262Sheet;
 	}
 
+        public String getNzms260Sheet() {
+            return nzms260Sheet;
+        }
+
+        public void setNzms260Sheet(String nzms260Sheet) {
+            this.nzms260Sheet = nzms260Sheet;
+        }
+
+        public String getTopo50Sheet() {
+            return topo50Sheet;
+        }
+
+        public void setTopo50Sheet(String topo50Sheet) {
+            this.topo50Sheet = topo50Sheet;
+        }        
+        
 	public void setIsland(String island) {
 		this.island = island;
 	}

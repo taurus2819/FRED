@@ -44,7 +44,7 @@
         %><%@page import="nz.cri.gns.fred.util.SampleUtil"
         %><%@page import="nz.cri.gns.fred.util.RecordUtil"
         %><%@page import="nz.cri.gns.fred.util.StageUtil"
-        %><%@page import="nz.cri.gns.fred.util.SiteUtil"
+        %><%@page import="nz.cri.gns.fred.util.SiteModelUtil"
         %><%@page import="nz.cri.gns.fred.util.FolderUtil"
         %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
         %><%@page import="nz.cri.gns.fred.util.FREDUtil"
@@ -354,8 +354,8 @@
                 }
                 SiteView sv = null;
                 if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
-                    Datum datum = SiteUtil.getFREDDatum(feature);
-                    Coordinate coord = SiteUtil.getFREDCoordinate(feature);
+                    Datum datum = SiteModelUtil.getFREDDatum(feature);
+                    Coordinate coord = SiteModelUtil.getFREDCoordinate(feature);
             %><tr class="lightColour"><td class="heading">Original Grid Reference</td><td><%=datum.getHumanStringFor(coord).replaceAll("Geographic ", "")%></td></tr><%
                 if (!datum.getName().equals("NZMG")) {
                     try {
@@ -369,8 +369,8 @@
         }
         if (feature.getSiteView() != null) {
             sv = feature.getSiteView();
-            LatLong ll = SiteUtil.getSiteLatLong(sv);
-    %><tr class="lightColour"><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr><%
+            LatLong ll = SiteModelUtil.getSiteLatLong(feature);
+    %><tr class="lightColour"><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (WGS84)"%></td></tr><%
             }
         }
         if (feature.getMapYear() != null) {
