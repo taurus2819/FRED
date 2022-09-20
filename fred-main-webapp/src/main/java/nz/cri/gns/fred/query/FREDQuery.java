@@ -245,17 +245,22 @@ public class FREDQuery extends HqlQuery implements NumberSource {
     public String getHQLQuery(String type, String query) throws InvalidOperatorException, InvalidValueException {
         //return super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
         String hqlQuery;
-        if("Adv".equals(type)){
+        
+        //debugging
+        hqlQuery = super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", null, null, null);
+        
+        
+        /*if("Adv".equals(type)){
             hqlQuery = super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
         }else{
             hqlQuery = query;
-        }
+        }*/
         String debugQuery = hqlQuery;
 //        System.out.println("HQLQUERY = " + hqlQuery);
-        if(hqlQuery.contains("SITE_API.COUNTRY_CODE"))
+       /* if(hqlQuery.contains("SITE_API.COUNTRY_CODE"))
         {
             hqlQuery = "SELECT DISTINCT s.sampleId FROM Sample AS s WHERE (s.audit.status = 'approved' AND s.feature.audit.status = 'approved')";
-        }
+        }*/
         //fetch SITE ID list from API here and embed into HQL query
         if (hqlQuery.contains("SITE_API")) {
             String patternString = "SITE_API.([A-Z0-9_]+) = '([A-Za-z0-9\\s]+)'";
