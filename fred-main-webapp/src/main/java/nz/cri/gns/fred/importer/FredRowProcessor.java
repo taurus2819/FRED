@@ -2,6 +2,7 @@ package nz.cri.gns.fred.importer;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -260,18 +261,32 @@ public class FredRowProcessor extends TemplateRowProcessor {
         String longitude = epsgInfo.getLongitude();
         String format = epsgInfo.getFormat();
         
-        SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
+        Integer siteId = null;
+        siteId = checkIfSiteExistsInFred(row, siteName);
+        Integer pgSiteId = checkIfSiteExistsInPG(siteName);  //pgSiteId is the site id in postgresql created by the site api
+//        if(siteId != null || siteId > 0){
+        if(pgSiteId != null && pgSiteId == siteId){
+            //site already exists
+            SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                 epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
-        SiteModel site = SiteModelUtil.getSite(smi);
-        int siteId = site.getSiteId();  
+            SiteModelUtil.updateSite(siteId,smi);
+            System.out.println("Site : " + siteId + " Updated");
+        }else{
+            //create a new site
+            SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
+                    epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
+            SiteModel site = SiteModelUtil.getSite(smi);
+            siteId = site.getSiteId();  
+            System.out.println("Site : " + siteId + " Created");
+            update.set("FEATURE_ID$SITE_ID", siteId);
+        }
 
         if (!error.isEmpty()) {
             for (String[] each : error) {
                 log.log(Level.WARNING, Arrays.toString(each));
             }
             throw new RowImportException(row, "NORTHING", "Error creating the site: " + error.toString(), null);
-        }
-        update.set("FEATURE_ID$SITE_ID", siteId);
+        }        
     }
 
     private String getOrigCoords(Row row) throws RowImportException {
@@ -397,15 +412,20 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    private Integer checkIfSiteExists(String siteName) {
+    private Integer checkIfSiteExistsInFred(Row row, String siteName) throws RowImportException {
 //        int siteId = -1;
         //DAOFactory factory = FredHibernate.get().getDAOFactory();
+        Feature feature = null;
         try{
-        Feature feature = featureUtil.getFeatureWithName(siteName);
-        return feature.getSiteId();
+            feature = featureUtil.getFeatureWithName(siteName);
+            System.out.println("FEATURE : **** " + feature.getOrigCoord() + " *** ");
         } catch (StorageAccessException ex){
-            return null;
+            throw new RowImportException(row, "FEATURE_NAME", "An error occurred while trying to find a feature.", ex);
         }
+        if (null == feature) {
+            throw new RowImportException(row, "FEATURE_NAME", "Could not find this feature.", null);
+        }
+        return feature.getSiteId();
 
 //        try (Connection conn = JspUtils.getConnectionFromPool("fr")) {
 //            try (Statement stmnt = conn.createStatement()) {
@@ -422,6 +442,41 @@ public class FredRowProcessor extends TemplateRowProcessor {
 //        } catch (SQLException ex) {
 //        }
 //        return null;        
+    }
+
+    private Integer checkIfSiteExistsInPG(String siteName) {
+        Connection c = null;
+        Statement stmt = null;
+        Integer siteId = null;
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager.getConnection("jdbc:postgresql://hutd03.gns.cri.nz:5432/gns_uat","application_w", "cH2KThMp");
+            if( c!= null) {
+                System.out.println("Successfully Connected.");
+            } else {
+                System.out.println("Connection failed");
+            }
+            java.sql.Driver d = new org.postgresql.Driver();
+            System.out.println(d.getMajorVersion() + "." + d.getMinorVersion());
+
+            stmt = c.createStatement();
+            String selectSt = "select * from sc.site_proposed where site_name like ";
+            ResultSet rs = stmt.executeQuery(selectSt + "'" + siteName + "';");
+            while ( rs.next() ) {
+                siteId = rs.getInt("site_id");
+                String  site_Name = rs.getString("site_name");
+                System.out.printf( "Site Name = %s, Site ID = %s", site_Name, siteId );
+                System.out.println();
+            }
+            rs.close();
+            stmt.close();
+            c.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println(" Data Retrieved Successfully ..");
+        return siteId;
     }
 
     interface PersonNotFound {
