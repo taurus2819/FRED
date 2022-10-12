@@ -184,7 +184,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 String hq = query.getHQLQuery("Adv", "");
                 samples = sampleUtil.getLightweightSamples(hq);;
                 features = featureUtil.getFeaturesBySampleSubquery(hq);
-                auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
+                //auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
                 log.log(Level.INFO, "Hibernate Query " + hq);
             } else {
                 queryString = queryStringParam;
