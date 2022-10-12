@@ -152,34 +152,37 @@ public class SiteModelUtil extends ModelUtil {
         }
         return siteView;
     }
+    
+    public static int getMainLandMasterfile(double lat, double lon, boolean isBacklog) {
+
+        if (lon <= 176.458899 && lat >= -38.901906) {
+            return (isBacklog) ? MASTERFILE_NTH_NI_BACKLOG : MASTERFILE_NTH_NI;
+        }
+        if (lat >= -39.712028 || (lon >= 175.597906 && lat >= -40.546957)) {
+            return (isBacklog) ? MASTERFILE_CEN_NI_BACKLOG : MASTERFILE_CEN_NI;
+        }
+        if (lon >= 174.611 || lat >= -40.024067) {
+            return (isBacklog) ? MASTERFILE_STH_NI_BACKLOG : MASTERFILE_STH_NI;
+        }
+        if (lat >= -41.926979) {
+            return (isBacklog) ? MASTERFILE_NELSON_BACKLOG : MASTERFILE_NELSON;
+        }
+        if (lon >= 169.222279 && lat >= -44.566144) {
+            return (isBacklog) ? MASTERFILE_CEN_SI_BACKLOG : MASTERFILE_CEN_SI;
+        }
+        if ((lat >= -47.531892)) {
+            return (isBacklog) ? MASTERFILE_STH_SI_BACKLOG : MASTERFILE_STH_SI;
+        }
+        return (isBacklog) ? MASTERFILE_OFFSHORE_BACKLOG : MASTERFILE_OFFSHORE;
+    }
 
     public static int getMasterfile(Feature feature) throws SQLException, NamingException, IOException {
         boolean isBacklog = FeatureUtil.isBacklogFeature(feature);
-        switch (feature.getRegistrationArea().getRegAreaId().intValue()) {
+        switch (feature.getRegistrationArea().getRegAreaId()) {
             case REG_MAINLAND_NZ:
-                NorthingEasting nzmgCoord = (NorthingEasting) getSiteCoordinate(feature);
-                double easting = nzmgCoord.getEastWest();
-                double northing = nzmgCoord.getNorthSouth();
-                
-                if (easting <= 2810000 && northing >= 6250000) {
-                    return (isBacklog) ? MASTERFILE_NTH_NI_BACKLOG : MASTERFILE_NTH_NI;
-                }
-                if (northing >= 6160000 || (easting >= 2730000 && northing >= 6070000)) {
-                    return (isBacklog) ? MASTERFILE_CEN_NI_BACKLOG : MASTERFILE_CEN_NI;
-                }
-                if (easting >= 2650000 || northing >= 6130000) {
-                    return (isBacklog) ? MASTERFILE_STH_NI_BACKLOG : MASTERFILE_STH_NI;
-                }
-                if (northing >= 5920000) {
-                    return (isBacklog) ? MASTERFILE_NELSON_BACKLOG : MASTERFILE_NELSON;
-                }
-                if (easting >= 2210000 && northing >= 5620000) {
-                    return (isBacklog) ? MASTERFILE_CEN_SI_BACKLOG : MASTERFILE_CEN_SI;
-                }
-                if ((northing >= 5290000)) {
-                    return (isBacklog) ? MASTERFILE_STH_SI_BACKLOG : MASTERFILE_STH_SI;
-                }
-                return (isBacklog) ? MASTERFILE_OFFSHORE_BACKLOG : MASTERFILE_OFFSHORE;
+                SiteModel site = getSite(feature);
+                return getMainLandMasterfile(site.getLat(), site.getLon(), isBacklog);
+
             case REG_CHATHAM_ISLANDS:
             case REG_CAMPBELL_ISLAND:
             case REG_AUCKLAND_ISLANDS:
@@ -208,15 +211,6 @@ public class SiteModelUtil extends ModelUtil {
                 return (isBacklog) ? MASTERFILE_OFFSHORE_BACKLOG : MASTERFILE_OFFSHORE;
         }
         return (isBacklog) ? MASTERFILE_OFFSHORE_BACKLOG : MASTERFILE_OFFSHORE;
-    }
-
-    private static NorthingEasting getSiteCoordinate(Feature feature) throws IOException {
-        NorthingEasting ne;
-        SiteModel sm = getSite(feature);
-        JsonNode origCoord = sm.getOrigCoord();
-//        ne = new NorthingEasting(origCoord.get("northing").asDouble(), origCoord.get("easting").asDouble());
-        ne = new NorthingEasting(sm.getLat(), sm.getLon());
-        return ne;
     }
 
     public static Datum.LatLong getSiteLatLong(Feature feature) throws SQLException, NamingException, IOException {
