@@ -262,7 +262,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         
         SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                 epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
-        SiteModel site = SiteModelUtil.getSite(smi);
+        SiteModel site = SiteModelUtil.insertSite(smi);
         int siteId = site.getSiteId();  
 
         if (!error.isEmpty()) {

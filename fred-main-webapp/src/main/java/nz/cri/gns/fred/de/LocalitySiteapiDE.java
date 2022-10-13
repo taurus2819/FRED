@@ -525,7 +525,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         if(site == null ){
             try {
                 smi = createNewSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
-                site = SiteModelUtil.getSite(smi);
+                site = SiteModelUtil.insertSite(smi);
             } catch (IOException  e) {
                     log.log(Level.SEVERE, null, e);
                 try {
