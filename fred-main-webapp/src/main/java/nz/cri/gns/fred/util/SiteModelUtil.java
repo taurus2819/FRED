@@ -324,6 +324,7 @@ public class SiteModelUtil extends ModelUtil {
         
         spatialFilter = spatialFilter.replaceAll("QMAP_SHEET","qmapSheet");
         spatialFilter = spatialFilter.replaceAll("NZMG_SHEET","nzmgSheet");
+        spatialFilter = spatialFilter.replaceAll("COUNTRY_CODE","countryCode");
         spatialFilter = spatialFilter.replaceAll("ISLAND","island");
         spatialFilter = spatialFilter.replaceAll(";","&");
             
