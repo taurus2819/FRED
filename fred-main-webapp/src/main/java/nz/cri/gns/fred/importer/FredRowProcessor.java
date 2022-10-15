@@ -280,7 +280,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
             }else{ //feature exists but no siteid present
                 SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                     epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
-                SiteModel newSite = SiteModelUtil.getSite(smi);                
+                SiteModel newSite = SiteModelUtil.insertSite(smi);                
                 System.out.println("Site : " + newSite.getSiteId() + " Created");
 //                feature.setSiteId(newSite.getSiteId());
 //                feature.setOrigCoord(origCoords);
@@ -295,7 +295,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
             //create a new site
             SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                     epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
-            SiteModel site = SiteModelUtil.getSite(smi);
+            SiteModel site = SiteModelUtil.insertSite(smi);
             Integer newSiteId = site.getSiteId();  
             System.out.println("Site : " + newSiteId + " Created");
             update.set("FEATURE_ID$SITE_ID", newSiteId);
