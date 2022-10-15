@@ -261,24 +261,45 @@ public class FredRowProcessor extends TemplateRowProcessor {
         String longitude = epsgInfo.getLongitude();
         String format = epsgInfo.getFormat();
         
-        Integer siteId = null;
-        siteId = checkIfSiteExistsInFred(row, siteName);
-        Integer pgSiteId = checkIfSiteExistsInPG(siteName);  //pgSiteId is the site id in postgresql created by the site api
-//        if(siteId != null || siteId > 0){
-        if(pgSiteId != null && pgSiteId == siteId){
-            //site already exists
-            SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
-                epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
-            SiteModelUtil.updateSite(siteId,smi);
-            System.out.println("Site : " + siteId + " Updated");
+        Feature feature = checkIfSiteExistsInFred(row, siteName);        
+        if(feature != null){        //there is a site with the same site Name existing - so upddate it
+            Integer featureSiteId = feature.getSiteId();
+//            Integer pgSiteId = checkIfSiteExistsInPG(siteName) ;  //pgSiteId is the site id in postgresql created by the site api
+            if(featureSiteId != null){
+                SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
+                    epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
+                SiteModelUtil.updateSite(featureSiteId,smi);
+//                feature.setSiteId(featureSiteId);
+//                feature.setOrigCoord(origCoords);
+//                feature.setOrigSystemId(origSystemId);
+                update.set("FEATURE_ID$SITE_ID", featureSiteId);
+                update.set("FEATURE_ID$ORIG_COORD", origCoords);
+                update.set("FEATURE_ID$ORIG_SYSTEM_ID", origSystemId);
+                update.set("FEATURE_ID", feature.getFeatureId());
+                System.out.println("Feature exists with siteID: featureId= " + feature.getFeatureId() + ", featureSiteId = " + featureSiteId);
+            }else{ //feature exists but no siteid present
+                SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
+                    epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
+                SiteModel newSite = SiteModelUtil.getSite(smi);                
+                System.out.println("Site : " + newSite.getSiteId() + " Created");
+//                feature.setSiteId(newSite.getSiteId());
+//                feature.setOrigCoord(origCoords);
+//                feature.setOrigSystemId(origSystemId);
+                update.set("FEATURE_ID$SITE_ID", newSite.getSiteId());
+                update.set("FEATURE_ID$ORIG_COORD", origCoords);
+                update.set("FEATURE_ID$ORIG_SYSTEM_ID", origSystemId);
+                update.set("FEATURE_ID", feature.getFeatureId());
+                System.out.println("Feature exists with NO siteID: featureId= " + feature.getFeatureId() + ", newSiteId = " + newSite.getSiteId());
+            } 
         }else{
             //create a new site
             SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                     epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
             SiteModel site = SiteModelUtil.getSite(smi);
-            siteId = site.getSiteId();  
-            System.out.println("Site : " + siteId + " Created");
-            update.set("FEATURE_ID$SITE_ID", siteId);
+            Integer newSiteId = site.getSiteId();  
+            System.out.println("Site : " + newSiteId + " Created");
+            update.set("FEATURE_ID$SITE_ID", newSiteId);
+            System.out.println("New Feature and new Site created:  newSiteId = " + newSiteId);
         }
 
         if (!error.isEmpty()) {
@@ -412,20 +433,22 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    private Integer checkIfSiteExistsInFred(Row row, String siteName) throws RowImportException {
+    private Feature checkIfSiteExistsInFred(Row row, String siteName) throws RowImportException {
 //        int siteId = -1;
         //DAOFactory factory = FredHibernate.get().getDAOFactory();
         Feature feature = null;
         try{
             feature = featureUtil.getFeatureWithName(siteName);
-            System.out.println("FEATURE : **** " + feature.getOrigCoord() + " *** ");
+            if(feature != null){
+                System.out.println("FEATURE : **** " + feature.getOrigCoord() + " *** ");
+            }
         } catch (StorageAccessException ex){
             throw new RowImportException(row, "FEATURE_NAME", "An error occurred while trying to find a feature.", ex);
         }
-        if (null == feature) {
-            throw new RowImportException(row, "FEATURE_NAME", "Could not find this feature.", null);
-        }
-        return feature.getSiteId();
+//        if (null == feature) {
+//            throw new RowImportException(row, "FEATURE_NAME", "Could not find this feature.", null);
+//        }
+        return feature;
 
 //        try (Connection conn = JspUtils.getConnectionFromPool("fr")) {
 //            try (Statement stmnt = conn.createStatement()) {
@@ -476,7 +499,11 @@ public class FredRowProcessor extends TemplateRowProcessor {
             System.exit(0);
         }
         System.out.println(" Data Retrieved Successfully ..");
-        return siteId;
+        if(siteId > 0){
+            return siteId;
+        }else{
+            return 0;
+        }
     }
 
     interface PersonNotFound {
