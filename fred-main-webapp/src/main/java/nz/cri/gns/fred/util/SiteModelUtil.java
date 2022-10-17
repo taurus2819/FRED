@@ -239,7 +239,9 @@ public class SiteModelUtil extends ModelUtil {
         try {            
             JsonNode node = objectMapper.readTree(inputSiteModel);
             String newSite = SiteRevampServiceClient.insertSite(node);
-            sm = objectMapper.readValue(newSite, SiteModel.class);
+            if(newSite != null){
+                sm = objectMapper.readValue(newSite, SiteModel.class);
+            }
 //        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
         } catch (JsonProcessingException e) {
                 System.out.println(e.getClass().getName() + 

@@ -262,44 +262,41 @@ public class FredRowProcessor extends TemplateRowProcessor {
         String format = epsgInfo.getFormat();
         
         Feature feature = checkIfSiteExistsInFred(row, siteName);        
-        if(feature != null){        //there is a site with the same site Name existing - so upddate it
+        if(feature != null){        //there is a site with the same site Name existing - so update it
             Integer featureSiteId = feature.getSiteId();
-//            Integer pgSiteId = checkIfSiteExistsInPG(siteName) ;  //pgSiteId is the site id in postgresql created by the site api
+//            Integer pgSiteId = checkIfSiteExistsInPG(siteName) ;  //pgSiteId is the site id in postgresql created by the site api - Do not remove this call might need in future
             if(featureSiteId != null){
                 SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                     epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
                 SiteModelUtil.updateSite(featureSiteId,smi);
-//                feature.setSiteId(featureSiteId);
-//                feature.setOrigCoord(origCoords);
-//                feature.setOrigSystemId(origSystemId);
                 update.set("FEATURE_ID$SITE_ID", featureSiteId);
                 update.set("FEATURE_ID$ORIG_COORD", origCoords);
                 update.set("FEATURE_ID$ORIG_SYSTEM_ID", origSystemId);
                 update.set("FEATURE_ID", feature.getFeatureId());
-                System.out.println("Feature exists with siteID: featureId= " + feature.getFeatureId() + ", featureSiteId = " + featureSiteId);
-            }else{ //feature exists but no siteid present
+            }else{ //feature exists but no siteid present - then create a new site and update the FRED feature with this new siteid
                 SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                     epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
-                SiteModel newSite = SiteModelUtil.insertSite(smi);                
-                System.out.println("Site : " + newSite.getSiteId() + " Created");
-//                feature.setSiteId(newSite.getSiteId());
-//                feature.setOrigCoord(origCoords);
-//                feature.setOrigSystemId(origSystemId);
-                update.set("FEATURE_ID$SITE_ID", newSite.getSiteId());
-                update.set("FEATURE_ID$ORIG_COORD", origCoords);
-                update.set("FEATURE_ID$ORIG_SYSTEM_ID", origSystemId);
-                update.set("FEATURE_ID", feature.getFeatureId());
-                System.out.println("Feature exists with NO siteID: featureId= " + feature.getFeatureId() + ", newSiteId = " + newSite.getSiteId());
+                SiteModel newSite = SiteModelUtil.insertSite(smi);   
+                if(newSite != null){
+                    update.set("FEATURE_ID$SITE_ID", newSite.getSiteId());
+                    update.set("FEATURE_ID$ORIG_COORD", origCoords);
+                    update.set("FEATURE_ID$ORIG_SYSTEM_ID", origSystemId);
+                    update.set("FEATURE_ID", feature.getFeatureId());
+                }else{
+                    log.log(Level.WARNING, "Unable to update FIELD NUMBER = {0}", siteName);
+                }
             } 
         }else{
             //create a new site
             SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
                     epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
             SiteModel site = SiteModelUtil.insertSite(smi);
-            Integer newSiteId = site.getSiteId();  
-            System.out.println("Site : " + newSiteId + " Created");
-            update.set("FEATURE_ID$SITE_ID", newSiteId);
-            System.out.println("New Feature and new Site created:  newSiteId = " + newSiteId);
+            if(site != null){
+                Integer newSiteId = site.getSiteId();  
+                update.set("FEATURE_ID$SITE_ID", newSiteId);
+            }else{
+                log.log(Level.WARNING, "Unable to create FIELD NUMBER = {0}", siteName);
+            }
         }
 
         if (!error.isEmpty()) {
@@ -434,39 +431,19 @@ public class FredRowProcessor extends TemplateRowProcessor {
     }
 
     private Feature checkIfSiteExistsInFred(Row row, String siteName) throws RowImportException {
-//        int siteId = -1;
-        //DAOFactory factory = FredHibernate.get().getDAOFactory();
         Feature feature = null;
         try{
             feature = featureUtil.getFeatureWithName(siteName);
             if(feature != null){
-                System.out.println("FEATURE : **** " + feature.getOrigCoord() + " *** ");
+                log.log(Level.INFO, "Feature with OrigCoord {0} exists", feature.getOrigCoord());
             }
         } catch (StorageAccessException ex){
             throw new RowImportException(row, "FEATURE_NAME", "An error occurred while trying to find a feature.", ex);
         }
-//        if (null == feature) {
-//            throw new RowImportException(row, "FEATURE_NAME", "Could not find this feature.", null);
-//        }
         return feature;
-
-//        try (Connection conn = JspUtils.getConnectionFromPool("fr")) {
-//            try (Statement stmnt = conn.createStatement()) {
-//                try (ResultSet rs = stmnt.executeQuery(
-//                        "SELECT site_id FROM fr.feature WHERE FEATURE_NAME='" + siteName + "'")) {
-//                    if (rs.next()) {
-//                        siteId = rs.getInt("siteid");
-//                        return siteId;
-//                    }
-//                } catch (SQLException ex) {
-//                }
-//            } catch (SQLException ex) {
-//            }
-//        } catch (SQLException ex) {
-//        }
-//        return null;        
     }
 
+    //TODO: Do not remove this check; I may need this in future if there are any issues while uploading
     private Integer checkIfSiteExistsInPG(String siteName) {
         Connection c = null;
         Statement stmt = null;
