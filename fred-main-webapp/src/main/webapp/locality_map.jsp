@@ -159,7 +159,7 @@
 						<tr class="lightColour"><td class="heading">Accuracy</td><td><%=((sv != null && sv.getAccuracy() != null) ? "&#177;" + String.valueOf(sv.getAccuracy()) + " m" : "&nbsp;")%></td></tr><%
 						if (featureUtil.isAllowedReadFeature(user, feature)) {
 							%><tr class="lightColour"><td class="heading">Locality</td><td><%=DBUtils.nvl(feature.getLocality())%></td></tr>
-							<tr class="lightColour"><td class="heading">Country</td><td><%=((sv != null && sv.getCountryCode() != null) ? sv.getCountryCode() : "&nbsp;")%></td></tr>
+                                                        <tr class="lightColour"><td class="heading">Country</td><td><%=((sv != null && sv.getCountryCode() != null) ? featureUtil.getCountry(sv.getCountryCode()) : "&nbsp;")%></td></tr>
 							<tr class="lightColour"><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
 						}
 						%></table>

@@ -72,4 +72,8 @@ public class Country implements Serializable, nz.cri.gns.fred.model.Country {
 	public int hashCode() {
 		return countryCode.hashCode();
 	}
+        
+        public String toString()    {
+            return name;
+        }
 }
