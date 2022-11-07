@@ -21,6 +21,7 @@ import nz.cri.gns.fred.model.DatumMethod;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.hibernate.SiteView;
+import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.site.util.SiteModel;
 import nz.cri.gns.fred.site.util.SiteModelInput;
 import nz.cri.gns.fred.site.util.SiteRevampServiceClient;
