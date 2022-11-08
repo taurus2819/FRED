@@ -284,9 +284,9 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 
                 //if polygon vertices are set, apply spatial filter
                 if (idString != null && idString.length() > 0) {
-                    samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
+                    samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), sampHql);
                 } else {
-                    samples = sampleUtil.getLightweightSamples(hq);
+                    samples = sampleUtil.getLightweightSamples(sampHql);
                 }
                 features = featureUtil.getFeaturesBySampleSubquery(samples);
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
