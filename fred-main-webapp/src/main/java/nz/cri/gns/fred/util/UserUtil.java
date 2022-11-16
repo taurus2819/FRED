@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import nz.cri.gns.auth.AuthServiceClient;
 import nz.cri.gns.auth.AuthServiceException;
 
@@ -17,12 +16,12 @@ import nz.cri.gns.fred.model.UserView;
 
 public class UserUtil extends ModelUtil {
 
-	private FredDAO fredDAO;
+	private final FredDAO fredDAO;
 	
 	public static Integer FRED_WRITE = 2;
 	public static Integer FRED_READ = 4;
         
-        private static final Logger log = Logger.getLogger(UserUtil.class.getName());
+//        private static final Logger log = Logger.getLogger(UserUtil.class.getName());
 	
 	public UserUtil(DAOFactory factory) {
 		super(factory);

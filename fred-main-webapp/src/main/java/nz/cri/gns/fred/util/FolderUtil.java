@@ -19,7 +19,7 @@ import nz.cri.gns.fred.model.UserFolder;
 
 public class FolderUtil extends ModelUtil {
 
-    private FredDAO fredDAO;
+    private final FredDAO fredDAO;
 
     private UserUtil userUtil;
 
@@ -41,9 +41,13 @@ public class FolderUtil extends ModelUtil {
      * Returns a list of <code>UserFolder</code>s representing personal folders
      * belonging to the given user, or to which the given user has access but is
      * not the owner
+     *
+     * @param user
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public List<UserFolder> getPersonalFolders(User user) throws StorageAccessException {
-        Vector<UserFolder> folders = new Vector<UserFolder>();
+        Vector<UserFolder> folders = new Vector<>();
         int userId = user.getId().intValue();
         folders.addAll(getOwnedFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
         folders.addAll(getAccessibleFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
@@ -54,6 +58,10 @@ public class FolderUtil extends ModelUtil {
     /**
      * Returns a list of <code>UserFolder</code>s representing admin folders to
      * which the given user has access
+     *
+     * @param user
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public List<UserFolder> getAdminFolders(User user) throws StorageAccessException {
         List<UserFolder> folders = getAccessibleFolders(user.getId().intValue(), getFolderType(Folder.FOLDER_TYPE_ADMIN));
@@ -70,6 +78,10 @@ public class FolderUtil extends ModelUtil {
     /**
      * Returns a list of <code>UserFolder</code>s representing backlog admin
      * folders to which the given user has access
+     *
+     * @param user
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public List<UserFolder> getBacklogAdminFolders(User user) throws StorageAccessException {
         List<UserFolder> folders = getAccessibleFolders(user.getId().intValue(), getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
@@ -81,9 +93,13 @@ public class FolderUtil extends ModelUtil {
      * Returns a list of <code>UserFolder</code>s representing backlog folders
      * belonging to the given user, or to which the given user has access but is
      * not the owner
+     *
+     * @param user
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public List<UserFolder> getBacklogFolders(User user) throws StorageAccessException {
-        Vector<UserFolder> folders = new Vector<UserFolder>();
+        Vector<UserFolder> folders = new Vector<>();
         folders.addAll(getOwnedFolders(user.getId().intValue(), getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
         folders.addAll(getAccessibleFolders(user.getId().intValue(), getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
         Collections.sort(folders);
@@ -91,7 +107,7 @@ public class FolderUtil extends ModelUtil {
     }
 
     public List<UserFolder> getOwnedFolders(Integer ownerId, FolderType type) throws StorageAccessException {
-        List<UserFolder> userFolders = new Vector<UserFolder>();
+        List<UserFolder> userFolders = new Vector<>();
         FrUserView owner = userUtil.getFrUserView(ownerId);
         List<Folder> folders = fredDAO.getList("FROM Folder as f where f.owner = ? and f.folderType = ?", Folder.class, owner, type);
         for (Folder folder : folders) {
@@ -101,7 +117,7 @@ public class FolderUtil extends ModelUtil {
     }
 
     public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException {
-        List<UserFolder> userFolders = new Vector<UserFolder>();
+        List<UserFolder> userFolders = new Vector<>();
         FrUserView user = userUtil.getFrUserView(userId);
         List<FolderUser> fus = fredDAO.getList("FROM FolderUser as f where f.user = ? and f.folder.folderType = ?", FolderUser.class, user, type);
         for (FolderUser fu : fus) {
@@ -158,13 +174,13 @@ public class FolderUtil extends ModelUtil {
     public Integer getMasterfileFolderFeatureCount(Folder folder) throws StorageAccessException {
         try {
             return fredDAO.getList("SELECT COUNT(*) FROM Feature AS f WHERE f.masterFile = ? AND f.audit.status = ?", Integer.class, folder, FREDConstants.WAITING).get(0);
-        } catch (Exception e) {
+        } catch (StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
 
     public UserFolder getUserFolder(int folderId, User user) throws StorageAccessException {
-        return getUserFolder(folderId, new Integer(user.getId().intValue()));
+        return getUserFolder(folderId, user.getId().intValue());
     }
 
     public UserFolder getUserFolder(int folderId, int userId) throws StorageAccessException {
@@ -173,7 +189,7 @@ public class FolderUtil extends ModelUtil {
             return null;
         }
 
-        if (folder.getOwner() != null && folder.getOwner().getUserId().intValue() == userId) {
+        if (folder.getOwner() != null && folder.getOwner().getUserId() == userId) {
             return UserFolder.getOwnedUserFolder(folder);
         }
 
@@ -181,19 +197,20 @@ public class FolderUtil extends ModelUtil {
         if (fu == null) {
             return null;
         }
-        return UserFolder.getAccessibleUserFolder(folder, fu.getUserRights().intValue());
+        return UserFolder.getAccessibleUserFolder(folder, fu.getUserRights());
     }
 
     /**
      * Returns a list of right types in the appropriate order and omitting any
      * innappropriate rights for the given folder's type.
      *
-     * @throws StorageAccessException
-     */
-    /**
-     * TODO need to query code field being VARCHAR with Iain. Should change to
+     *
+     * TODO need to query code field being VARCHAR with Iain.Should change to
      * NUMBER and then can get rid of TO_NUMBER() in code below
      *
+     * @param folder
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public List<FolderRight> getRightTypesForDisplay(UserFolder folder) throws StorageAccessException {
         return (folder.getFolder().getFolderType().getName().equals(Folder.FOLDER_TYPE_PERSONAL)
@@ -203,25 +220,25 @@ public class FolderUtil extends ModelUtil {
     }
 
     public void addUserToFolder(UserFolder folder, Integer userId, Integer permissions) throws StorageAccessException {
-        UserUtil userUtil = new UserUtil(factory);
+        userUtil = new UserUtil(factory);
         FolderUser folderUser = fredDAO.createNewFolderUser();
         folderUser.setUser(userUtil.getFrUserView(userId));
-        folderUser.setUserRights(new Integer(permissions));
+        folderUser.setUserRights(permissions);
         folderUser.setFolder(folder.getFolder());
         folder.getFolder().getFolderUsers().add(folderUser);
         fredDAO.saveOrUpdate(folderUser);
     }
 
     public void removeUserFromFolder(UserFolder folder, Integer userId) throws StorageAccessException {
-        UserUtil userUtil = new UserUtil(factory);
+        userUtil = new UserUtil(factory);
         FolderUser fu = getFolderUser(folder, userUtil.getFrUserView(userId));
         fredDAO.delete(fu);
     }
 
     public void toggleUserFolderRights(UserFolder folder, int userId, int newRight) throws StorageAccessException {
-        UserUtil userUtil = new UserUtil(factory);
+        userUtil = new UserUtil(factory);
         FolderUser fu = getFolderUser(folder, userUtil.getFrUserView(userId));
-        fu.setUserRights(new Integer(newRight ^ fu.getUserRights().intValue()));
+        fu.setUserRights(newRight ^ fu.getUserRights());
         fredDAO.saveOrUpdate(fu);
     }
 
@@ -231,7 +248,7 @@ public class FolderUtil extends ModelUtil {
 
     public FolderUser getFolderUser(Folder folder, FrUserView user) throws StorageAccessException {
         List<FolderUser> fus = fredDAO.getList("FROM FolderUser AS f WHERE f.folder = ? AND f.user = ?", FolderUser.class, folder, user);
-        if (fus.size() > 0) {
+        if (!fus.isEmpty()) {
             return fus.get(0);
         }
         return null;

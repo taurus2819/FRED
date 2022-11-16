@@ -32,12 +32,11 @@ import nz.cri.gns.fred.site.util.SiteModel;
 import nz.cri.gns.fred.util.SiteModelUtil;
 import nz.cri.gns.util.map.Datum.LatLong;
 
-
-public class TabbedPollenExport extends OldFormatFredExport {
+public final class TabbedPollenExport extends OldFormatFredExport {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.export.TabbedPollenExport");
-    
-    private boolean checkIdentifers = false;
+
+    private final boolean checkIdentifers = false;
     private SortedMap<String, Vector<String>> synonyms = null;
 
     public TabbedPollenExport(Writer writer, DAOFactory factory, SortedMap<String, Vector<String>> synonyms) {
@@ -47,13 +46,13 @@ public class TabbedPollenExport extends OldFormatFredExport {
         writeColumnHeaders();
     }
 
-    private static Set<String> groups;
-    private static Set<String> ageGroups;
-    private static Set<String> excludedIdentifiers;
-    private static double baseAge = 83.6;
+    private static final Set<String> groups;
+    private static final Set<String> ageGroups;
+    private static final Set<String> excludedIdentifiers;
+    private static final double BASEAGE = 83.6;
 
     static {
-        groups = new HashSet<String>(3);
+        groups = new HashSet<>(3);
         groups.add("SPORITES");
         groups.add("POLLENITES");
         groups.add("XANTHOPHYCEAE");
@@ -62,7 +61,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
         groups.add("FUNGI");
         groups.add("ALGAE");
 
-        ageGroups = new HashSet<String>(5);
+        ageGroups = new HashSet<>(5);
         ageGroups.add("FORAMINIFERA");
         ageGroups.add("DINOPHYCEAE");
         ageGroups.add("RADIOLARIA");
@@ -70,7 +69,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
         ageGroups.add("GASTROPODA");
         ageGroups.add("SCAPHOPODA");
 
-        excludedIdentifiers = new HashSet<String>(17);
+        excludedIdentifiers = new HashSet<>(17);
         excludedIdentifiers.add("Pocknall, D.T.");
         excludedIdentifiers.add("Mildenhall, D.C.");
         excludedIdentifiers.add("Raine, J.I.");
@@ -113,8 +112,8 @@ public class TabbedPollenExport extends OldFormatFredExport {
     @Override
     public void handleFeature(Feature feature) throws IOException, StorageAccessException {
         Set<Sample> samples = feature.getSamples();
-        int num = samples.size();
-        System.out.println("Feature: " + feature.getFrNumber());
+//        int num = samples.size();
+//        System.out.println("Feature: " + feature.getFrNumber());
         for (Sample sample : samples) {
             for (Paleontology list : getListsToExport(sample)) {
                 handleList(feature, sample, getAgeRange(sample, list), list);
@@ -125,7 +124,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
     @Override
     public Collection<Paleontology> getListsToExport(Sample sample) throws StorageAccessException {
         if (sample.getDrillType() != null && sample.getDrillType().equals("Cutting")) {
-            return new Vector<Paleontology>();
+            return new Vector<>();
         }
 
         List<Paleontology> listSet = Export.getFactory().getFredDAO().getPaleontologies(sample);
@@ -152,6 +151,12 @@ public class TabbedPollenExport extends OldFormatFredExport {
     /**
      * This is overridden to skip non-cenozoic pollen - done here because this
      * is after the age is calculated.
+     *
+     * @param feature
+     * @param sample
+     * @param age
+     * @param list
+     * @throws java.io.IOException
      */
     @Override
     public void handleList(Feature feature, Sample sample, AgeRange age, Paleontology list) throws IOException {
@@ -161,8 +166,8 @@ public class TabbedPollenExport extends OldFormatFredExport {
         }
         //Reject anything that ends before the Cenozoic begins
         if ((age.getUpper() == null && age.getLower() == null)
-                || (age.getUpper() == null && age.getLower() != null && age.getLower().getTopAge() > baseAge)
-                || (age.getUpper() != null && age.getUpper().getTopAge() > baseAge)) {
+                || (age.getUpper() == null && age.getLower() != null && age.getLower().getTopAge() > BASEAGE)
+                || (age.getUpper() != null && age.getUpper().getTopAge() > BASEAGE)) {
             return;
         }
         try {
@@ -225,9 +230,8 @@ public class TabbedPollenExport extends OldFormatFredExport {
         StringBuilder builder = new StringBuilder("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|");//create spacer column for readability
 
         for (String name : synonyms.keySet()) {
-            Integer total = new Integer(0);
+            Integer total = 0;
             Vector<String> syns = synonyms.get(name);
-
 
             for (String synonym : synonyms.get(name)) {
                 if (recordedTaxa.containsKey(synonym)) {
@@ -253,7 +257,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
     }
 
     private Integer parseDVct(String synonym, String comments) {
-        Integer val = new Integer(0);
+        Integer val = 0;
         try {
             if (comments != null) {
                 int start = comments.indexOf("DVct");
@@ -300,7 +304,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
                         tmp = comments.substring(start).trim();
                     }
 
-                    val = new Integer(tmp);
+                    val = Integer.valueOf(tmp);
                 }
             }
 
@@ -332,7 +336,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
                 it.remove();
             }
         }
-        if (relevantPals.size() == 0) {
+        if (relevantPals.isEmpty()) {
             return null;
         } else {
             return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM, " incl Pollen"); //pollen only
@@ -359,11 +363,10 @@ public class TabbedPollenExport extends OldFormatFredExport {
         }
 
         Set<Paleontology> relevantPals = getMostRecentLists(sample);
-        if (relevantPals.size() == 0) {
+        if (relevantPals.isEmpty()) {
             return null;
         }
 
-        pals:
         for (Iterator<Paleontology> it = relevantPals.iterator(); it.hasNext();) {
             boolean keep = true;
 
@@ -376,7 +379,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
             }
             if (!keep) {
                 it.remove();
-                continue pals;
+                continue;
             }
 
             keep = false;
@@ -415,6 +418,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
         }
     }
 
+    @Override
     protected void writeHeader(Feature feature, Sample sample, AgeRange age, Paleontology list) {
         try {
             String frSuffix = (feature.getSamples().size() > 1) ? ("(" + DBUtils.nvl(sample.getTopDepth()) + "-" + DBUtils.nvl(sample.getBottomDepth()) + ")") : "";
@@ -446,7 +450,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
             }
             writer.write("|");
 
-            if (list.getIdentifiers().size() > 0) {
+            if (!list.getIdentifiers().isEmpty()) {
                 for (Iterator<Person> identifiers = list.getIdentifiers().iterator(); identifiers.hasNext();) {
                     writer.write(identifiers.next().getDisplayName());
                     if (identifiers.hasNext()) {
@@ -468,10 +472,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
                 try {
                     LatLong ll = SiteModelUtil.getSiteLatLong(feature);
                     writer.write(ll.getLatAsDecDegree(5) + "| " + ll.getLongAsDecDegree(5));
-                } catch (SQLException ex) {
-                    Logger.getLogger(PollenExport.class.getName()).log(Level.SEVERE, null, ex);
-                    writer.write("oops|oops|");
-                } catch (NamingException ex) {
+                } catch (SQLException | NamingException ex) {
                     Logger.getLogger(PollenExport.class.getName()).log(Level.SEVERE, null, ex);
                     writer.write("oops|oops|");
                 }

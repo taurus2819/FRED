@@ -13,7 +13,6 @@ import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserView;
-import org.apache.commons.lang.ObjectUtils;
 
 public class AuditTable implements Serializable, Audit {
 
@@ -92,7 +91,7 @@ public class AuditTable implements Serializable, Audit {
 
                 // Find all the groups
                 java.util.List<String> confidOrgs = java.util.Arrays.asList(confidParts).subList(2, altEmailPosn);
-                java.util.Set<ConfidentialGroup> groupsToAdd = new java.util.HashSet<ConfidentialGroup>();
+                java.util.Set<ConfidentialGroup> groupsToAdd = new java.util.HashSet<>();
                 java.util.List<ConfidentialGroup> possibleGroups = (new nz.cri.gns.fred.util.AuditUtil(factory)).getConfidentialGroups(user);
                 for (String desiredGroup : confidOrgs) {
                     for (ConfidentialGroup group : possibleGroups) {
@@ -114,7 +113,7 @@ public class AuditTable implements Serializable, Audit {
                 setConfidPeriod(0.5D);
                 this.setConfidEmailFlag(false);
                 this.setConfidLapseEmail("");
-                setConfidGroups(new java.util.HashSet<ConfidentialGroup>());
+                setConfidGroups(new java.util.HashSet<>());
             }
         }
     }
@@ -142,19 +141,19 @@ public class AuditTable implements Serializable, Audit {
                 conversionMultiplier = 12;
                 datePeriod = "Month";
             }
-            int approxPeriod = (new Double(Math.floor(actualPeriod * conversionMultiplier))).intValue();
-            auditString.append(approxPeriod + " " + datePeriod + (approxPeriod == 1 ? "" : "s"));
+            int approxPeriod = (Double.valueOf(Math.floor(actualPeriod * conversionMultiplier))).intValue();
+            auditString.append(approxPeriod).append(" ").append(datePeriod).append(approxPeriod == 1 ? "" : "s");
 
             Set<ConfidentialGroup> groups = this.getConfidGroups();
             for (ConfidentialGroup group : groups) 
             {
-                auditString.append(";"+group.getName());
+                auditString.append(";").append(group.getName());
             }
             
             String lapseEmail = this.getConfidLapseEmail();
             if (lapseEmail!=null&&!lapseEmail.equals(""))
             {
-                auditString.append("("+lapseEmail+")");
+                auditString.append("(").append(lapseEmail).append(")");
             }
 
         } else {
@@ -164,218 +163,272 @@ public class AuditTable implements Serializable, Audit {
         return auditString.toString();
     }
 
+    @Override
     public Integer getAuditId() {
         return this.auditId;
     }
 
+    @Override
     public void setAuditId(Integer auditId) {
         this.auditId = auditId;
     }
 
+    @Override
     public String getStatus() {
         return this.status;
     }
 
+    @Override
     public void setStatus(String status) {
         this.status = status;
     }
 
+    @Override
     public Integer getCreatedById() {
         return this.createdById;
     }
 
+    @Override
     public void setCreatedById(Integer createdById) {
         this.createdById = createdById;
     }
 
+    @Override
     public Date getCreatedDate() {
         return this.createdDate;
     }
 
+    @Override
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
+    @Override
     public Integer getSubmittedById() {
         return this.submittedById;
     }
 
+    @Override
     public void setSubmittedById(Integer submittedById) {
         this.submittedById = submittedById;
     }
 
+    @Override
     public Date getSubmittedDate() {
         return this.submittedDate;
     }
 
+    @Override
     public void setSubmittedDate(Date submittedDate) {
         this.submittedDate = submittedDate;
     }
 
+    @Override
     public Integer getApprovedById() {
         return this.approvedById;
     }
 
+    @Override
     public void setApprovedById(Integer approvedById) {
         this.approvedById = approvedById;
     }
 
+    @Override
     public Date getApprovedDate() {
         return this.approvedDate;
     }
 
+    @Override
     public void setApprovedDate(Date approvedDate) {
         this.approvedDate = approvedDate;
     }
 
+    @Override
     public String getWorkingComments() {
         return this.workingComments;
     }
 
+    @Override
     public void setWorkingComments(String workingComments) {
         this.workingComments = workingComments;
     }
 
+    @Override
     public String getCuratorComments() {
         return this.curatorComments;
     }
 
+    @Override
     public void setCuratorComments(String curatorComments) {
         this.curatorComments = curatorComments;
     }
 
+    @Override
     public String getSendMessage() {
         return this.sendMessage;
     }
 
+    @Override
     public void setSendMessage(String sendMessage) {
         this.sendMessage = sendMessage;
     }
 
+    @Override
     public Boolean getConfidentialFlag() {
         return confidentialFlag;
     }
 
+    @Override
     public void setConfidentialFlag(Boolean confidentialFlag) {
         this.confidentialFlag = confidentialFlag;
     }
 
+    @Override
     public Double getConfidPeriod() {
         return confidPeriod;
     }
 
+    @Override
     public void setConfidPeriod(Double confidPeriod) {
         this.confidPeriod = confidPeriod;
     }
 
+    @Override
     public Date getConfidLapseDate() {
         return confidLapseDate;
     }
 
+    @Override
     public void setConfidLapseDate(Date confidLapseDate) {
         this.confidLapseDate = confidLapseDate;
     }
 
+    @Override
     public Boolean getConfidEmailFlag() {
         return confidEmailFlag;
     }
 
+    @Override
     public void setConfidEmailFlag(Boolean confidEmailFlag) {
         this.confidEmailFlag = confidEmailFlag;
     }
 
+    @Override
     public String getConfidLapseEmail() {
         return confidLapseEmail;
     }
 
+    @Override
     public void setConfidLapseEmail(String confidLapseEmail) {
         this.confidLapseEmail = confidLapseEmail;
     }
 
+    @Override
     public Folder getFolder() {
         return this.folder;
     }
 
+    @Override
     public void setFolder(Folder folder) {
         this.folder = folder;
     }
 
+    @Override
     public DataOrigin getDataOrigin() {
         return this.dataOrigin;
     }
 
+    @Override
     public void setDataOrigin(DataOrigin dataOrigin) {
         this.dataOrigin = dataOrigin;
     }
 
+    @Override
     public void setCreatedBy(UserView createdBy) {
         this.createdBy = createdBy;
     }
 
+    @Override
     public UserView getCreatedBy() {
         return createdBy;
     }
 
+    @Override
     public void setSubmittedBy(UserView submittedBy) {
         this.submittedBy = submittedBy;
     }
 
+    @Override
     public UserView getSubmittedBy() {
         return submittedBy;
     }
 
+    @Override
     public void setApprovedBy(UserView approvedBy) {
         this.approvedBy = approvedBy;
     }
 
+    @Override
     public UserView getApprovedBy() {
         return approvedBy;
     }
 
+    @Override
     public Set<Sample> getSamples() {
         return this.samples;
     }
 
+    @Override
     public void setSamples(Set<Sample> samples) {
         this.samples = samples;
     }
 
+    @Override
     public Set<Record> getRecords() {
         return this.records;
     }
 
+    @Override
     public void setRecords(Set<Record> records) {
         this.records = records;
     }
 
+    @Override
     public Set<Record> getRecordByPalListAuditIds() {
         return recordByPalListAuditIds;
     }
 
+    @Override
     public void setRecordByPalListAuditIds(Set<Record> recordByPalListAuditIds) {
         this.recordByPalListAuditIds = recordByPalListAuditIds;
     }
 
+    @Override
     public Set<Feature> getFeatures() {
         return this.features;
     }
 
+    @Override
     public void setFeatures(Set<Feature> features) {
         this.features = features;
     }
 
+    @Override
     public Set<AuditEdit> getAuditEdits() {
         return this.auditEdits;
     }
 
+    @Override
     public void setAuditEdits(Set<AuditEdit> auditEdits) {
         this.auditEdits = auditEdits;
     }
 
+    @Override
     public Set<ConfidentialGroup> getConfidGroups() {
         return confidGroups;
     }
 
+    @Override
     public void setConfidGroups(Set<ConfidentialGroup> confidGroups) {
         this.confidGroups = confidGroups;
     }

@@ -127,22 +127,22 @@ public class CenozoicPollenReport extends AbstractReport {
             int group_id = 100;
             String line = null;
             List<Taxon> taxa = null;
-            HashMap<Integer, HashSet<String>> groups = new HashMap<Integer, HashSet<String>>();
+            HashMap<Integer, HashSet<String>> groups = new HashMap<>();
 
             while ((line = br.readLine()) != null) {
                 line = line.trim();
                 if (!line.equals(".")) {
                     try {
-                        if (groups.get(new Integer(group_id)) == null) {
-                            groups.put(new Integer(group_id), new HashSet<String>());
+                        if (groups.get(group_id) == null) {
+                            groups.put(group_id, new HashSet<>());
                         }
-                        if (groups.get(new Integer(group_id)).contains(line)) {
+                        if (groups.get(group_id).contains(line)) {
                             continue;
                         } else {
-                            groups.get(new Integer(group_id)).add(line);
+                            groups.get(group_id).add(line);
                         }
                         taxa = dao.getMatchingTaxa(line, null, Match.EXACT, 50);
-                        if (taxa.size() == 0) {
+                        if (taxa.isEmpty()) {
                             if (taxa_id == -1) {
                                 quarantine.println("unable to match taxa: " + line);
                             } else {
@@ -152,7 +152,7 @@ public class CenozoicPollenReport extends AbstractReport {
                             Taxon taxon = taxa.get(0);
                             System.out.println("matching input: " + line + " with: " + taxon.getTaxonomicName() + " of (" + taxa.size() + ") taxa");
                             if (taxa_id == -1) {
-                                taxa_id = taxon.getTaxaId().intValue();
+                                taxa_id = taxon.getTaxaId();
                                 writer.print(taxa_id);
                                 writer.print(':');
                             }
@@ -342,9 +342,9 @@ public class CenozoicPollenReport extends AbstractReport {
                         String rightStage = right.substring(rightOpenPos + 2, rightClosePos).trim();
 
                         try {
-                            return new Double(leftStage.substring(0, leftStage.indexOf("-") - 1))
-                            .compareTo(new Double(rightStage.substring(0, rightStage.indexOf("-") - 1)));
-                        } catch (Exception ex) {
+                            return Double.valueOf(leftStage.substring(0, leftStage.indexOf("-") - 1))
+                            .compareTo(Double.valueOf(rightStage.substring(0, rightStage.indexOf("-") - 1)));
+                        } catch (NumberFormatException ex) {
                             return leftStage.compareTo(rightStage);
                         }
                     }
@@ -412,7 +412,7 @@ public class CenozoicPollenReport extends AbstractReport {
                 HashMap<String, Integer> taxonAges = taxa.get(parts[0]);
 
                 String[] ageCounts = null;
-                if (parts[1].indexOf("|") == -1) {
+                if (!parts[1].contains("|")) {
                     ageCounts = new String[]{parts[1]};
                 } else {
                     ageCounts = parts[1].split("\\|");
@@ -423,7 +423,7 @@ public class CenozoicPollenReport extends AbstractReport {
                     int closedpos = ageCount.lastIndexOf(")");
 
                     String key = ageCount.substring(0, openpos).trim();
-                    taxonAges.put(key, new Integer(ageCount.substring(openpos + 1, closedpos)));
+                    Integer put = taxonAges.put(key, Integer.valueOf(ageCount.substring(openpos + 1, closedpos)));
                 }
             }
         } catch (IOException ex) {
@@ -432,7 +432,7 @@ public class CenozoicPollenReport extends AbstractReport {
     }
 
     private void aggregateTaxaCounts(Vector<String> synonyms) {
-        aggregatedTaxa = new HashMap<String, HashMap<String, Integer>>();
+        aggregatedTaxa = new HashMap<>();
         Taxon synonym = null;
         Taxon taxon = null;
         for (String list : synonyms) {

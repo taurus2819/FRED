@@ -173,11 +173,11 @@ public class StageUtil extends ModelUtil {
             return true;
         }
 
-        if (startId != null && !new Integer(startId).equals(stage.getLowerAge().getAgeId())) {
+        if (startId != null && !(startId).equals(stage.getLowerAge().getAgeId())) {
             return true;
         }
 
-        if (stopId != null && !new Integer(stopId).equals(stage.getUpperAge().getAgeId())) {
+        if (stopId != null && !(stopId).equals(stage.getUpperAge().getAgeId())) {
             return true;
         }
 

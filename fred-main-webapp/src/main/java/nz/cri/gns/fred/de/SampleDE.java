@@ -97,7 +97,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             throw new InsufficientPrivelegesException("Insufficient rights to view sample");
         }
         if (sample.getAudit().getFolder() != null) {
-            workingFolder = folderUtil.getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
+            workingFolder = folderUtil.getUserFolder(sample.getAudit().getFolder().getFolderId(), user);
         }
 
         try {
@@ -108,6 +108,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
     }
 
+    @Override
     public void copyFrom(int sampleId) throws StorageAccessException {
         Sample fromSample = sampleUtil.getSample(sampleId);
 
@@ -120,7 +121,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Collectors
         Set<Person> collectors = sample.getCollectors();
         if (collectors == null) {
-            collectors = new LinkedHashSet<Person>();
+            collectors = new LinkedHashSet<>();
             sample.setCollectors(collectors);
         } else {
             collectors.clear();
@@ -135,7 +136,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Sent to
         Set<SentTo> sentTos = sample.getSentTos();
         if (sentTos == null) {
-            sentTos = new HashSet<SentTo>();
+            sentTos = new HashSet<>();
             sample.setSentTos(sentTos);
         } else {
             sentTos.clear();
@@ -152,7 +153,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Relationships
         Set<Relationship> relationships = sample.getRelationships();
         if (relationships == null) {
-            relationships = new HashSet<Relationship>();
+            relationships = new HashSet<>();
             sample.setRelationships(relationships);
         } else {
             relationships.clear();
@@ -180,7 +181,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         sample.setPrimaryColour(fromSample.getPrimaryColour());
         sample.setSecondaryColour(fromSample.getSecondaryColour());
         sample.setWet(fromSample.getWet());
-        HashSet<SedimentaryFeature> sedFeatures = new HashSet<SedimentaryFeature>(fromSample.getSedimentaryFeatures().size());
+        HashSet<SedimentaryFeature> sedFeatures = new HashSet<>(fromSample.getSedimentaryFeatures().size());
         for (SedimentaryFeature sedFeature : (Set<SedimentaryFeature>) fromSample.getSedimentaryFeatures()) {
             sedFeatures.add(sampleUtil.copyFor(sedFeature, sample));
         }
@@ -195,6 +196,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         this.outcropSample = isOutcropSample;
     }
 
+    @Override
     public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException, StorageAccessException {
         reinitialise(factory);
 
@@ -220,7 +222,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 try {
                     //drill type combo box
                     template.loadUntil(out, "{@drillTypeCombo}");
-                    SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
+                    SelectBox<DrillType> selectBox = new SelectBox<>(sampleUtil.getDrillTypes());
                     Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
                     selectBox.writeBox(attributes, "-- Choose --", null, sample.getDrillType(), out);
                 } catch (IOException | StorageAccessException e) {
@@ -255,7 +257,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
             //Grain size...
             template.loadUntil(out, "{@primaryGrainSize}");
-            SelectBox<GrainSize> gsSelectBox = new SelectBox<GrainSize>(sampleUtil.getGrainSizes());
+            SelectBox<GrainSize> gsSelectBox = new SelectBox<>(sampleUtil.getGrainSizes());
             Attributes attributes = Attributes.createNameOnlyAttributes("GrainSizeP");
             gsSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryGrainSize(), out);
 
@@ -264,12 +266,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             gsSelectBox.writeBox(attributes, "-- Choose --", null, sample.getSecondaryGrainSize(), out);
 
             template.loadUntil(out, "{@beddingThickness}");
-            SelectBox<BedThickness> btSelectBox = new SelectBox<BedThickness>(sampleUtil.getBeddingThicknesses());
+            SelectBox<BedThickness> btSelectBox = new SelectBox<>(sampleUtil.getBeddingThicknesses());
             attributes = Attributes.createNameOnlyAttributes("BedThick");
             btSelectBox.writeBox(attributes, "-- Choose --", null, sample.getBedThickness(), out);
 
             template.loadUntil(out, "{@primaryBedding}");
-            SelectBox<Bedding> bSelectBox = new SelectBox<Bedding>(sampleUtil.getBeddings());
+            SelectBox<Bedding> bSelectBox = new SelectBox<>(sampleUtil.getBeddings());
             attributes = Attributes.createNameOnlyAttributes("BeddingP");
             bSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryBedding(), out);
 
@@ -278,27 +280,27 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             bSelectBox.writeBox(attributes, "-- Choose --", null, sample.getSecondaryBedding(), out);
 
             template.loadUntil(out, "{@weathering}");
-            SelectBox<Weathering> wSelectBox = new SelectBox<Weathering>(sampleUtil.getWeatherings());
+            SelectBox<Weathering> wSelectBox = new SelectBox<>(sampleUtil.getWeatherings());
             attributes = Attributes.createNameOnlyAttributes("Weath");
             wSelectBox.writeBox(attributes, "-- Choose --", null, sample.getWeathering(), out);
 
             template.loadUntil(out, "{@hardness}");
-            SelectBox<Hardness> hSelectBox = new SelectBox<Hardness>(sampleUtil.getHardnesses());
+            SelectBox<Hardness> hSelectBox = new SelectBox<>(sampleUtil.getHardnesses());
             attributes = Attributes.createNameOnlyAttributes("Hard");
             hSelectBox.writeBox(attributes, "-- Choose --", null, sample.getHardness(), out);
 
             template.loadUntil(out, "{@carbonate}");
-            SelectBox<Carbonate> cSelectBox = new SelectBox<Carbonate>(sampleUtil.getCarbonates());
+            SelectBox<Carbonate> cSelectBox = new SelectBox<>(sampleUtil.getCarbonates());
             attributes = Attributes.createNameOnlyAttributes("Carb");
             cSelectBox.writeBox(attributes, "-- Choose --", null, sample.getCarbonate(), out);
 
             template.loadUntil(out, "{@ColMod}");
-            SelectBox<ColourModifier> cmSelectBox = new SelectBox<ColourModifier>(sampleUtil.getColourModifiers());
+            SelectBox<ColourModifier> cmSelectBox = new SelectBox<>(sampleUtil.getColourModifiers());
             attributes = Attributes.createNameOnlyAttributes("ColMod");
             cmSelectBox.writeBox(attributes, "-- Choose --", null, sample.getColourModifier(), out);
 
             template.loadUntil(out, "{@primaryColour}");
-            SelectBox<RockColour> clSelectBox = new SelectBox<RockColour>(sampleUtil.getRockColours());
+            SelectBox<RockColour> clSelectBox = new SelectBox<>(sampleUtil.getRockColours());
             attributes = Attributes.createNameOnlyAttributes("ColourP");
             clSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryColour(), out);
 
@@ -388,7 +390,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (sentTos == null) {
             return "";
         }
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         for (SentTo sentTo : sentTos) {
             if (sentTo.getFossilGroup() != null) {
@@ -446,7 +448,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             return "";
         }
         //.replaceAll(";", "#").replaceAll("\\*", "\\$")
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (SedimentaryFeature feat : (Set<SedimentaryFeature>) sample.getSedimentaryFeatures()) {
             buffer.append(feat.getSedimentaryFeatureType().getName());
             if (feat.getAbundant() != null && feat.getAbundant().equals(FREDConstants.Y)) {
@@ -461,7 +463,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (sample.getRelationships() == null) {
             return "";
         }
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (Relationship rel : sample.getRelationships()) {
             if (rel.getRelationType().getName().equals(relationType) && rel.getRelationshipType().getName().equals(relationshipType)) {
                 buffer.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature())).append(separator);
@@ -474,10 +476,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (sample.getRelationships() == null) {
             return "";
         }
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (Relationship rel : sample.getRelationships()) {
-            for (int i = 0; i < relationshipTypes.length; i++) {
-                if (rel.getRelationType().getName().equals(relationType) && rel.getRelationshipType().getName().equals(relationshipTypes[i])) {
+            for (String relationshipType : relationshipTypes) {
+                if (rel.getRelationType().getName().equals(relationType) && rel.getRelationshipType().getName().equals(relationshipType)) {
                     buffer.append(SampleUtil.getRelationshipDescription(rel)).append(separator);
                     break;
                 }
@@ -486,6 +488,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         return buffer.toString();
     }
 
+    @Override
     public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
         try {
             Template template = provider.getContent("sample.de.excel");
@@ -591,6 +594,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
     }
 
+    @Override
     public int save(int dataOriginId) throws StorageAccessException, InsufficientPrivelegesException {
         if (!isAllowedSave) {
             throw new InsufficientPrivelegesException("Insufficient rights to save this sample");
@@ -602,12 +606,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             audit.setStatus(FREDConstants.WORKING);
             audit.setCreatedById(user.getId().intValue());
             audit.setCreatedDate(new Date());
-            audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(new Integer(dataOriginId)));
+            audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(dataOriginId));
         }
 
         sampleUtil.saveOrUpdate(sample);
 
-        return sample.getSampleId().intValue();
+        return sample.getSampleId();
 
     }
 
@@ -633,6 +637,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         return links;
     }
 
+    @Override
     public void makePostFormHTML(PrintWriter out) throws IOException {
         Template template = provider.getContent("calendar.script");
         template.addSub("inputField", "CollDate");
@@ -643,10 +648,19 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     *
+     * @param request
+     * @param factory
+     * @param addIfNew
+     * @throws DataInputException
+     * @throws StorageAccessException
+     */
+    @Override
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException, nz.cri.gns.dataaccess.StorageAccessException {
         reinitialise(factory);
 
-        ArrayList<String[]> error = new ArrayList<String[]>();
+        ArrayList<String[]> error = new ArrayList<>();
 
         //Drillhole/Vert Section depths
         if (!outcropSample) {
@@ -654,24 +668,24 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             Double bottomDepth = null;
             if (request.getParameter("TopDepth").length() > 0) {
                 try {
-                    topDepth = new Double(request.getParameter("TopDepth").trim());
+                    topDepth = Double.valueOf(request.getParameter("TopDepth").trim());
                 } catch (NumberFormatException e) {
                     error.add(new String[]{"Top Depth/Height", "Non-numeric value"});
                 }
             }
             if (request.getParameter("BottomDepth").length() > 0) {
                 try {
-                    bottomDepth = new Double(request.getParameter("BottomDepth").trim());
+                    bottomDepth = Double.valueOf(request.getParameter("BottomDepth").trim());
                 } catch (NumberFormatException e) {
                     error.add(new String[]{"Bottom Depth/Height", "Non-numeric value"});
                 }
 
                 if (topDepth != null && bottomDepth != null) {
                     if ("Bottom".equals(sample.getFeature().getDatumType())) {
-                        if (topDepth.doubleValue() < bottomDepth.doubleValue()) {
+                        if (topDepth < bottomDepth) {
                             error.add(new String[]{"Heights", "Top height < bottom height and datum = Bottom"});
                         }
-                    } else if (topDepth.doubleValue() > bottomDepth.doubleValue()) {
+                    } else if (topDepth > bottomDepth) {
                         error.add(new String[]{"Depths", "Top depth > bottom depth"});
                     }
                 }
@@ -735,7 +749,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
         //Sent to
         String sentToParam = sanitizeHttpRequest.stripAllScripts(request.getParameter("SentTo")).trim();
-        HashSet<SentTo> sentToSet = new HashSet<SentTo>();
+        HashSet<SentTo> sentToSet = new HashSet<>();
         if (sentToParam.length() > 0) {
             String[] sentTos = request.getParameter("SentTo").split("\\n");
             for (String sentTo : sentTos) {
@@ -790,7 +804,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Relationships - previous, sample and strat
         Set<Relationship> relationships = sample.getRelationships();
         //Split into different kinds of relationships
-        HashSet<Relationship> previousSample = new HashSet<Relationship>(), sampleRel = new HashSet<Relationship>(), stratRel = new HashSet<Relationship>();
+        HashSet<Relationship> previousSample = new HashSet<>(), sampleRel = new HashSet<>(), stratRel = new HashSet<>();
         if (relationships != null) {
             for (Relationship rel : relationships) {
                 if (sampleUtil.isPreviousSampleRelationship(rel)) {
@@ -802,7 +816,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 }
             }
         } else {
-            relationships = new HashSet<Relationship>();
+            relationships = new HashSet<>();
             sample.setRelationships(relationships);
         }
         //Now deal with previous samples
@@ -921,8 +935,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             sample.setDip(null);
         } else {
             try {
-                sample.setDip(new Integer(dip));
-                int iDip = sample.getDip().intValue();
+                sample.setDip(Integer.valueOf(dip));
+                int iDip = sample.getDip();
                 if (iDip > 90 || iDip < 0) {
                     error.add(new String[]{"Dip", iDip + " is not valid.  Dip must be between 0 and 90"});
                 }
@@ -947,8 +961,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             sample.setStrike(null);
         } else {
             try {
-                sample.setStrike(new Integer(strike));
-                int iStrike = sample.getStrike().intValue();
+                sample.setStrike(Integer.valueOf(strike));
+                int iStrike = sample.getStrike();
                 if (iStrike > 360 || iStrike < 0) {
                     error.add(new String[]{"Strike", iStrike + " is not valid.  Strike must be between 0 and 360"});
                 }
@@ -1013,12 +1027,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Sed features
         Set<SedimentaryFeature> sedFeatures = sample.getSedimentaryFeatures();
         if (sedFeatures == null) {
-            sedFeatures = new HashSet<SedimentaryFeature>();
+            sedFeatures = new HashSet<>();
             sample.setSedimentaryFeatures(sedFeatures);
         }
         String sf = sanitizeHttpRequest.stripAllScripts(request.getParameter("SedFeat"));
         if (sf.length() > 0) {
-            HashSet<SedimentaryFeature> newFeatures = new HashSet<SedimentaryFeature>(sedFeatures.size());
+            HashSet<SedimentaryFeature> newFeatures = new HashSet<>(sedFeatures.size());
             for (String sedFeature : sf.split(";")) {
                 boolean isAbundant = sedFeature.indexOf("*") == sedFeature.length() - 1;
                 if (isAbundant) {
@@ -1083,7 +1097,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         String confidString = sanitizeHttpRequest.stripAllScripts(request.getParameter("Confid"));
         audit.processAuditString(confidString, factory, user);
 
-        if (error.size() > 0) {
+        if (!error.isEmpty()) {
             throw new DataInputException(error);
         }
 
@@ -1095,7 +1109,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     private void reinitialise(DAOFactory factory) throws StorageAccessException {
         sampleUtil = new SampleUtil(factory);
         if (sample.getSampleId() != null) {
-            sample = sampleUtil.getSample(sample.getSampleId().intValue());
+            sample = sampleUtil.getSample(sample.getSampleId());
             if (copySample != null) {
                 getFromDatabase(copySample);
                 copySample = null;
@@ -1108,7 +1122,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (parameter == null) {
             return null;
         }
-        return sampleUtil.getDrillType(new Integer(parameter));
+        return sampleUtil.getDrillType(parameter);
     }
 
     private RockColour getColour(String parameter) throws NumberFormatException, StorageAccessException {
@@ -1116,7 +1130,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (parameter == null) {
             return null;
         }
-        return sampleUtil.getRockColour(new Integer(parameter));
+        return sampleUtil.getRockColour(Integer.valueOf(parameter));
     }
 
     private ColourModifier getColourModifier(String parameter) throws NumberFormatException, StorageAccessException {
@@ -1124,7 +1138,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (parameter == null) {
             return null;
         }
-        return sampleUtil.getColourModifier(new Integer(parameter));
+        return sampleUtil.getColourModifier(Integer.valueOf(parameter));
     }
 
     private Carbonate getCarbonate(String parameter) throws NumberFormatException, StorageAccessException {
@@ -1132,7 +1146,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (parameter == null) {
             return null;
         }
-        return sampleUtil.getCarbonate(new Integer(parameter));
+        return sampleUtil.getCarbonate(Integer.valueOf(parameter));
     }
 
     private Hardness getHardness(String parameter) throws NumberFormatException, StorageAccessException {
@@ -1140,7 +1154,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (parameter == null) {
             return null;
         }
-        return sampleUtil.getHardness(new Integer(parameter));
+        return sampleUtil.getHardness(Integer.valueOf(parameter));
     }
 
     private Weathering getWeathering(String parameter) throws NumberFormatException, StorageAccessException {
@@ -1148,7 +1162,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (parameter == null) {
             return null;
         }
-        return sampleUtil.getWeathering(new Integer(parameter));
+        return sampleUtil.getWeathering(Integer.valueOf(parameter));
     }
 
     private Bedding getBedding(String parameter) throws NumberFormatException, StorageAccessException {
@@ -1156,7 +1170,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (parameter == null) {
             return null;
         }
-        return sampleUtil.getBedding(new Integer(parameter));
+        return sampleUtil.getBedding(Integer.valueOf(parameter));
     }
 
     private BedThickness getBeddingThickness(String parameter) throws NumberFormatException, StorageAccessException {
@@ -1164,7 +1178,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (parameter == null) {
             return null;
         }
-        return sampleUtil.getBeddingThickness(new Integer(parameter));
+        return sampleUtil.getBeddingThickness(Integer.valueOf(parameter));
     }
 
     private GrainSize getGrainSize(String parameter) throws NumberFormatException, StorageAccessException {
@@ -1172,17 +1186,20 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (parameter == null) {
             return null;
         }
-        return sampleUtil.getGrainSize(new Integer(parameter));
+        return sampleUtil.getGrainSize(Integer.valueOf(parameter));
     }
 
+    @Override
     public boolean usesCalendar() {
         return true;
     }
 
+    @Override
     public int getWorkingFolderID() {
-        return workingFolder.getFolderId().intValue();
+        return workingFolder.getFolderId();
     }
 
+    @Override
     public String getHeading() {
         return "Edit sample";
     }

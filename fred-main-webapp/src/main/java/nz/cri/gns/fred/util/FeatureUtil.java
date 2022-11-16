@@ -49,10 +49,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.util.FeatureUtil");
 
-    private FredDAO fredDAO;
-    private FolderUtil folderUtil;
+    private final FredDAO fredDAO;
+    private final FolderUtil folderUtil;
 
-    private static String BACKLOG_PREPARE_COMMENTS = "Locality prepared for backlog editing";
+    private static final String BACKLOG_PREPARE_COMMENTS = "Locality prepared for backlog editing";
 
     public FeatureUtil(DAOFactory factory) {
         super(factory);
@@ -90,7 +90,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         fredDAO.saveOrUpdate(newFeature);
 
         if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-			//For outcrops we copy everything
+            //For outcrops we copy everything
 
             //Copy sample (should be only one!)
             Set<Sample> samples = feature.getSamples();
@@ -106,8 +106,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             //Save the new sample
             try {
                 fredDAO.saveOrUpdate(newSample);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (StorageAccessException e) {
+                Logger.getLogger("FRED").log(Level.SEVERE, e.getMessage());
             }
         } else {
             //Anything that's not actually a feature attribute doesn't get saved
@@ -127,8 +127,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         //Clear the fr number if it has one
         //Copy relationships
         Set<Relationship> relationships = sample.getRelationships();
-        if (relationships != null && relationships.size() > 0) {
-            HashSet<Relationship> newRels = new HashSet<Relationship>();
+        if (relationships != null && !relationships.isEmpty()) {
+            HashSet<Relationship> newRels = new HashSet<>();
             for (Relationship rel : relationships) {
                 Relationship newRel = fredDAO.createNewRelationship();
                 FREDUtil.beanCopy(rel, newRel, new FREDUtil.ExcludeByName(FREDUtil.toVector("relationshipId", "sample")));
@@ -139,8 +139,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         }
         //Copy sent to
         Set<SentTo> sentTos = sample.getSentTos();
-        if (sentTos != null && sentTos.size() > 0) {
-            HashSet<SentTo> newSent = new HashSet<SentTo>();
+        if (sentTos != null && !sentTos.isEmpty()) {
+            HashSet<SentTo> newSent = new HashSet<>();
             for (SentTo sentTo : sentTos) {
                 SentTo newSentTo = fredDAO.createNewSentTo();
                 FREDUtil.beanCopy(sentTo, newSentTo, new FREDUtil.ExcludeByName(FREDUtil.toVector("sentToId", "sample")));
@@ -153,7 +153,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         //Copy sedimentary feature
         Set<SedimentaryFeature> sedFeatures = sample.getSedimentaryFeatures();
         if (!FREDUtil.isEmpty(sedFeatures)) {
-            HashSet<SedimentaryFeature> newSedFeatures = new HashSet<SedimentaryFeature>();
+            HashSet<SedimentaryFeature> newSedFeatures = new HashSet<>();
             for (SedimentaryFeature sedFeature : sedFeatures) {
                 SedimentaryFeature newSedFeature = fredDAO.createNewSedimentaryFeature();
                 FREDUtil.beanCopy(sedFeature, newSedFeature, new FREDUtil.CopyAll());
@@ -165,7 +165,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         //Copy Collectors
         Set<Person> collectors = sample.getCollectors();
         if (!FREDUtil.isEmpty(collectors)) {
-            HashSet<Person> newCollectors = new HashSet<Person>(collectors.size());
+            HashSet<Person> newCollectors = new HashSet<>(collectors.size());
             newCollectors.addAll(collectors);
             newSample.setCollectors(newCollectors);
         }
@@ -177,15 +177,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public void deleteRemoveFeatures(String[] featIDs, UserFolder folder, User user) {
         boolean errFlag = false;
-        for (int i = 0; i < featIDs.length; i++) {
+        for (String featID : featIDs) {
             try {
-                Feature feature = getFeature(Integer.parseInt(featIDs[i]));
+                Feature feature = getFeature(Integer.parseInt(featID));
                 if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
                     removeFeature(feature, folder, user);
                 } else {
                     deleteFeature(feature, user);
                 }
-            } catch (Exception e) {
+            } catch (NumberFormatException | InsufficientPrivelegesException | StorageAccessException e) {
                 errFlag = true;
             }
         }
@@ -210,7 +210,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             try {
                 Feature relFeature = (feature.getRelationships().iterator().next()).getSample().getFeature();
                 throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + getFeatureIdentifyingName(relFeature));
-            } catch (Exception e) {
+            } catch (IllegalStateException e) {
                 throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship");
             }
         }
@@ -233,8 +233,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public void submitFeatures(String[] featIds, UserFolder folder, User user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
-        for (int i = 0; i < featIds.length; i++) {
-            submitFeature(getFeature(Integer.parseInt(featIds[i])), folder, user);
+        for (String featId : featIds) {
+            submitFeature(getFeature(Integer.parseInt(featId)), folder, user);
         }
     }
 
@@ -273,8 +273,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public void revokeFeatures(String[] featIds, UserFolder folder, User user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException {
-        for (int i = 0; i < featIds.length; i++) {
-            revokeFeature(getFeature(Integer.parseInt(featIds[i])), folder, user);
+        for (String featId : featIds) {
+            revokeFeature(getFeature(Integer.parseInt(featId)), folder, user);
         }
     }
 
@@ -295,8 +295,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public void alterFeatureTypes(String[] featIDs, String newFeatureType, UserFolder folder, User user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
-        for (int i = 0; i < featIDs.length; i++) {
-            alterFeatureType(getFeature(Integer.parseInt(featIDs[i])), newFeatureType, folder, user);
+        for (String featID : featIDs) {
+            alterFeatureType(getFeature(Integer.parseInt(featID)), newFeatureType, folder, user);
         }
     }
 
@@ -310,39 +310,45 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         String oldFeatureType = feature.getFeatureType();
         if (!oldFeatureType.equals(newFeatureType)) {
             Set<Sample> samples = feature.getSamples();
-            if (newFeatureType.equals(FREDConstants.OUTCROP)) {
-                if (!samples.isEmpty() && samples.size() > 1) {
-                    throw new IllegalStateException("Cannot change to Outcrop as locality has more than one sample");
-                }
-                feature.setDatumElevation(null);
-                feature.setDatumType(null);
-                feature.setDrillholeLicenceName(null);
-                feature.setFinishDate(null);
-                feature.setFinishDateRounding(null);
-                feature.setFinishDepth(null);
-                feature.setPerson(null);
-                feature.setStartDate(null);
-                feature.setStartDateRounding(null);
-                feature.setStartDepth(null);
-                for (Sample sample : samples) {
-                    sample.setAudit(feature.getAudit());
-                    sample.setBottomDepth(null);
-                    sample.setTopDepth(null);
-                    sample.setDrillType(null);
-                    fredDAO.saveOrUpdate(sample);
-                }
-            } else if (newFeatureType.equals(FREDConstants.DRILLHOLE)) {
-                for (Sample sample : samples) {
-                    breakApartSampleAudit(sample);
-                    fredDAO.saveOrUpdate(sample);
-                }
-            } else if (newFeatureType.equals(FREDConstants.VERTICAL_SECTION)) {
-                feature.setDrillholeLicenceName(null);
-                for (Sample sample : samples) {
-                    breakApartSampleAudit(sample);
-                    sample.setDrillType(null);
-                    fredDAO.saveOrUpdate(sample);
-                }
+            switch (newFeatureType) {
+                case FREDConstants.OUTCROP:
+                    if (!samples.isEmpty() && samples.size() > 1) {
+                        throw new IllegalStateException("Cannot change to Outcrop as locality has more than one sample");
+                    }
+                    feature.setDatumElevation(null);
+                    feature.setDatumType(null);
+                    feature.setDrillholeLicenceName(null);
+                    feature.setFinishDate(null);
+                    feature.setFinishDateRounding(null);
+                    feature.setFinishDepth(null);
+                    feature.setPerson(null);
+                    feature.setStartDate(null);
+                    feature.setStartDateRounding(null);
+                    feature.setStartDepth(null);
+                    for (Sample sample : samples) {
+                        sample.setAudit(feature.getAudit());
+                        sample.setBottomDepth(null);
+                        sample.setTopDepth(null);
+                        sample.setDrillType(null);
+                        fredDAO.saveOrUpdate(sample);
+                    }
+                    break;
+                case FREDConstants.DRILLHOLE:
+                    for (Sample sample : samples) {
+                        breakApartSampleAudit(sample);
+                        fredDAO.saveOrUpdate(sample);
+                    }
+                    break;
+                case FREDConstants.VERTICAL_SECTION:
+                    feature.setDrillholeLicenceName(null);
+                    for (Sample sample : samples) {
+                        breakApartSampleAudit(sample);
+                        sample.setDrillType(null);
+                        fredDAO.saveOrUpdate(sample);
+                    }
+                    break;
+                default:
+                    break;
             }
             AuditEdit edit = fredDAO.createNewAuditEdit();
             edit.setAudit(feature.getAudit());
@@ -363,8 +369,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public void mergeFeatures(Feature mergeToFeature, String[] mergeFeatIDs, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, NumberFormatException, IntrospectionException {
-        for (int i = 0; i < mergeFeatIDs.length; i++) {
-            mergeFeature(mergeToFeature, getFeature(Integer.parseInt(mergeFeatIDs[i])), folder, user);
+        for (String mergeFeatID : mergeFeatIDs) {
+            mergeFeature(mergeToFeature, getFeature(Integer.parseInt(mergeFeatID)), folder, user);
         }
     }
 
@@ -380,18 +386,16 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             FrNumber mergeFromFrNumber = mergeFromFeature.getFrNumber();
             FrNumber mergeFromYardFrNumber = mergeFromFeature.getYardFrNumber();
             //put in array as feature.getSamples() changes as you change sample's feature
-            Object[] samples = mergeFromFeature.getSamples().toArray();
+            Set<Sample> samples = mergeFromFeature.getSamples();
 
             //move all samples from merge feature to parent feature
-            for (int i = 0; i < samples.length; i++) {
-                Sample sample = (Sample) samples[i];
+            for (Sample sample : samples) {
                 //check audits - if same as feature then create new onw
                 if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
                     Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
                     fredDAO.saveOrUpdate(newAudit);
                     sample.setAudit(newAudit);
                 }
-
                 //add comments
                 AuditEdit edit = fredDAO.createNewAuditEdit();
                 edit.setAudit(sample.getAudit());
@@ -399,7 +403,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                 edit.setEditedDate(new Date());
                 edit.setComments("Sample merged into " + getFeatureIdentifyingName(mergeToFeature) + " from " + getFeatureIdentifyingName(mergeFromFeature));
                 fredDAO.saveOrUpdate(edit);
-
                 //set sample FRNumber if currently null
                 if (sample.getFrNumber() == null && mergeFromFrNumber != null) {
                     sample.setFrNumber(mergeFromFrNumber);
@@ -407,7 +410,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                 if (sample.getYardFrNumber() == null && mergeFromYardFrNumber != null) {
                     sample.setYardFrNumber(mergeFromYardFrNumber);
                 }
-
                 //delete any relationships that reference MergeToFeature (otherwise would be referencing itself
                 Set<Relationship> relationships = sample.getRelationships();
                 for (Relationship relationship : relationships) {
@@ -416,7 +418,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                         fredDAO.delete(relationship);
                     }
                 }
-
                 sample.setFeature(mergeToFeature);
                 mergeToFeature.getSamples().add(sample);
                 mergeFromFeature.getSamples().remove(sample);
@@ -451,8 +452,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public boolean folderContainsFeature(UserFolder folder, Feature feature) throws StorageAccessException {
         Feature[] features = getFeaturesInFolder(folder);
-        for (int i = 0; i < features.length; i++) {
-            if (features[i].equals(feature)) {
+        for (Feature feature1 : features) {
+            if (feature1.equals(feature)) {
                 return true;
             }
         }
@@ -460,7 +461,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public Feature[] getFeaturesInFolder(UserFolder folder) throws StorageAccessException {
-        HashSet<Feature> features = new HashSet<Feature>();
+        HashSet<Feature> features = new HashSet<>();
 
         //Get from feature_content
         Collection<? extends Feature> featuresToAdd = folder.getFolder().getFeatures();
@@ -491,7 +492,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             }
         }
 
-        Feature[] featuresArray = features.toArray(new Feature[features.size()]);
+        Feature[] featuresArray = features.toArray(Feature[]::new);
         Arrays.sort(featuresArray);
         return featuresArray;
     }
@@ -510,25 +511,25 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public List<Feature> getFeaturesBySampleSubquery(String sampleSubquery) throws StorageAccessException {
         List<Feature> cartesianFeatures = fredDAO.getList("select new Feature(s.feature.featureId, s.feature.frNumber) FROM Sample s WHERE s.sampleId in (" + sampleSubquery + ")", Feature.class);
-        Set<Feature> features = new HashSet<Feature>();
+        Set<Feature> features = new HashSet<>();
         features.addAll(cartesianFeatures);
         return FREDUtil.getSortedList(features);
     }
 
     public List<Feature> getFeaturesBySampleSubquery(List<Sample> lightweightSamples) throws StorageAccessException {
         if (lightweightSamples.isEmpty()) {
-            return new Vector<Feature>();
+            return new Vector<>();
         }
 
         int MAX_ITEMS = 1000;
         int offset = 0;
-        List<Feature> features = new ArrayList<Feature>();
+        List<Feature> features = new ArrayList<>();
 
         //chunk request due to Oracle list size limit
         while (offset * MAX_ITEMS < lightweightSamples.size()) {
-            StringBuffer buffer = new StringBuffer(1024);
+            StringBuilder buffer = new StringBuilder(1024);
             for (int i = 0; i < MAX_ITEMS && offset * MAX_ITEMS + i < lightweightSamples.size(); i++) {
-                int count = offset * MAX_ITEMS + i;
+//                int count = offset * MAX_ITEMS + i;
                 buffer.append(lightweightSamples.get(offset * MAX_ITEMS + i).getSampleId());
                 buffer.append(",");
             }
@@ -546,7 +547,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public List<Feature> getFeatures(List<Sample> samples) {
-        Set<Feature> features = new HashSet<Feature>();
+        Set<Feature> features = new HashSet<>();
         for (Sample sample : samples) {
             features.add(sample.getFeature());
         }
@@ -555,7 +556,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public static Feature[] getOrderedFeaturesInMasterfile(Folder masterfile) {
         Set<Feature> features = masterfile.getMasterfileFeatures();
-        Feature[] featuresArray = features.toArray(new Feature[features.size()]);
+        Feature[] featuresArray = features.toArray(Feature[]::new);
         Arrays.sort(featuresArray);
         return featuresArray;
     }
@@ -568,13 +569,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
         List<Feature> features = getFeaturesInMasterfile(masterfile.getFolder(), then, now, FREDConstants.APPROVED);
         Collections.sort(features);
-        return features.toArray(new Feature[features.size()]);
+        return features.toArray(Feature[]::new);
     }
 
     public Feature[] getWaitingFeatures(UserFolder masterfile) throws StorageAccessException {
         List<Feature> features = getFeaturesInMasterfile(masterfile.getFolder(), FREDConstants.WAITING);
         Collections.sort(features);
-        return features.toArray(new Feature[features.size()]);
+        return features.toArray(Feature[]::new);
     }
 
     public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate, String status) throws StorageAccessException {
@@ -590,6 +591,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     /**
      * Returns true if a user is allowed to view the locality always true if
      * user != null && status == approved
+     *
+     * @param user
+     * @param feature
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public boolean isAllowedReadFeature(User user, Feature feature) throws StorageAccessException {
         if (user == null) {
@@ -597,10 +603,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         }
         String status = feature.getAudit().getStatus();
         if (!status.equals(FREDConstants.APPROVED)) {
-            UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
+            UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId(), user);
             UserFolder mfFolder = null;
             if (feature.getMasterFile() != null) {
-                mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), user.getId().intValue());
+                mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId(), user.getId().intValue());
             }
             return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
         }
@@ -610,6 +616,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     /**
      * Returns true if a user is allowed to view the locality site information
      * always true if status == approved
+     *
+     * @param user
+     * @param feature
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public boolean isAllowedReadFeatureSite(User user, Feature feature) throws StorageAccessException {
         String status = feature.getAudit().getStatus();
@@ -617,10 +628,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             if (user == null) {
                 return false;
             }
-            UserFolder folder = folderUtil.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user.getId().intValue());
+            UserFolder folder = folderUtil.getUserFolder(feature.getAudit().getFolder().getFolderId(), user.getId().intValue());
             UserFolder mfFolder = null;
             if (feature.getMasterFile() != null) {
-                mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), user.getId().intValue());
+                mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId(), user.getId().intValue());
             }
             return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
         }
@@ -676,10 +687,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     /**
      * Returns true is the user is allowed to approve the locality
+     *
+     * @param user
+     * @param feature
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public boolean isAllowedApproveFeature(User user, Feature feature) throws StorageAccessException {
         if (WAITING.equals(feature.getAudit().getStatus())) {
-            UserFolder folder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), user.getId().intValue());
+            UserFolder folder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId(), user.getId().intValue());
             if (folder != null) {
                 return folder.isAllowedApproveLocalities();
             }
@@ -690,6 +706,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     /**
      * Returns true if the user has masterfile rights for this locality
      *
+     * @param user
+     * @param feature
+     * @param right
+     * @return
      * @throws StorageAccessException
      * @throws
      */
@@ -703,7 +723,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             return false;
         }
 
-        UserFolder masterfileFolder = folderUtil.getUserFolder(masterfile.getFolderId().intValue(), user.getId().intValue());
+        UserFolder masterfileFolder = folderUtil.getUserFolder(masterfile.getFolderId(), user.getId().intValue());
 
         return (masterfileFolder == null) ? false : (masterfileFolder.getRights() & right) > 0;
     }
@@ -713,7 +733,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             throw new IllegalArgumentException("Feature is not an outcrop");
         }
 
-        return new Vector<Sample>(feature.getSamples()).get(0);
+        return new Vector<>(feature.getSamples()).get(0);
     }
 
     public void approveFeature(Feature feature, String mapSheet, Integer serialNumber, String recollectionNumber, String comments, User user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
@@ -737,7 +757,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             feature.setFrNumber(frNumber);
             feature.getFolders().add(audit.getFolder());
             fredDAO.saveOrUpdate(feature);
-        } catch (Exception e) {
+        } catch (StorageAccessException e) {
         }
 
         //update audit table
@@ -820,6 +840,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
      * Returns the next available FR number - <b>not</b> saved to the DB
      *
      * @param feature
+     * @return
+     * @throws java.sql.SQLException
+     * @throws javax.naming.NamingException
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public FrNumber getNextAvailableFrNumber(Feature feature) throws SQLException, NamingException, StorageAccessException, IOException {
         String mapSheet = SiteModelUtil.getFrNumberMapSheet(feature);
@@ -830,6 +854,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
      * Returns the next available FR number - <b>not</b> saved to the DB
      *
      * @param mapSheet
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public FrNumber getNextAvailableFrNumber(String mapSheet) throws StorageAccessException {
         int nextAvailable = getNextAvailableSerialNumber(mapSheet);
@@ -848,10 +874,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     /**
-     * Creates a blank feature of the given type, in the given folder. The
+     * Creates a blank feature of the given type, in the given folder.The
      * feature and its associated entries are _not_ committed to persistent
      * storage.
      *
+     * @param folderId
+     * @param featureType
+     * @param user
+     * @return
      * @throws StorageAccessException
      */
     public Feature createFeature(int folderId, String featureType, User user) throws StorageAccessException {
@@ -883,14 +913,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             //range
             if (frNumStr.indexOf("-") > 0) {
                 String[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
-                Integer endSerialNum = new Integer(frNumStr.substring(frNumStr.indexOf("-") + 1));
-                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], new Integer(frNumBits[1]), endSerialNum);
+                Integer endSerialNum = Integer.valueOf(frNumStr.substring(frNumStr.indexOf("-") + 1));
+                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], frNumBits[1], endSerialNum);
             }
- 
+
             //single
             frNumStr = sanitiseFredNumberString(frNumStr);
 
-            List<FrNumber> frNumbers = new Vector<FrNumber>();
+            List<FrNumber> frNumbers = new Vector<>();
             FrNumber frNum = getMetricFrNumberByString(frNumStr, false);
             if (frNum != null) {
                 frNumbers.add(frNum);
@@ -910,11 +940,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                     if (recoll == null) {
                         serial = num.substring(frNumStr.indexOf("/f") + 2);
                         return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ?",
-                                FrNumber.class, mapSheet, new Integer(serial));
+                                FrNumber.class, mapSheet, serial);
                     } else {
                         serial = num.substring(0, num.indexOf(recoll)).substring(frNumStr.indexOf("/f") + 2);
                         return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ? AND f.recollectionNumber=?",
-                                FrNumber.class, mapSheet, new Integer(serial), recoll);
+                                FrNumber.class, mapSheet, serial, recoll);
                     }
                 }
             }
@@ -945,7 +975,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         if (frNumber == null && createNew) {
             frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
             frNumber.setMapSheet(frNumBits[0]);
-            frNumber.setSerialNumber(new Integer(frNumBits[1]));
+            frNumber.setSerialNumber(Integer.valueOf(frNumBits[1]));
             frNumber.setRecollectionNumber(frNumBits[2]);
             if (yard) {
                 frNumber.setObsolete("Y");
@@ -953,33 +983,35 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         }
         return frNumber;
     }
-    
-    private String sanitiseFredNumberString(String origFrNumStr)   {
+
+    private String sanitiseFredNumberString(String origFrNumStr) {
         String frNumStr = origFrNumStr;
-        
-        if(!frNumStr.contains("/f")) {
-            if(frNumStr.contains("/F"))  {
+
+        if (!frNumStr.contains("/f")) {
+            if (frNumStr.contains("/F")) {
                 frNumStr = origFrNumStr.replace("/F", "/f");
-            } else if(frNumStr.contains("/")) {
+            } else if (frNumStr.contains("/")) {
                 frNumStr = origFrNumStr.replace("/", "/f");
-            } else if(frNumStr.indexOf("f") > 1) {
+            } else if (frNumStr.indexOf("f") > 1) {
                 frNumStr = origFrNumStr.replace("f", "/f");
-            } else if(frNumStr.indexOf("F") > 1) {
+            } else if (frNumStr.indexOf("F") > 1) {
                 frNumStr = origFrNumStr.replace("F", "/f");
             }
         }
-        
+
         return frNumStr;
     }
-   
+
     /**
-     * returns array containing 0. Map Sheet 1. Serial Number (with leading
-     * zeros) 2. Recollection Number
+     * returns array containing 0.Map Sheet 1.Serial Number (with leading zeros)
+     * 2. Recollection Number
      *
+     * @param frNumStr
+     * @return
      * @throws DataInputException
      */
     public String[] parseFrNumber(String frNumStr) throws DataInputException {
-        
+
         frNumStr = sanitiseFredNumberString(frNumStr);
         if (frNumStr != null && frNumStr.indexOf("/f") > 0) {
             String recollectionNumber;
@@ -987,13 +1019,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             String mapSheet = frNumStr.substring(0, frNumStr.indexOf("/f")).toUpperCase();
             String num = frNumStr.substring(frNumStr.indexOf("/f") + 2);
             try {
-                serialNumber = new Integer(num);
+                serialNumber = Integer.valueOf(num);
                 recollectionNumber = null;
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 try {
-                    serialNumber = new Integer(num.substring(0, num.length() - 1));
+                    serialNumber = Integer.valueOf(num.substring(0, num.length() - 1));
                     recollectionNumber = num.substring(num.length() - 1).toUpperCase();
-                } catch (Exception e1) {
+                } catch (NumberFormatException e1) {
                     throw new DataInputException("FR Number", "Badly formed FR Number");
                 }
             }
@@ -1010,8 +1042,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     /**
-     * Returns the feature for this FR number. If FEATURE not found then also
+     * Returns the feature for this FR number.If FEATURE not found then also
      * checks SAMPLE
+     *
+     * @param frNum
+     * @return
      */
     public Feature getFeature(FrNumber frNum) {
         try {
@@ -1046,7 +1081,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         if (bottomDepthAsString.length() > 0) {
             try {
                 bottomDepth = Double.parseDouble(bottomDepthAsString);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 throw new DataInputException("Sample Depths", "Data Missing or Invalid");
             }
         }
@@ -1054,7 +1089,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         if (drillTypeIdAsString.length() > 0) {
             try {
                 drillTypeId = Integer.parseInt(drillTypeIdAsString);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 throw new DataInputException("Sample Depths", "Data Missing or Invalid");
             }
         }
@@ -1083,21 +1118,27 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         return fredDAO.saveOrUpdate(audit);
     }
 
+    @Override
     public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
         return fredDAO.saveOrUpdate(audit);
     }
 
     public static Collection<Sample> getSortedSamples(Feature feature) {
         Set<Sample> sampleSet = feature.getSamples();
-        Vector<Sample> v = new Vector<Sample>(sampleSet);
+        Vector<Sample> v = new Vector<>(sampleSet);
         Collections.sort(v);
         return v;
     }
 
     /**
+     * @param feature
+     * @param user
+     * @param comments
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      * @deprecated use saveFeature(Feature feature, User user, String comments,
      * int dataOriginId)
      */
+    @Deprecated
     public void saveFeature(Feature feature, User user, String comments) throws StorageAccessException {
         saveFeature(feature, user, comments, FREDConstants.DATA_ORIGIN_ONLINE);
     }
@@ -1111,7 +1152,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             audit.setStatus(FREDConstants.WORKING);
             audit.setCreatedById(user.getId().intValue());
             audit.setCreatedDate(new Date());
-            audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(new Integer(dataOriginId)));
+            audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(dataOriginId));
         } else if (FeatureUtil.isBacklogFeature(feature)) {
             //Backlog editing feature
             AuditEdit edit = fredDAO.createNewAuditEdit();
@@ -1159,6 +1200,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
      * Performs the inverse of getFeatureIdentifyingName (except where name is a
      * coordinate)
      *
+     * @param ident
+     * @return
      * @throws StorageAccessException
      */
     public Feature getFeatureWithIdentifyingName(String ident) throws StorageAccessException {
@@ -1170,7 +1213,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             if (frNum != null) {
                 return getFeature(frNum);
             }
-        } catch (Exception e) {
+        } catch (StorageAccessException | DataInputException e) {
         }
         return getFeatureWithName(ident);
     }
@@ -1183,6 +1226,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     /**
      * Finds feature in folder with matching FeatureName
      *
+     * @param ident
+     * @param folder
+     * @return
      * @throws StorageAccessException
      */
     public Feature getFeatureWithName(String ident, UserFolder folder) throws StorageAccessException {
@@ -1210,6 +1256,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     /**
      * Backlog method
      *
+     * @param folderToAddTo
+     * @param mapSheet
+     * @param masterFile
+     * @param end
+     * @param start
+     * @param user
      * @throws StorageAccessException
      */
     public void addToBacklog(UserFolder folderToAddTo, String mapSheet, int start, int end, UserFolder masterFile, User user) throws StorageAccessException {
@@ -1252,16 +1304,23 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         return getFrNumber(mapSheet + "/f" + serialNum + DBUtils.nvl(recollectionNumber));
     }
 
-    /** Same logic as getFrNumber but with no database access or GOL. */
+    /**
+     * Same logic as getFrNumber but with no database access or GOL.
+     *
+     * @param mapSheet
+     * @param serialNumber
+     * @param recollectionNumber
+     * @return
+     */
     public String asFrNumberString(String mapSheet, Integer serialNumber, String recollectionNumber) {
         String serialNum = String.valueOf(serialNumber);
         while (serialNum.length() < 4) {
             serialNum = "0" + serialNum;
         }
-        
-        return mapSheet + "/f" + serialNum + Objects.toString(recollectionNumber, "");  
+
+        return mapSheet + "/f" + serialNum + Objects.toString(recollectionNumber, "");
     }
-    
+
     public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
         return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.obsolete IS NULL", FrNumber.class, mapSheet);
     }
@@ -1270,7 +1329,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ? AND f.obsolete IS NULL", FrNumber.class, mapSheet, start, end);
     }
 
-    private static String RECOLL_COMMENTS = "*Recoll:";
+    private static final String RECOLL_COMMENTS = "*Recoll:";
 
     public static String combineWorkingComments(String recoll, String workComm) {
         if (recoll != null && recoll.length() > 0) {
@@ -1280,9 +1339,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     /**
-     * Splits the recollection data from AUDIT.WORKING_COMMENTS. Returns a
-     * String array with two values. First value contains Working Comments and
-     * second value contains Recollection (if present) or NULL
+     * Splits the recollection data from AUDIT.WORKING_COMMENTS.Returns a String
+     * array with two values.First value contains Working Comments and second
+     * value contains Recollection (if present) or NULL
+     *
+     * @param comments
+     * @return
      */
     public static String[] splitWorkingComments(String comments) {
         if (comments == null) {
@@ -1307,7 +1369,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         try {
             return fredDAO.getList("SELECT MAX(f.audit.approvedDate) FROM Feature AS f", Date.class
             ).get(0);
-        } catch (Exception e) {
+        } catch (StorageAccessException e) {
             return null;
         }
     }
@@ -1315,7 +1377,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     public static String formatDepthForOutput(Double depth, String unit) {
         StringBuffer d = new StringBuffer(FREDUtil.formatDoubleForOutput(depth, 3)).append(" ").append(unit);
         if (FEET_UNIT.equals(unit)) {
-            d.append(" (").append(FREDUtil.formatDoubleForOutput(new Double(depth.doubleValue() * FT_TO_M), 3)).append(" m)");
+            d.append(" (").append(FREDUtil.formatDoubleForOutput(depth * FT_TO_M, 3)).append(" m)");
         }
         return d.toString();
     }
@@ -1332,7 +1394,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public List<SimpleNameableAndIdentifiable> getFrMapSheetsAsNameable() throws StorageAccessException {
         List<String> sheetsAsString = getFrMapSheets();
-        List<SimpleNameableAndIdentifiable> sheets = new Vector<SimpleNameableAndIdentifiable>();
+        List<SimpleNameableAndIdentifiable> sheets = new Vector<>();
         for (String sheetAsString : sheetsAsString) {
             SimpleNameableAndIdentifiable sheet = new SimpleNameableAndIdentifiable(sheetAsString, sheetAsString);
             sheets.add(sheet);

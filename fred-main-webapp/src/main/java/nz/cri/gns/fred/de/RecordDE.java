@@ -42,7 +42,6 @@ import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
-
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.RecordDE");
 
     protected User user;
@@ -80,7 +79,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
             throw new InsufficientPrivelegesException("Insufficient rights to view record");
         }
         if (record.getAudit().getFolder() != null) {
-            workingFolder = folderUtil.getUserFolder(record.getAudit().getFolder().getFolderId().intValue(), user);
+            workingFolder = folderUtil.getUserFolder(record.getAudit().getFolder().getFolderId(), user);
         }
 
         try {
@@ -93,6 +92,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         }
     }
 
+    @Override
     public void copyFrom(int recordId) throws InsufficientPrivelegesException, StorageAccessException {
         Record fromRecord = recordUtil.getRecord(recordId);
         if (!recordUtil.isAllowedReadRecord(user, fromRecord)) {
@@ -115,7 +115,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
             //Adoptors
             Set<Person> adoptors = adoption.getAdoptors();
             if (adoptors == null) {
-                adoptors = new HashSet<Person>();
+                adoptors = new HashSet<>();
                 adoption.setAdoptors(adoptors);
             } else {
                 adoptors.clear();
@@ -138,7 +138,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
             //Identifiers
             Set<Person> identifiers = pal.getIdentifiers();
             if (identifiers == null) {
-                identifiers = new HashSet<Person>();
+                identifiers = new HashSet<>();
                 pal.setIdentifiers(identifiers);
             } else {
                 identifiers.clear();
@@ -150,7 +150,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
             //Pal lists
             Set<PaleontologyListEntry> lists = pal.getListEntries();
             if (lists == null) {
-                lists = new HashSet<PaleontologyListEntry>();
+                lists = new HashSet<>();
                 pal.setListEntries(lists);
             } else {
                 lists.clear();
@@ -165,8 +165,9 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         //TODO not copying metas....for now ???
     }
 
+    @Override
     public List<IconnedLink> getNavigation() {
-        List<IconnedLink> links = new Vector<IconnedLink>(4);
+        List<IconnedLink> links = new Vector<>(4);
         try {
             String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId()))
                     + ((record.getRecordId() == null) ? "" : ("&RecID=" + record.getRecordId()))
@@ -183,6 +184,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         return links;
     }
 
+    @Override
     public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws SQLException, IOException {
         reinitialise(factory);
         Template template = provider.getContent("record.de.form");
@@ -213,6 +215,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         template.loadAll(out);
     }
 
+    @Override
     public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
         out.write("<tr><td>" + record.getRecordId() + "</td>\n");
         out.write("<td>" + FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature()) + ((!FREDConstants.OUTCROP.equals(record.getSample().getFeature().getFeatureType())) ? ": " + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : "") + "</td>\n");
@@ -222,6 +225,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         out.write("<td>" + DBUtils.nvl(record.getAudit().getWorkingComments()) + "</td>\n");
     }
 
+    @Override
     public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
         if (!isAllowedSave) {
             throw new InsufficientPrivelegesException("Insufficient rights to save this record");
@@ -233,7 +237,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
             audit.setStatus(FREDConstants.WORKING);
             audit.setCreatedById(user.getId().intValue());
             audit.setCreatedDate(new Date());
-            audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(new Integer(dataOriginId)));
+            audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(dataOriginId));
             recordUtil.saveOrUpdate(audit);
             recordUtil.saveOrUpdate(record);
         } else {
@@ -243,6 +247,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         return record.getRecordId();
     }
 
+    @Override
     public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException {
         if (!isAllowedSubmit) {
             throw new InsufficientPrivelegesException("Insufficient rights to submit this record");
@@ -256,28 +261,30 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
     protected void checkMandatoryFields() throws DataInputException {
     }
 
+    @Override
     public int getWorkingFolderID() {
         return workingFolder.getFolderId();
     }
 
+    @Override
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
-            SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
-            record.getAudit().setWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm")));
-        }
+        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
+        record.getAudit().setWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm")));
+    }
 
     protected void reinitialise(DAOFactory factory) {
         recordUtil = new RecordUtil(factory);
 
         if (record.getRecordId() != null) {
             try {
-                record = recordUtil.getRecord(record.getRecordId().intValue());
+                record = recordUtil.getRecord(record.getRecordId());
                 if (copyRecord != null) {
                     getFromDatabase(copyRecord);
                     copyRecord = null;
                 }
             } catch (StorageAccessException e) {
                 log.log(Level.WARNING, null, e);
-           }
+            }
         }
     }
 

@@ -6,34 +6,64 @@ public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.Backlo
 
     private static final long serialVersionUID = 20050818L;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private Integer objectId;
 
-    /** persistent field */
+    /**
+     * persistent field
+     */
     private String mapNumber;
 
-    /** persistent field */
+    /**
+     * persistent field
+     */
     private String mapName;
-    
-    /** persistent field */
+
+    /**
+     * persistent field
+     */
     private String status;
 
-    /** persistent field */
+    /**
+     * persistent field
+     */
     private Integer masterfileId;
 
-    /** persistent field */
+    /**
+     * persistent field
+     */
     private Integer localityCount;
-    
-    /** persistent field */
+
+    /**
+     * persistent field
+     */
     private Integer processingCount;
-    
-    /** persistent field */
+
+    /**
+     * persistent field
+     */
     private Integer completedCount;
-    
-    /** persistent field */
+
+    /**
+     * persistent field
+     */
     private Integer newCount;
-    
-    /** full constructor */
+
+    /**
+     * full constructor
+     *
+     * @param objectId
+     * @param mapNumber
+     * @param mapName
+     * @param status
+     * @param masterfileId
+     * @param localityCount
+     * @param processingCount
+     * @param completedCount
+     * @param newCount
+     */
     public BacklogStatus(Integer objectId, String mapNumber, String mapName, String status, Integer masterfileId, Integer localityCount, Integer processingCount, Integer completedCount, Integer newCount) {
         this.objectId = objectId;
         this.mapNumber = mapNumber;
@@ -46,102 +76,124 @@ public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.Backlo
         this.newCount = newCount;
     }
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public BacklogStatus() {
     }
 
-	public Integer getObjectId() {
-		return this.objectId;
-	}
-
-	public void setObjectId(Integer objectId) {
-		this.objectId = objectId;
-	}
-
-	public String getMapNumber() {
-		return mapNumber;
-	}
-
-	public void setMapNumber(String mapNumber) {
-		this.mapNumber = mapNumber;
-	}
-
-	public String getMapName() {
-		return this.mapName;
-	}
-
-	public void setMapName(String mapName) {
-		this.mapName = mapName;
-	}
-
-	public String getStatus() {
-		return this.status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public Integer getMasterfileId() {
-		return this.masterfileId;
-	}
-
-	public void setMasterfileId(Integer masterfileId) {
-		this.masterfileId = masterfileId;
-	}
-
-	public Integer getLocalityCount() {
-		return this.localityCount;
-	}
-
-	public void setLocalityCount(Integer localityCount) {
-		this.localityCount = localityCount;
-	}
-
-	public Integer getProcessingCount() {
-		return this.processingCount;
-	}
-
-	public void setProcessingCount(Integer processingCount) {
-		this.processingCount = processingCount;
-	}
-
-	public Integer getCompletedCount() {
-		return this.completedCount;
-	}
-
-	public void setCompletedCount(Integer completedCount) {
-		this.completedCount = completedCount;
-	}
-
-	public Integer getNewCount() {
-		return this.newCount;
-	}
-
-	public void setNewCount(Integer newCount) {
-		this.newCount = newCount;
-	}
-	
-	public Integer getNotStartedCount() {
-		return new Integer(this.localityCount.intValue() - this.processingCount.intValue() - this.completedCount.intValue() - this.newCount.intValue());
-	}
-	
     @Override
-	public String toString() {
+    public Integer getObjectId() {
+        return this.objectId;
+    }
+
+    @Override
+    public void setObjectId(Integer objectId) {
+        this.objectId = objectId;
+    }
+
+    @Override
+    public String getMapNumber() {
         return mapNumber;
     }
 
-	public int compareTo(nz.cri.gns.fred.model.BacklogStatus arg0) {
-		return mapNumber.compareTo(((BacklogStatus)arg0).mapNumber);
-	}
+    @Override
+    public void setMapNumber(String mapNumber) {
+        this.mapNumber = mapNumber;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		return o instanceof BacklogStatus && ((BacklogStatus)o).objectId.equals(objectId);
-	}
-	
-	@Override
-	public int hashCode() {
-		return 943 * objectId;
-	}
+    @Override
+    public String getMapName() {
+        return this.mapName;
+    }
+
+    @Override
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
+    }
+
+    @Override
+    public String getStatus() {
+        return this.status;
+    }
+
+    @Override
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public Integer getMasterfileId() {
+        return this.masterfileId;
+    }
+
+    @Override
+    public void setMasterfileId(Integer masterfileId) {
+        this.masterfileId = masterfileId;
+    }
+
+    @Override
+    public Integer getLocalityCount() {
+        return this.localityCount;
+    }
+
+    @Override
+    public void setLocalityCount(Integer localityCount) {
+        this.localityCount = localityCount;
+    }
+
+    @Override
+    public Integer getProcessingCount() {
+        return this.processingCount;
+    }
+
+    @Override
+    public void setProcessingCount(Integer processingCount) {
+        this.processingCount = processingCount;
+    }
+
+    @Override
+    public Integer getCompletedCount() {
+        return this.completedCount;
+    }
+
+    @Override
+    public void setCompletedCount(Integer completedCount) {
+        this.completedCount = completedCount;
+    }
+
+    @Override
+    public Integer getNewCount() {
+        return this.newCount;
+    }
+
+    @Override
+    public void setNewCount(Integer newCount) {
+        this.newCount = newCount;
+    }
+
+    @Override
+    public Integer getNotStartedCount() {
+        return this.localityCount - this.processingCount - this.completedCount - this.newCount;
+    }
+
+    @Override
+    public String toString() {
+        return mapNumber;
+    }
+
+    @Override
+    public int compareTo(nz.cri.gns.fred.model.BacklogStatus arg0) {
+        return mapNumber.compareTo(((BacklogStatus) arg0).mapNumber);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof BacklogStatus && ((BacklogStatus) o).objectId.equals(objectId);
+    }
+
+    @Override
+    public int hashCode() {
+        return 943 * objectId;
+    }
 }
