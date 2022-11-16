@@ -1,6 +1,6 @@
 package nz.cri.gns.fred.util.test;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 import org.junit.Test;
 
@@ -21,7 +21,7 @@ public class TaxonomicUtilTest {
                 "group name"},
             {"spp.",
                 "name",
-                "name n. spp."},            
+                "name n. spp."},
             {"spp.",
                 "name",
                 "name spp."},
