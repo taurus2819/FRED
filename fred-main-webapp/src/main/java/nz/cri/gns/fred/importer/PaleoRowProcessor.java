@@ -291,7 +291,7 @@ public class PaleoRowProcessor extends RowProcessor {
             r = recordUtil.createRecord(sample, RecordUtil.PALEONTOLOGICAL, folderId, user);
 
             // PDB-259
-            r.getAudit().setDataOrigin(this.auditUtil.getDataOrigin(new Integer(FREDConstants.DATA_ORIGIN_EXCEL)));
+            r.getAudit().setDataOrigin(this.auditUtil.getDataOrigin(FREDConstants.DATA_ORIGIN_EXCEL));
         } catch (StorageAccessException ex) {
             throw new MgException(ex);
         }
@@ -490,7 +490,7 @@ public class PaleoRowProcessor extends RowProcessor {
         String localityName = localityNameMatrix.get(columnNum);
         Read r = null;
         try {
-            SchemaSingleton schema = SchemaSingleton.getInstance(importConn);
+            schema = SchemaSingleton.getInstance(importConn);
             r = schema.select("SAMPLE");
             r.addColumn("SAMPLE_ID");
             r.addWhere("FEATURE_ID$FR_ID$FR_NUMBER", localityName);

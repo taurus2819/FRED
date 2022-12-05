@@ -6,16 +6,12 @@
 %><%@page import="java.io.BufferedReader"
 %><%@page import="java.io.ByteArrayOutputStream"
 %><%
-	boolean okFlag = false;
 	
-	String rawUrl = request.getParameter("url");
-	URL url = new URL(rawUrl.replace("/gwc/service",""));
+	String rawUrl = request.getParameter("url").replace("/gwc/service", "");
+	URL url = new URL(rawUrl);
 	
-	if (url.getHost().equals("data-dev.gns.cri.nz") || url.getHost().equals("data-uat.gns.cri.nz") || url.getHost().equals("data.gns.cri.nz")) 
-		okFlag = true;
-
-	if (okFlag) {
-		BufferedReader reader = request.getReader();
+	if (url.getHost().equals("dev-app.gns.cri.nz") || url.getHost().equals("data-dev.gns.cri.nz") || url.getHost().equals("data-uat.gns.cri.nz") || url.getHost().equals("data.gns.cri.nz")) {
+            BufferedReader reader = request.getReader();
 	    String s;
 	    StringBuffer postContent = new StringBuffer();
 	    while((s = reader.readLine()) != null)

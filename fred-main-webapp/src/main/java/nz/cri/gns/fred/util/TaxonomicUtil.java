@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.util;
 
 import java.beans.IntrospectionException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.hibernate.expression.Criterion;
 import net.sf.hibernate.expression.Expression;
@@ -30,10 +32,11 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class TaxonomicUtil extends ModelUtil {
 
-    private FredDAO fredDAO;
+    private final FredDAO fredDAO;
 
     public TaxonomicUtil(DAOFactory dao) {
         super(dao);
@@ -54,7 +57,7 @@ public class TaxonomicUtil extends ModelUtil {
 
     public List<TaxonomicGroup> getTaxonomicGroupsIsPanelistOf(User user) throws StorageAccessException {
         FrUserView frUser = fredDAO.get(user.getId().intValue(), nz.cri.gns.fred.hibernate.FrUserView.class);
-        List<TaxonomicGroup> groups = new Vector<TaxonomicGroup>();
+        List<TaxonomicGroup> groups = new Vector<>();
         for (TaxonomicGroup group : frUser.getTaxonomicGroups()) {
             groups.add(group);
         }
@@ -63,7 +66,7 @@ public class TaxonomicUtil extends ModelUtil {
     }
 
     public boolean isUserPanelistOf(TaxonomicGroup group, User user) throws StorageAccessException {
-        Integer userId = new Integer(user.getId().intValue());
+        Integer userId = user.getId().intValue();
         for (FrUserView frUser : group.getPanelists()) {
             if (frUser.getUserId().equals(userId)) {
                 return true;
@@ -117,6 +120,9 @@ public class TaxonomicUtil extends ModelUtil {
     }
 
     /**
+     * @param group
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      * @deprecated use getTaxaCount
      */
     @Deprecated
@@ -215,13 +221,13 @@ public class TaxonomicUtil extends ModelUtil {
     }
 
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
-        List<Criterion> criteria = new Vector<Criterion>();
+        List<Criterion> criteria = new Vector<>();
         if (taxonomicGroup != null) {
             criteria.add(Expression.eq("taxonomicGroup", taxonomicGroup));
         }
         criteria.add(Expression.eq("taxonomicName", name));
         List<Taxon> taxa = fredDAO.getList(Taxon.class, criteria);
-        if (taxa.size() > 0) {
+        if (!taxa.isEmpty()) {
             Taxon taxon = taxa.get(0);
             if (author != null && (taxon.getAuthor() == null || taxon.getAuthor().length() == 0)) {
                 //If no author then fill in the gap.
@@ -252,7 +258,7 @@ public class TaxonomicUtil extends ModelUtil {
             fredDAO.saveOrUpdate(taxon);
         } catch (StorageAccessException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (IntrospectionException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -300,13 +306,13 @@ public class TaxonomicUtil extends ModelUtil {
         if (commentsStr == null || commentsStr.length() == 0) {
             return decode;
         }
-        if (commentsStr.indexOf("|") < 0) {
+        if (!commentsStr.contains("|")) {
             try {
                 //if numeric then value goes in SPEC_COUNT else value goes in COMMENTS
                 Integer.parseInt(commentsStr);
                 decode[0] = commentsStr;
                 return decode;
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 decode[2] = commentsStr;
                 return decode;
             }
@@ -333,7 +339,7 @@ public class TaxonomicUtil extends ModelUtil {
                 try {
                     Integer.parseInt(comments);
                     return "||" + comments;
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     return comments;
                 }
             }
@@ -359,7 +365,7 @@ public class TaxonomicUtil extends ModelUtil {
             Document doc = db.parse(xml);
             Node existsNode = doc.getElementsByTagName("exists").item(0);
             return (existsNode != null);
-        } catch (Exception e) {
+        } catch (IOException | ParserConfigurationException | SAXException e) {
         }
         return false;
     }

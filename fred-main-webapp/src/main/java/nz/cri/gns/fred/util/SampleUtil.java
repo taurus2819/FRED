@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 
@@ -67,89 +68,119 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
         /**
          * Throws IllegalStateException...always
+         *
+         * @return
          */
+        @Override
         public Integer getRelationshipId() {
             throw new IllegalStateException("'NoIdRelationship'....get it?");
         }
 
         /**
          * Does nothing
+         *
+         * @param relationshipId
          */
+        @Override
         public void setRelationshipId(Integer relationshipId) {
         }
 
+        @Override
         public RelationType getRelationType() {
             return relationType;
         }
 
+        @Override
         public void setRelationType(RelationType relationType) {
             this.relationType = relationType;
         }
 
+        @Override
         public Integer getStratUnitId() {
             return stratUnitId;
         }
 
+        @Override
         public void setStratUnitId(Integer stratUnitId) {
             this.stratUnitId = stratUnitId;
         }
 
+        @Override
         public Double getDistance() {
             return distance;
         }
 
+        @Override
         public void setDistance(Double distance) {
             this.distance = distance;
         }
 
+        @Override
         public String getDistanceMod() {
             return distanceMod;
         }
 
+        @Override
         public void setDistanceMod(String distanceMod) {
             this.distanceMod = distanceMod;
         }
 
+        @Override
         public Double getDistanceRange() {
             return distanceRange;
         }
 
+        @Override
         public void setDistanceRange(Double distanceRange) {
             this.distanceRange = distanceRange;
         }
 
+        @Override
         public Feature getFeature() {
             return feature;
         }
 
+        @Override
         public void setFeature(Feature feature) {
             this.feature = feature;
         }
 
+        @Override
         public RelationshipType getRelationshipType() {
             return relationshipType;
         }
 
+        @Override
         public void setRelationshipType(RelationshipType relationshipType) {
             this.relationshipType = relationshipType;
         }
 
+        @Override
         public Sample getSample() {
             return sample;
         }
 
+        @Override
         public void setSample(Sample sample) {
             this.sample = sample;
         }
 
+        @Override
         public String getStratUnit() {
             return stratUnit;
         }
 
+        @Override
         public void setStratUnit(String stratUnit) {
             this.stratUnit = stratUnit;
         }
 
+        /**
+         *
+         * @param o
+         * @return
+         */
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Relationship)) {
                 return false;
@@ -157,8 +188,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
             Relationship rel = (Relationship) o;
 
-            return distance == rel.getDistance()
-                    && distanceRange == rel.getDistanceRange()
+            return Objects.equals(distance, rel.getDistance())
+                    && Objects.equals(distanceRange, rel.getDistanceRange())
                     && FREDUtil.equals(distanceMod, rel.getDistanceMod(), true)
                     && FREDUtil.equals(feature, rel.getFeature(), true)
                     && FREDUtil.equals(relationshipType, rel.getRelationshipType(), true)
@@ -168,6 +199,22 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
                     && FREDUtil.equals(stratUnitId, rel.getStratUnitId(), true);
         }
 
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 41 * hash + Objects.hashCode(this.relationType);
+            hash = 41 * hash + Objects.hashCode(this.stratUnitId);
+            hash = 41 * hash + Objects.hashCode(this.stratUnit);
+            hash = 41 * hash + Objects.hashCode(this.distance);
+            hash = 41 * hash + Objects.hashCode(this.distanceMod);
+            hash = 41 * hash + Objects.hashCode(this.distanceRange);
+            hash = 41 * hash + Objects.hashCode(this.sample);
+            hash = 41 * hash + Objects.hashCode(this.feature);
+            hash = 41 * hash + Objects.hashCode(this.relationshipType);
+            return hash;
+        }
+
+        @Override
         public String toString() {
             return SampleUtil.getRelationshipDescription(this);
         }
@@ -188,7 +235,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         }
     }
 
-    private FredDAO fredDAO;
+    private final FredDAO fredDAO;
     private FeatureUtil featureUtil;
 
     public SampleUtil(DAOFactory factory) {
@@ -198,8 +245,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public Sample findSample(String localityName) throws StorageAccessException {
-        FeatureUtil featureUtil = new FeatureUtil(factory);
-        if (localityName.indexOf(":") < 0) {
+        featureUtil = new FeatureUtil(factory);
+        if (!localityName.contains(":")) {
             Feature feature = featureUtil.getFeatureWithIdentifyingName(localityName);
             if (feature != null && feature.getFeatureType().equals(OUTCROP)) {
                 return featureUtil.getOutcropSample(feature);
@@ -219,10 +266,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public Sample findOrCreateSample(String localityName, User user) throws StorageAccessException, DataInputException, InsufficientPrivelegesException {
-        if (localityName.indexOf(":") < 0) {
+        if (!localityName.contains(":")) {
             return findSample(localityName);
         }
-        FeatureUtil featureUtil = new FeatureUtil(factory);
+        featureUtil = new FeatureUtil(factory);
         Feature feature = featureUtil.getFeatureWithIdentifyingName(localityName.substring(0, localityName.indexOf(":")).trim());
         if (feature != null && !feature.getFeatureType().equals(OUTCROP)) {
             String sampleName = localityName.substring(localityName.indexOf(":") + 1).trim();
@@ -270,11 +317,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     /**
-     * @param sample
+     * @param topDepth
+     * @param bottomDepth
+     * @param unit
+     * @param drillType
      * @return
      */
     public static String getDrillHoleDepthDescription(Double topDepth, Double bottomDepth, String unit, DrillType drillType) {
-        StringBuffer desc = new StringBuffer();
+        StringBuilder desc = new StringBuilder();
 
         if (topDepth != null) {
             desc.append(FREDUtil.formatDoubleForOutput(topDepth, 3)).append(" ").append(unit);
@@ -286,10 +336,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         if (FEET_UNIT.equals(unit)) {
             desc.append(" (");
             if (topDepth != null) {
-                desc.append(FREDUtil.formatDoubleForOutput(new Double(topDepth * FT_TO_M), 3)).append(" m");
+                desc.append(FREDUtil.formatDoubleForOutput((topDepth * FT_TO_M), 3)).append(" m");
             }
             if (bottomDepth != null) {
-                desc.append(" - ").append(FREDUtil.formatDoubleForOutput(new Double(bottomDepth * FT_TO_M), 3)).append(" m");
+                desc.append(" - ").append(FREDUtil.formatDoubleForOutput((bottomDepth * FT_TO_M), 3)).append(" m");
             }
             desc.append(")");
         }
@@ -304,9 +354,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     public Object[] parseDrillHoleDepthDescription(String desc) throws StorageAccessException, DataInputException {
         try {
             Object[] depths = new Object[4];
-            if (desc.indexOf("-") < 0) {
+            if (!desc.contains("-")) {
                 String[] bits = desc.split(" ");
-                depths[0] = new Double(bits[0]);
+                depths[0] = Double.valueOf(bits[0]);
                 depths[1] = null;
                 depths[2] = bits[1];
                 if (bits.length > 2) {
@@ -317,9 +367,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
             } else {
                 String[] bits = desc.split("-");
                 String[] littleBits = bits[0].trim().split(" ");
-                depths[0] = new Double(littleBits[0]);
+                depths[0] = Double.valueOf(littleBits[0]);
                 littleBits = bits[1].trim().split(" ");
-                depths[1] = new Double(littleBits[0]);
+                depths[1] = Double.valueOf(littleBits[0]);
                 depths[2] = littleBits[1];
                 if (littleBits.length > 2) {
                     depths[3] = getDrillType(littleBits[2]);
@@ -330,7 +380,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
             return depths;
         } catch (StorageAccessException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             throw new DataInputException("Drillhole Depth", "Incorrectly formatted");
         }
     }
@@ -342,12 +392,15 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     /**
      * Returns the Sample immediately above the given Sample in a drillhole or
      * vertical section
+     *
+     * @param sample
+     * @return
      */
     public static Sample getSampleAbove(Sample sample) {
         if (!hasDepthInformation(sample)) {
             return null;
         }
-        Vector<Sample> samples = new Vector<Sample>(FeatureUtil.getSortedSamples(sample.getFeature()));
+        Vector<Sample> samples = new Vector<>(FeatureUtil.getSortedSamples(sample.getFeature()));
         if (samples == null || samples.size() == 1) {
             return null;
         }
@@ -362,12 +415,15 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     /**
      * Returns the Sample immediately below the given Sample in a drillhole or
      * vertical section
+     *
+     * @param sample
+     * @return
      */
     public static Sample getSampleBelow(Sample sample) {
         if (!hasDepthInformation(sample)) {
             return null;
         }
-        Vector<Sample> samples = new Vector<Sample>(FeatureUtil.getSortedSamples(sample.getFeature()));
+        Vector<Sample> samples = new Vector<>(FeatureUtil.getSortedSamples(sample.getFeature()));
         if (samples == null || samples.size() == 1) {
             return null;
         }
@@ -381,10 +437,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     public void deleteSamples(String[] sampIds, UserFolder folder, User user) {
         boolean errFlag = false;
-        for (int i = 0; i < sampIds.length; i++) {
+        for (String sampId : sampIds) {
             try {
-                deleteSample(getSample(Integer.parseInt(sampIds[i])), folder, user);
-            } catch (Exception e) {
+                deleteSample(getSample(Integer.parseInt(sampId)), folder, user);
+            } catch (NumberFormatException | InsufficientPrivelegesException | StorageAccessException | DataInputException e) {
                 errFlag = true;
             }
         }
@@ -422,7 +478,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         //try and delete audit record (if can't then probably also used by feature) so just ignore error
         try {
             fredDAO.delete(audit);
-        } catch (Exception e) {
+        } catch (StorageAccessException e) {
         }
     }
 
@@ -445,8 +501,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public void submitSamples(String[] sampIds, UserFolder folder, User user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
-        for (int i = 0; i < sampIds.length; i++) {
-            submitSample(getSample(Integer.parseInt(sampIds[i])), folder, user);
+        for (String sampId : sampIds) {
+            submitSample(getSample(Integer.parseInt(sampId)), folder, user);
         }
     }
 
@@ -467,12 +523,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         if (isBacklogSample(sample)) {
             return true;
         }
-        if (FREDUtil.isEmpty(sample.getCollectors())
+        return !(FREDUtil.isEmpty(sample.getCollectors())
                 || sample.getCollectionDate() == null || sample.getInPlace() == null
-                || (FREDUtil.isEmpty(sample.getSentTos()) && FREDUtil.isEmpty(sample.getNotCollected()))) {
-            return false;
-        }
-        return true;
+                || (FREDUtil.isEmpty(sample.getSentTos()) && FREDUtil.isEmpty(sample.getNotCollected())));
     }
 
     public static boolean isBacklogSample(Sample sample) {
@@ -484,7 +537,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         if (sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
             return false;
         }
-        return sample.getAudit().getConfidentialFlag().booleanValue();
+        return sample.getAudit().getConfidentialFlag();
     }
 
     public String getSampleConfidAccessListDescription(Sample sample) {
@@ -493,6 +546,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     /**
      * Returns true if a user is allowed to view the locality
+     *
+     * @param user
+     * @param sample
+     * @return
+     * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public boolean isAllowedReadSample(User user, Sample sample) throws StorageAccessException {
         if (user == null) {
@@ -506,7 +564,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
                     return false;
                 }
             } else {
-                UserFolder folder = new FolderUtil(factory).getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
+                UserFolder folder = new FolderUtil(factory).getUserFolder(sample.getAudit().getFolder().getFolderId(), user);
                 if (folder == null || !folder.isAllowedReadLocalities()) {
                     return false;
                 }
@@ -627,7 +685,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public List<Paleontology> getPaleontologyRecords(Sample sample) {
-        List<Paleontology> palRecords = new Vector<Paleontology>();
+        List<Paleontology> palRecords = new Vector<>();
         for (Record record : sample.getRecords()) {
             if (record.getPaleontology() != null) {
                 palRecords.add(record.getPaleontology());
@@ -638,7 +696,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public List<Adoption> getAdoptionRecords(Sample sample) {
-        List<Adoption> adoRecords = new Vector<Adoption>();
+        List<Adoption> adoRecords = new Vector<>();
         for (Record record : sample.getRecords()) {
             if (record.getAdoption() != null) {
                 adoRecords.add(record.getAdoption());
@@ -651,7 +709,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     /**
      * Return a new sample initialised with the given information
      *
+     * @param feature
+     * @param folderId
      * @param reuseFeatureAudit
+     * @param user
+     * @return
      * @throws StorageAccessException
      */
     public Sample createSample(Feature feature, Integer folderId, boolean reuseFeatureAudit, User user) throws StorageAccessException {
@@ -674,7 +736,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public List<Sample> getSamplesByAge(Double startAge, Double stopAge) throws StorageAccessException {
-        Set<Sample> samples = new HashSet<Sample>();
+        Set<Sample> samples = new HashSet<>();
         samples.addAll(fredDAO.getList("SELECT DISTINCT s FROM Sample AS s WHERE s.inferredStage.baseAge >= ? AND s.inferredStage.topAge <= ?", Sample.class, stopAge, startAge));
         samples.addAll(fredDAO.getList("SELECT DISTINCT s FROM Sample AS s WHERE s.knownStage.baseAge >= ? AND s.knownStage.topAge <= ?", Sample.class, stopAge, startAge));
         samples.addAll(fredDAO.getList("SELECT DISTINCT s FROM Sample AS s JOIN s.records AS record WHERE record.adoption.stage.baseAge >= ? AND record.adoption.stage.topAge <= ?", Sample.class, stopAge, startAge));
@@ -686,6 +748,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
      * Copies the given SedimentaryFeature but assigns the new one to the given
      * sample instead of the original
      *
+     * @param sedFeature
+     * @param sample
+     * @return
      * @throws StorageAccessException
      */
     public SedimentaryFeature copyFor(SedimentaryFeature sedFeature, Sample sample) throws StorageAccessException {
@@ -706,7 +771,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public List<Relationship> getRelationships(Sample sample, String relationTypeName, String[] relationshipTypes) throws StorageAccessException {
-        List<Relationship> relationships = new Vector<Relationship>();
+        List<Relationship> relationships = new Vector<>();
         RelationType relationType = getRelationType(relationTypeName);
 
         for (String typeName : relationshipTypes) {
@@ -717,7 +782,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public static String getRelationshipDescription(Relationship rel) {
-        StringBuffer desc = new StringBuffer();
+        StringBuilder desc = new StringBuilder();
         if (rel.getDistanceMod() != null) {
             desc.append(rel.getDistanceMod()).append(" ");
         }
@@ -743,7 +808,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
             return getRelationshipDescription(rel);
         }
 
-        StringBuffer desc = new StringBuffer();
+        StringBuilder desc = new StringBuilder();
         desc.append("<a href=\"").append(path).append(rel.getFeature().getFeatureId()).append("\"");
         if (target != null) {
             desc.append(" target=\"").append(target).append("\"");
@@ -762,7 +827,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
             relationship.setFeature(feature);
             return relationship;
         } else {
-            throw new DataInputException("Sample Relationships", "Feature " + name + " not found"); 
+            throw new DataInputException("Sample Relationships", "Feature " + name + " not found");
         }
     }
 
@@ -789,16 +854,16 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         int where = 0;
 
         try {
-            rel.setDistance(new Double(parts[where]));
+            rel.setDistance(Double.valueOf(parts[where]));
             where++;
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             //This means that there is a modifier in the way
             try {
-                rel.setDistance(new Double(parts[where + 1]));
+                rel.setDistance(Double.valueOf(parts[where + 1]));
                 rel.setDistanceMod(parts[where]);
                 where++;
                 where++;
-            } catch (Exception _e) {
+            } catch (NumberFormatException _e) {
                 //don't throw exception as distance bits may be NULL
             }
         }
@@ -810,13 +875,13 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
         if (parts[where].equals("-")) {
             try {
-                rel.setDistanceRange(new Double(parts[++where]));
+                rel.setDistanceRange(Double.valueOf(parts[++where]));
                 ++where;
                 //skip "m" if present
                 if (parts[where].equals("m")) {
                     where++;
                 }
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Relationship description not properly formatted");
             }
         }
@@ -843,7 +908,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException {
         try {
             return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ? AND r.name = ?", RelationshipType.class, relationType, relationshipTypeName).get(0);
-        } catch (Exception e) {
+        } catch (StorageAccessException e) {
         }
         return null;
     }
@@ -853,7 +918,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public static String getDipStrikeDescription(Sample sample) {
-        StringBuffer desc = new StringBuffer();
+        StringBuilder desc = new StringBuilder();
         if (sample.getDip() != null) {
             desc.append(sample.getDip()).append((char) 176);
         }
@@ -878,9 +943,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     /**
      * Returns string representing a single SentTo
+     *
+     * @param sentTo
+     * @return
      */
     public static String getSentToDescription(SentTo sentTo) {
-        StringBuffer desc = new StringBuffer();
+        StringBuilder desc = new StringBuilder();
         if (sentTo.getFossilGroup() != null) {
             desc.append("(").append(sentTo.getFossilGroup().getName()).append(") ");
         }
@@ -903,7 +971,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public static String getGrainSizeDescription(Sample sample) {
-        StringBuffer desc = new StringBuffer();
+        StringBuilder desc = new StringBuilder();
         if (sample.getPrimaryGrainSize() != null) {
             desc.append(sample.getPrimaryGrainSize().getName()).append(" (pri)");
             if (sample.getSecondaryGrainSize() != null) {
@@ -924,7 +992,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public static String getBeddingDescription(Sample sample) {
-        StringBuffer desc = new StringBuffer();
+        StringBuilder desc = new StringBuilder();
         if (sample.getPrimaryBedding() != null) {
             desc.append(sample.getPrimaryBedding().getName());
             if (sample.getSecondaryBedding() != null) {
@@ -938,7 +1006,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public static String getColourDescription(Sample sample) {
-        StringBuffer desc = new StringBuffer();
+        StringBuilder desc = new StringBuilder();
         if (sample.getColourModifier() != null) {
             desc.append(sample.getColourModifier().getName()).append(" ");
         }
@@ -958,7 +1026,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public static String getSedFeatureDescription(SedimentaryFeature sedFeat) {
-        StringBuffer desc = new StringBuffer();
+        StringBuilder desc = new StringBuilder();
         desc.append(sedFeat.getSedimentaryFeatureType().getName());
         if (sedFeat.getAbundant() != null && sedFeat.getAbundant().equals("Y")) {
             desc.append(" (abundant)");
@@ -966,6 +1034,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return desc.toString();
     }
 
+    @Override
     public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
         return fredDAO.saveOrUpdate(audit);
     }
@@ -1018,6 +1087,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     /**
      * Return the fossil group with the given name or null if one doesn't exist
      *
+     * @param name
+     * @return
      * @throws StorageAccessException
      */
     public FossilGroup getFossilGroup(String name) throws StorageAccessException {
@@ -1029,8 +1100,15 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     /**
-     * Tests for a match between the given relationship and the other arguments.
-     * Ignores the fields of relationship that are not passed as arguments
+     * Tests for a match between the given relationship and the other
+     * arguments.Ignores the fields of relationship that are not passed as
+     * arguments
+     *
+     * @param rel
+     * @param feature
+     * @param relationType
+     * @param relationshipType
+     * @return
      */
     public boolean isMatchingRelationship(Relationship rel, Feature feature, String relationType, String relationshipType) {
         return rel.getFeature().equals(feature)
@@ -1057,15 +1135,17 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         if (!FREDUtil.equals(rel1.getDistance(), rel2.getDistance(), true)) {
             return false;
         }
-        if (!FREDUtil.equals(rel1.getDistanceRange(), rel2.getDistanceRange(), true)) {
-            return false;
-        }
-        return true;
+        return FREDUtil.equals(rel1.getDistanceRange(), rel2.getDistanceRange(), true);
     }
 
     /**
      * Creates a relationship with the given fields
      *
+     * @param sample
+     * @param feature
+     * @param relationType
+     * @param relationshipType
+     * @return
      * @throws StorageAccessException
      */
     public Relationship createRelationship(Sample sample, Feature feature, String relationType, String relationshipType) throws StorageAccessException {
@@ -1082,6 +1162,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
      * Creates a new relationship object which is a copy of the given one, but
      * valid within the access layers world
      *
+     * @param newRelationship
+     * @return
      * @throws StorageAccessException
      */
     public Relationship cloneRelationship(Relationship newRelationship) throws StorageAccessException {
@@ -1217,7 +1299,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     public SedimentaryFeature createSedimentaryFeature(String sedFeature, boolean isAbundant) throws StorageAccessException {
         SedimentaryFeature feature = fredDAO.createNewSedimentaryFeature();
         feature.setAbundant((isAbundant) ? "Y" : "N");
-        if (sedFeature.indexOf(":") >= 0) {
+        if (sedFeature.contains(":")) {
             sedFeature = sedFeature.substring(sedFeature.indexOf(":") + 1).trim();
         }
         SedimentaryFeatureType type = fredDAO.getSedimentaryFeatureTypeWithName(sedFeature);
@@ -1250,8 +1332,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     /**
      * Ensures the given sample is attached to the current persistence mechanism
      *
-     * @param sample
-     * @throws StorageAccessException
+     * @param audit
      * @throws StorageAccessException
      */
     public void attach(Audit audit) throws StorageAccessException {
@@ -1268,7 +1349,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     public Stage getStage(Sample sample) {
         List<Adoption> adoRecords = getAdoptionRecords(sample);
-        if (adoRecords != null && adoRecords.size() > 0) {
+        if (adoRecords != null && !adoRecords.isEmpty()) {
             for (int i = adoRecords.size() - 1; i >= 0; i--) {
                 if (adoRecords.get(i).getStage() != null) {
                     return adoRecords.get(i).getStage();
@@ -1276,7 +1357,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
             }
         }
         List<Paleontology> palRecords = getPaleontologyRecords(sample);
-        if (palRecords != null && palRecords.size() > 0) {
+        if (palRecords != null && !palRecords.isEmpty()) {
             for (int i = palRecords.size() - 1; i >= 0; i--) {
                 if (palRecords.get(i).getStage() != null) {
                     return palRecords.get(i).getStage();

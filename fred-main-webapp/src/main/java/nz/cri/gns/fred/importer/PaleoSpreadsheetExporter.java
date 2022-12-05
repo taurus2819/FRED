@@ -5,9 +5,7 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -20,7 +18,6 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.LabUtil;
-import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
@@ -53,8 +50,8 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         it.gotoFirstColumn();
     }
 
-    static final int numColumns = 50;
-    static final int todoTextSize = 80;
+    static final int NUMCOLUMNS = 50;
+    static final int TODOTEXTSIZE = 80;
 
     @Override
     public void write(OutputStream o) throws SQLException, IOException {
@@ -62,7 +59,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         try {
 
             SheetIterator it = new AcrossSheetIterator();
-            SheetIterator to;
+//            SheetIterator to;
             s.setOutputStream(o);
 
             FolderUtil folderUtil = new FolderUtil(factory);
@@ -136,11 +133,11 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
                 s.setCellsSelection(groupList, it, "Choose a Taxonomic Group ", false);
                 s.setCellAsHeading();
                 s.nextColumn();
-                s.setCellsText(numColumns, it, "Type in a Taxonomic Name from the Taxonomic Thesaurus, or enter a new name.", false);//need a space or fullstop at the end to display full sentence
+                s.setCellsText(NUMCOLUMNS, it, "Type in a Taxonomic Name from the Taxonomic Thesaurus, or enter a new name.", false);//need a space or fullstop at the end to display full sentence
                 s.setCellAsHeading();
                 s.nextColumn();
 
-                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter '*' for presence, a numeric count, count|comment, a straight comment, 'aff.' or 'cf.' ", false);
+                s.setCellsText(TODOTEXTSIZE, it.copy().skipColumns(NUMCOLUMNS), "Enter '*' for presence, a numeric count, count|comment, a straight comment, 'aff.' or 'cf.' ", false);
             }
 
             s.finish();
@@ -160,7 +157,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         it.nextColumn();
         spreadsheet.setCellValue(heading);
         spreadsheet.setCellAsHeading();
-        SheetIterator to = it.copy().skipColumns(numColumns);
+        SheetIterator to = it.copy().skipColumns(NUMCOLUMNS);
         it.nextColumn();
         spreadsheet.setCellsTimestamp(to, placeholder, false);
         spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
@@ -173,7 +170,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         spreadsheet.setCellValue(heading);
         spreadsheet.setCellAsHeading();
 
-        SheetIterator to = it.copy().skipColumns(numColumns);
+        SheetIterator to = it.copy().skipColumns(NUMCOLUMNS);
         it.nextColumn();
         spreadsheet.setCellsSelection(listReference, to, placeholder, false);
         spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
@@ -186,8 +183,8 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         spreadsheet.setCellValue(heading);
         spreadsheet.setCellAsHeading();
         it.nextColumn();
-        SheetIterator to = it.copy().skipColumns(numColumns);
-        spreadsheet.setCellsText(todoTextSize, to, placeholder, false);
+        SheetIterator to = it.copy().skipColumns(NUMCOLUMNS);
+        spreadsheet.setCellsText(TODOTEXTSIZE, to, placeholder, false);
         spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
     }
 

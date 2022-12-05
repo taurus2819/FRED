@@ -108,7 +108,7 @@ public class DrillholeLocalitySiteApiDE extends LocalitySiteapiDE {
             feature.setDatumElevation(null);
         } else {
             try {
-                feature.setDatumElevation(new Double(datumElevation));
+                feature.setDatumElevation(Double.valueOf(datumElevation));
             } catch (NumberFormatException e) {
                 error = new String[]{"Datum Elevation", "Invalid elevation entered"};
             }
@@ -118,7 +118,7 @@ public class DrillholeLocalitySiteApiDE extends LocalitySiteapiDE {
         Double finishDepth = null;
         if (sanitizeHttpRequest.stripAllScripts(request.getParameter("StartDepth")).length() > 0) {
             try {
-                startDepth = new Double(sanitizeHttpRequest.stripAllScripts(request.getParameter("StartDepth")).trim());
+                startDepth = Double.valueOf(sanitizeHttpRequest.stripAllScripts(request.getParameter("StartDepth")).trim());
             } catch (NumberFormatException e) {
                 error = new String[]{"Kickoff Depth", "Invalid depth entered"};
             }
@@ -126,17 +126,17 @@ public class DrillholeLocalitySiteApiDE extends LocalitySiteapiDE {
 
         if (sanitizeHttpRequest.stripAllScripts(request.getParameter("FinishDepth")).length() > 0) {
             try {
-                finishDepth = new Double(sanitizeHttpRequest.stripAllScripts(request.getParameter("FinishDepth")).trim());
+                finishDepth = Double.valueOf(sanitizeHttpRequest.stripAllScripts(request.getParameter("FinishDepth")).trim());
             } catch (NumberFormatException e) {
                 error = new String[]{"Termination Depth", "Invalid depth entered"};
             }
             if (sanitizeHttpRequest.stripAllScripts(request.getParameter("StartDepth")).length() > 0) {
                 if ("Bottom".equals(feature.getDatumType())) {
-                    if (startDepth.doubleValue() < finishDepth.doubleValue()) {
+                    if (startDepth < finishDepth) {
                         error = new String[]{"Depths/Heights", "Top horizon < base horizon and datum = Bottom"};
                     }
                 } else {
-                    if (startDepth.doubleValue() > finishDepth.doubleValue()) {
+                    if (startDepth > finishDepth) {
                         error = new String[]{"Depths", "Top horizon/kickoff depth > base horizon/termination depth"};
                     }
                 }
@@ -239,6 +239,7 @@ public class DrillholeLocalitySiteApiDE extends LocalitySiteapiDE {
         template.loadAll(out);
     }
 
+    @Override
     public String getHeading() {
         return "Edit drillhole locality";
     }

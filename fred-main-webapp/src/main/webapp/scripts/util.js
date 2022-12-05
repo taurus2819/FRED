@@ -3,10 +3,14 @@
  * 
  */
 function getFQHostName() {
-    var protocol = location.protocol;
-    var slashes = protocol.concat("//");
-    var hostname =(window.location.hostname =='localhost' ? 'data-dev.gns.cri.nz' : window.location.hostname);
-    var host = slashes.concat(hostname);
-    return host;
+    if(window.location.hostname === 'localhost'){
+        return "https://dev-app.gns.cri.nz";
+    } else {
+        var protocol = location.protocol;
+        var slashes = protocol.concat("//");
+        var hostname = window.location.hostname;
+        var host = slashes.concat(hostname);
+        return host;
+    }
 }
 

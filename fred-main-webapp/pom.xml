@@ -3,12 +3,12 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.3.23-SNAPSHOT</version>
+        <version>3.4.0-SNAPSHOT</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred</artifactId>
     <packaging>war</packaging>
-    <version>3.3.23-SNAPSHOT</version>
+    <version>3.4.0-SNAPSHOT</version>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
@@ -24,28 +24,20 @@
     </properties>     
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
                 <configuration>
                     <showDeprecation>true</showDeprecation>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <tagNameFormat>RELEASE_@{project.version}</tagNameFormat>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
                 <!--testing--> 
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.15</version>
+                <version>2.22.2</version>
                 <configuration>
                     <skip>false</skip>
                 </configuration>
@@ -53,15 +45,10 @@
             <plugin>
                 <!--packaging-->   
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.3.2</version>
                 <configuration>
                     <attachClasses>true</attachClasses>                            
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.7</version>
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -75,8 +62,8 @@
                         </goals>
                         <configuration>
                             <!-- Exclude the FredStart class package from
-                                 the jar file, so it doesn't get picked up
-                                 and used by NPC -->
+                            the jar file, so it doesn't get picked up
+                            and used by NPC -->
                             <classifier>classes</classifier>                            
                             <excludes>
                                 <exclude>/nz/cri/gns/fred/*FredStart*</exclude>
@@ -98,7 +85,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.4</version>
+            <version>1.9</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
@@ -109,7 +96,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -125,7 +112,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.1.89.696</version>            
+            <version>3.2.3</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
@@ -170,24 +157,13 @@
             <version>1.1</version>
         </dependency>
 		
-		<!-- HTML to readable text -->
+        <!-- HTML to readable text -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.10.3</version>
             <type>jar</type>
         </dependency>
-		
-<!--        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>3.12</version>
-        </dependency>-->
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
@@ -199,27 +175,20 @@
             <version>1.10</version>
             <type>jar</type>
         </dependency>
-<!--        <dependency>
-            <groupId>nz.cri.gns.authservice</groupId>
-            <artifactId>auth</artifactId>
-            <version>3.2.1.106</version>
-            <classifier>classes</classifier>
-        </dependency>-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.2</version>
+            <version>1.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>nz.cri.gns</groupId>
+            <artifactId>munginator</artifactId>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
-        <version>20180219.1</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.7</version>
+            <version>20180219.1</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -267,22 +236,18 @@
                 </plugins>
             </build>
         </profile>        
-    </profiles> 
-    <scm>
-        <connection>scm:git:git@git.gns.cri.nz:applications/FRED.git/</connection>
-        <developerConnection>scm:git:git@git.gns.cri.nz:applications/FRED.git</developerConnection>
-        <url>scm:git:git@git.gns.cri.nz:applications/FRED.git</url>
-    </scm>
+    </profiles>
     <distributionManagement>
         <repository>
             <id>central</id>
-            <name>GNS Release Repository</name>
-            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release-local</url>
+            <name>GNS Private Repository</name>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-release/</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <name>GNS Snapshot Repository</name>
-            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot-local</url>
+            <name>libs-snapshots</name>
+            <url>https://artifactory.gns.cri.nz/artifactory/gns-libs-snapshot/</url>
         </snapshotRepository>
     </distributionManagement>
+
 </project>

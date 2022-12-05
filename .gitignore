@@ -37,3 +37,14 @@ fred-acceptance-tests/nb-configuration.xml
 fred-integration-tests/nb-configuration.xml
 .mvn/wrapper/maven-wrapper.jar
 /fred-main-webapp/nbproject/
+.idea/.gitignore
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/jarRepositories.xml
+.idea/jpa-buddy.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/
+fred-integration-tests/fred-integration.iml
+fred-main-webapp/fred.iml
+fred-top.iml

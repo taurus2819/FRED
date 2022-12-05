@@ -3,7 +3,7 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.3.23-SNAPSHOT</version>
+        <version>3.4.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -14,8 +14,7 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.2</junit.version>
         <junit.jupiter.version>5.0.0-M4</junit.jupiter.version>
         <junit.vintage.version>${junit.version}.0-M4</junit.vintage.version>
         <junit.platform.version>1.0.0-M4</junit.platform.version>
@@ -25,35 +24,31 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.10.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.13</version> 
+                <version>2.22.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit47</artifactId>
                         <version>2.12</version>
                     </dependency>
-                </dependencies>               
-                <!--<configuration>
-                    <skip>false</skip>
-                    <excludedGroups>nz.cri.gns.test.IntegrationTest</excludedGroups>
-                </configuration>-->
+                </dependencies>
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.12</version>
+                <version>2.22.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit47</artifactId>
-                        <version>2.12</version>
+                        <version>2.22.2</version>
                     </dependency>
                 </dependencies>
                 <!--
@@ -97,47 +92,7 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-               
-        <!--
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>jasper</artifactId>
-            <version>6.0.29</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jasper-el</artifactId>
-                    <groupId>org.apache.tomcat</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jasper-jdt</artifactId>
-                    <groupId>org.apache.tomcat</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>servlet-api</artifactId>
-                    <groupId>org.apache.tomcat</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>juli</artifactId>
-                    <groupId>org.apache.tomcat</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jsp-api</artifactId>
-                    <groupId>org.apache.tomcat</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>el-api</artifactId>
-                    <groupId>org.apache.tomcat</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>catalina</artifactId>
-                    <groupId>org.apache.tomcat</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
-        
-        
-        
+
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -170,16 +125,15 @@
         <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>munginator</artifactId>
-            <version>0.1.0.3</version>
+            <version>0.1.0.4</version>
         </dependency>
         
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.1.89.696</version>
+            <version>3.2.3</version>
         </dependency>
         
     </dependencies>
-    
-    
+
 </project>

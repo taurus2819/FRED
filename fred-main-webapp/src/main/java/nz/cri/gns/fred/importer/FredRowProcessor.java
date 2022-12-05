@@ -46,7 +46,7 @@ import nz.cri.gns.util.map.DatumFactory;
 public class FredRowProcessor extends TemplateRowProcessor {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.import.FredOutcropRowProcessor");
-    private User user;
+    private final User user;
 
     DAOFactory factory;
     FeatureUtil featureUtil;

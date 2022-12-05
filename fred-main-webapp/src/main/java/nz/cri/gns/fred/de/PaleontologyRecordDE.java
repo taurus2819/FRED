@@ -123,11 +123,11 @@ public class PaleontologyRecordDE extends RecordDE {
             dealWithTaxa(taxa2, pal, error);
         }
 
-        if (error.size() > 0) {
+        if (!error.isEmpty()) {
             throw new DataInputException(error);
         }
 
-        if (badTaxaList.size() > 0) {
+        if (!badTaxaList.isEmpty()) {
             throw new TaxonomicListException(badTaxaList);
         }
     }
@@ -178,7 +178,7 @@ public class PaleontologyRecordDE extends RecordDE {
                     }
                     nameStr = nameStr.replaceAll("\"", "'");
 
-                    Integer specCount = (specCountStr == null || specCountStr.length() == 0) ? null : new Integer(specCountStr);
+                    Integer specCount = (specCountStr == null || specCountStr.length() == 0) ? null : Integer.valueOf(specCountStr);
                     for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext();) {
                         PaleontologyListEntry entry = it.next();
                         if (taxonomicUtil.isMatchingEntry(entry, groupStr, nameStr, authorStr, specCount, specCoordStr, commentsStr)) {
@@ -228,7 +228,7 @@ public class PaleontologyRecordDE extends RecordDE {
                         entry.setTaxonomicName(nameStr);
                         entry.setTaxon(taxon);
                         if (specCountStr != null && specCountStr.length() > 0) {
-                            entry.setSpecimenCount(new Integer(specCountStr));
+                            entry.setSpecimenCount(Integer.valueOf(specCountStr));
                         }
                         entry.setSpecimenCoords(specCoordStr);
                         entry.setComments(commentsStr);
@@ -311,7 +311,7 @@ public class PaleontologyRecordDE extends RecordDE {
 
             List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
             List<PaleontologyListEntry> badTaxa = (badTaxaList == null) ? new ArrayList<>() : new ArrayList<>(badTaxaList);
-            if (groups != null && groups.size() > 0) {
+            if (groups != null && !groups.isEmpty()) {
                 for (TaxonomicGroup group : groups) {
                     List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
                     if (list == null || list.isEmpty()) {
@@ -323,7 +323,7 @@ public class PaleontologyRecordDE extends RecordDE {
                                     + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
                                     + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                                     + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
-                                                    TaxonomicUtil.encodeTaxaComments(entry))) + "');");
+                                            TaxonomicUtil.encodeTaxaComments(entry))) + "');");
                         });
                     }
                     //Also check for bad taxa of this group
@@ -335,7 +335,7 @@ public class PaleontologyRecordDE extends RecordDE {
                                     + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
                                     + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                                     + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
-                                                    TaxonomicUtil.encodeTaxaComments(entry))) + "');");
+                                            TaxonomicUtil.encodeTaxaComments(entry))) + "');");
                             it.remove();
                         }
                     }
@@ -348,7 +348,7 @@ public class PaleontologyRecordDE extends RecordDE {
                         + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
                         + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                         + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
-                                        TaxonomicUtil.encodeTaxaComments(entry))) + "');");
+                                TaxonomicUtil.encodeTaxaComments(entry))) + "');");
             });
 
             template.loadAll(out);
@@ -423,7 +423,7 @@ public class PaleontologyRecordDE extends RecordDE {
 
     @Override
     protected void checkMandatoryFields() throws DataInputException {
-        if (badTaxaList.size() > 0 || nonApprovedTaxaFlag) {
+        if (!badTaxaList.isEmpty() || nonApprovedTaxaFlag) {
             throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
         }
     }

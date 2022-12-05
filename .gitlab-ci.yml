@@ -6,7 +6,7 @@ variables:
   GIT_STRATEGY: clone
   TZ: "Pacific/Auckland"
 
-image: maven:3-openjdk-8
+image: maven:3-openjdk-11
 
 stages:
   - build
@@ -17,21 +17,21 @@ stages:
 default:
   before_script:
     - cp $settings_xml ~/.m2/settings.xml
-    
+
 initial-build:
   tags:
     - docker
   stage: build
   except:
     - master
-  script: 
+  script:
     - mvn $MAVEN_CLI_OPTS -Pjenkins-build clean deploy
-    
+
 integration-tests:
   tags:
     - docker
   stage: test
-  script: 
+  script:
     - mvn $MAVEN_CLI_OPTS integration-test
   artifacts:
     paths:
@@ -41,7 +41,7 @@ integration-tests:
       junit:
         - fred-main-webapp/target/surefire-reports/TEST-*.xml
         - fred-acceptance-tests/target/failsafe-reports/TEST-*.xml
-         
+
 release:
   tags:
     - docker
@@ -56,22 +56,14 @@ release:
     - git config pull.ff only
     - cp $settings_xml ~/.m2/settings.xml
     - mvn $MAVEN_CLI_OPTS gitflow:release-start
-    - mvn $MAVEN_CLI_OPTS gitflow:release-finish
+    - mvn $MAVEN_CLI_OPTS -DpreReleaseGoals=sonar:sonar gitflow:release-finish
 
 deploy-dev:
   tags:
     - docker
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_dev_url:$tomcat_paleo_port/manager/text tomcat7:redeploy
+    - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=http://dev-app.gns.cri.nz:8005/manager/text tomcat7:redeploy
     - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
   when: manual
-  
-deploy-uat:
-  tags:
-    - docker
-  stage: deploy
-  script:
-    - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$data_uat_url:$tomcat_paleo_port/manager/text tomcat7:redeploy
-    - mvn $MAVEN_CLI_OPTS clean verify -Puat
-  when: manual
+
