@@ -9,7 +9,6 @@
 	
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sonar.projectKey>applications_FRED_AXjCrkJdFnkgNxTNbcr4</sonar.projectKey>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
         <java.version>11</java.version>
