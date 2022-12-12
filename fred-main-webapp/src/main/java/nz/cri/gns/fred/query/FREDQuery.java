@@ -250,11 +250,11 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         hqlQuery = super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", null, null, null);
         
         
-        /*if("Adv".equals(type)){
+        if("Adv".equals(type)){
             hqlQuery = super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
         }else{
             hqlQuery = query;
-        }*/
+        }
         String debugQuery = hqlQuery;
 //        System.out.println("HQLQUERY = " + hqlQuery);
        /* if(hqlQuery.contains("SITE_API.COUNTRY_CODE"))
