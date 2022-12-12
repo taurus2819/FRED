@@ -281,7 +281,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 String hq = query.getHQLQuery("simple", sampHqlStr.toString());
 
                 String sampHql = sampHqlStr.toString();
-                
+             
                 //if polygon vertices are set, apply spatial filter
                 if (idString != null && idString.length() > 0) {
                     samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
