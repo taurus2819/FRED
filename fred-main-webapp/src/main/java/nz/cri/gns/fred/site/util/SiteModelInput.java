@@ -24,6 +24,7 @@ public class SiteModelInput {
     private String longitude;
     private String format;
     private String auditMsg;
+    private String clientUser;
 
     public SiteModelInput() {
         this.siteModel = new SiteModel();
@@ -31,7 +32,7 @@ public class SiteModelInput {
 
     public SiteModelInput(String siteName, Integer methodId, Double accuracy, String Directions, 
                Double height, Integer heightMethodId, Double heightAccuracy, String countyCode, String comment, Integer ownerId,
-               int epsg, String gridref, Double easting, Double northing, String latitude, String longitude, String format, String auditMsg) {
+               int epsg, String gridref, Double easting, Double northing, String latitude, String longitude, String format, String auditMsg, String clientUser) {
         this.siteModel = new SiteModel();
         this.siteModel.setSiteName(siteName);
         this.siteModel.setMethodId(methodId);
@@ -51,6 +52,7 @@ public class SiteModelInput {
         this.longitude = longitude;
         this.format = format;
         this.auditMsg = auditMsg;
+        this.clientUser = clientUser;
     }
     
     
@@ -198,6 +200,14 @@ public class SiteModelInput {
 
     public void setAuditMsg(String auditMsg) {
         this.auditMsg = auditMsg;
+    }
+
+    public String getClientUser() {
+        return clientUser;
+    }
+
+    public void setClientUser(String clientUser) {
+        this.clientUser = clientUser;
     }
     
 

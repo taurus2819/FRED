@@ -611,6 +611,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             throw new InsufficientPrivelegesException("Insufficient rights to save this locality");
         }
         //Check the site with the site DB
+        int siteId = site.getSiteId();
         if (site != null) {
 //            if(site.getSiteId() > 0){  //this means a site is already existing; trying to update the site info 
 //                String countryCode = request.getParameter("Country");
@@ -629,8 +630,8 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 //                String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
 //                System.out.println("Audit msg - Updating the site info : " + auditMsg);
 //            }
-
-            feature.setSiteId(Integer.valueOf(site.getSiteId()));
+            
+            feature.setSiteId(siteId);
             // feature incomplete
             SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
             feature.setSiteView(siteModelUtil.getSiteView(feature.getSiteId()));
@@ -639,8 +640,11 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         }
 
         featureUtil.saveFeature(feature, user, editComments, dataOriginId);
-
-        return feature.getFeatureId();
+        Integer featureId = feature.getFeatureId();
+        System.out.println("Feature = ID: " + featureId + ", " + feature.toString());
+        //call the site usage api
+        SiteModelUtil.insertSiteUsage(siteId, "FRED : FeatureId = " + featureId);
+        return featureId;
     }
 
     private SiteModelInput createNewSite(String featName, String description, Double accuracy, Integer locMethodId, String countryCode, String comments) throws IOException, JsonProcessingException {
@@ -666,7 +670,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
 
         SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
-                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg);
+                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg, "FRED");
         return smi;
     }
     
@@ -693,7 +697,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
 
         SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
-                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg);
+                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg, "FRED");
         return smi;
     }
 
