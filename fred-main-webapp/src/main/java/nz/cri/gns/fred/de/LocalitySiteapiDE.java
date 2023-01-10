@@ -641,7 +641,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 
         featureUtil.saveFeature(feature, user, editComments, dataOriginId);
         Integer featureId = feature.getFeatureId();
-        System.out.println("Feature = ID: " + featureId + ", " + feature.toString());
+//        System.out.println("Feature = ID: " + featureId + ", " + feature.toString());
         //call the site usage api
         SiteModelUtil.insertSiteUsage(siteId, "FRED : FeatureId = " + featureId);
         return featureId;
