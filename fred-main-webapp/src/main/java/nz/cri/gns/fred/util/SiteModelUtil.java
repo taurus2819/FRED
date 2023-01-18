@@ -284,6 +284,32 @@ public class SiteModelUtil extends ModelUtil {
         return islands;
     }
     
+    /**
+     * inserts an appropriate record from the Site API for the given site , inserting if
+     * necessary
+     *
+     * @throws IOException
+     * 
+     * return a SiteModel
+     */
+    public static void insertSiteUsage(int siteId, String clientFeature) throws IOException {
+        SiteUsage su = new SiteUsage(siteId, clientFeature);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String inputSiteUsr = objectMapper.writeValueAsString(su);
+        try {            
+            JsonNode node = objectMapper.readTree(inputSiteUsr);
+            SiteRevampServiceClient.insertSiteUser(node);
+//            if(siteUser != null){
+//                sm = objectMapper.readValue(siteUser, SiteModel.class);
+//            }
+////        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
+        } catch (JsonProcessingException e) {
+                System.out.println(e.getClass().getName() + 
+                " : " + e.getOriginalMessage());
+        }
+//        return sm;
+    }
+    
     
     public static List<Integer> requestSitesBySpatialFilter(String spatialFilter) {                
         
@@ -365,6 +391,35 @@ public class SiteModelUtil extends ModelUtil {
      */
     public static boolean hasData(String s){
         return (null != s && !s.isEmpty() && !s.trim().isEmpty());
+    }
+
+    private static class SiteUsage {
+        private Integer siteId;
+        private String usedBy;
+        
+        public SiteUsage(Integer siteId, String usedBy) {
+            this.usedBy = usedBy;
+            this.siteId = siteId;
+        }
+
+        public Integer getSiteId() {
+            return siteId;
+        }
+
+        public void setSiteId(Integer siteId) {
+            this.siteId = siteId;
+        }
+
+        public String getUsedBy() {
+            return usedBy;
+        }
+
+        public void setUsedBy(String usedBy) {
+            this.usedBy = usedBy;
+        }
+
+        
+        
     }
 
 }

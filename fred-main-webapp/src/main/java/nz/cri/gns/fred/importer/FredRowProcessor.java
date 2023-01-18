@@ -267,7 +267,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
 //            Integer pgSiteId = checkIfSiteExistsInPG(siteName) ;  //pgSiteId is the site id in postgresql created by the site api - Do not remove this call might need in future
             if(featureSiteId != null){
                 SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
-                    epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
+                    epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords, "FRED");
                 SiteModelUtil.updateSite(featureSiteId,smi);
                 update.set("FEATURE_ID$SITE_ID", featureSiteId);
                 update.set("FEATURE_ID$ORIG_COORD", origCoords);
@@ -275,7 +275,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID", feature.getFeatureId());
             }else{ //feature exists but no siteid present - then create a new site and update the FRED feature with this new siteid
                 SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
-                    epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
+                    epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords, "FRED");
                 SiteModel newSite = SiteModelUtil.insertSite(smi);   
                 if(newSite != null){
                     update.set("FEATURE_ID$SITE_ID", newSite.getSiteId());
@@ -289,7 +289,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }else{
             //create a new site
             SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
-                    epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords);
+                    epsg, gridref, easting, northing, latitude, longitude, format, "using importer : " + origCoords, "FRED");
             SiteModel site = SiteModelUtil.insertSite(smi);
             if(site != null){
                 Integer newSiteId = site.getSiteId();  

@@ -102,6 +102,19 @@ public class SiteRevampServiceClient {
         String[] siteDetails = restTemplate.getForObject(endpoint, String[].class);
         return siteDetails;
     }
+    
+    public static void insertSiteUser(JsonNode siteUserDetails){    
+        JsonNode newSiteUser = null;
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<String>(siteUserDetails.toString(), headers);
+        // TODO: need proper error handling exceptions if httpResponse
+        String endpoint = Environment.getEnvVar("DEFAULT_SITE_API_URL", LOCALHOST) + "/sites/usage/register";
+        try{
+            restTemplate.postForObject(endpoint, request, String.class);
+        }catch(RestClientException rce){
+            rce.printStackTrace();
+        }
+    }
 
     public static String getSpatialFilter(String spatialFilter) {
         headers.setContentType(MediaType.APPLICATION_JSON);
