@@ -554,7 +554,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 String longitude = epsgInfo.getLongitude();
                 String format = epsgInfo.getFormat();
                 String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;
-//                System.out.println("Audit msg - Updating the site info : " + auditMsg);
                 smi = updateSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
                 SiteModelUtil.updateSite(site.getSiteId(),smi);
             } catch (IOException ex) {
@@ -612,25 +611,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         }
         //Check the site with the site DB
         int siteId = site.getSiteId();
-        if (site != null) {
-//            if(site.getSiteId() > 0){  //this means a site is already existing; trying to update the site info 
-//                String countryCode = request.getParameter("Country");
-//                String siteName = request.getParameter("FeatName");
-//                String locDescr = request.getParameter("Loc");
-//                String locComms = request.getParameter("LocComm");
-//                int ownerId = Math.toIntExact(this.ownerId);
-//                OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
-//                int epsg = epsgInfo.getEpsg();
-//                String gridref = epsgInfo.getGridref();
-//                Double easting  = epsgInfo.getEasting();
-//                Double northing = epsgInfo.getNorthing();
-//                String latitude = epsgInfo.getLatitude();
-//                String longitude = epsgInfo.getLongitude();
-//                String format = epsgInfo.getFormat();
-//                String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
-//                System.out.println("Audit msg - Updating the site info : " + auditMsg);
-//            }
-            
+        if (site != null) {            
             feature.setSiteId(siteId);
             // feature incomplete
             SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
@@ -640,10 +621,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         }
 
         featureUtil.saveFeature(feature, user, editComments, dataOriginId);
-        Integer featureId = feature.getFeatureId();
-//        System.out.println("Feature = ID: " + featureId + ", " + feature.toString());
-        //call the site usage api
-        SiteModelUtil.insertSiteUsage(siteId, "FRED : FeatureId = " + featureId);
+        Integer featureId = feature.getFeatureId();        
         return featureId;
     }
 
@@ -706,6 +684,14 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 
         //change status and set Masterfile
         featureUtil.submitFeature(feature, workingFolder, user);
+        
+        //if the flow has come then there is always a SiteId associated with a feature. if for some unknown reason a SiteId is not associated
+        //then its better to check for null
+        //call the site usage api
+        Integer siteId = feature.getSiteId();
+        if(siteId != null){
+            SiteModelUtil.insertSiteUsage(siteId, "FR.FEATURE.SITE_ID");  //using the same format as in SC.SITEUSEAGE table in Oracle DB
+        }
 
         return feature.getFeatureId().intValue();
     }
