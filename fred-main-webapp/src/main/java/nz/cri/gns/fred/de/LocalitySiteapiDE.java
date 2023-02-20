@@ -609,9 +609,9 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         if (!isAllowedSave) {
             throw new InsufficientPrivelegesException("Insufficient rights to save this locality");
         }
-        //Check the site with the site DB
-        int siteId = site.getSiteId();
-        if (site != null) {            
+        //Check the site with the site DB        
+        if (site != null) {     
+            int siteId = site.getSiteId();
             feature.setSiteId(siteId);
             // feature incomplete
             SiteModelUtil siteModelUtil = new SiteModelUtil(factory);
