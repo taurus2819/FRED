@@ -2,9 +2,18 @@
 <%@page import="nz.cri.gns.fred.util.FeatureUtil"%>
 <%@page import="nz.cri.gns.fred.util.FREDUtil"%>
 <%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"%>
+<%@page import="nz.cri.gns.jsp.JspUtils"%>
 <%
     FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
 %>
+<%
+    // only display the login form if the current user is not logged in.
+    // if shifting this content take care not to put anything between here and
+    // `END of if not logged in`
+    if (!JspUtils.isLoggedIn(session)) {
+%>
+    <%@include file="/WEB-INF/jspf/login-form.jspf" %>
+<% } // END of if not logged in %>
 <table width="550" style="width:550px;" border="0">
     <tr>
         <td colspan="2">
