@@ -1,8 +1,8 @@
 package nz.cri.gns.fred.servlet;
 
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +33,6 @@ import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
-import nz.cri.gns.fred.model.SiteView;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.TaxonomicNameAndGroup;
 import nz.cri.gns.fred.servlet.util.FredHelper;
@@ -64,10 +63,27 @@ public class ExportServlet  extends FREDHibernateServlet {
     private static final String ABOVE_TOP = "above_top";
     private static final String ABOVE_BASE = "above_base";
     private static final String BELOW_TOP = "below_top";
-    private static final String BELOW_BASE = "below_base";    
+    private static final String BELOW_BASE = "below_base";
     private static final String SAMPLE = "sample";
     private static final String STRATIGRAPHIC = "stratigraphic";
-    
+
+    public static enum Type {
+        LOCATION,
+        ADOPTION,
+        PALEONTOLOGY,
+        PALEONTOLOGY_TAXONOMIC;
+
+        static Type of(String name) {
+            try {
+                if (! Strings.isNullOrEmpty(name)) {
+                    return Type.valueOf(name.toUpperCase());
+                }
+            } catch (IllegalArgumentException e) {}
+            // we'll default to location if the user hasn't provided a valid value
+            return LOCATION;
+        }
+    }
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -83,16 +99,31 @@ public class ExportServlet  extends FREDHibernateServlet {
         response.setContentType("text/html");
 
         /* Let's take a minute to muse over how aweful Microsoft Excel is.
-        
+
          If you set the encoding to UTF-8, Excel assumes it's ISO8859-1 instead.
          If you set the encoding to UTF-16, Excel converts the BOM to þÿ in Cell A1.
          So you need to set the encoding to UTF-16LE. Screw you, Excel.
-        
+
          */
         response.setCharacterEncoding("UTF-16LE"); // Read the blurb above.
         HttpSession session = request.getSession();
         FredHelper h = new FredHelper();
         DAOFactory factory = FredHibernate.get().getDAOFactory();
+
+        Type type = Type.of(request.getParameter("type"));
+        // the following flags determine what makes up the location download.
+        boolean collectionFlag = (request.getParameter("collection") != null);
+        boolean stratigraphyFlag = (request.getParameter("stratigraphy") != null);
+        boolean sedimentaryFlag = (request.getParameter("sedimentary") != null);
+
+        if (type == Type.LOCATION && !(collectionFlag || stratigraphyFlag || sedimentaryFlag)) {
+            // we are doing a location download but the user hasn't seleceted anything to go into it.
+            // default to everything.
+            // it is better to return all the possible data rather than an empty file
+            collectionFlag = true;
+            stratigraphyFlag = true;
+            sedimentaryFlag = true;
+        }
 
         try {
             User user = (User) h.getUser(session);
@@ -143,31 +174,17 @@ public class ExportServlet  extends FREDHibernateServlet {
                         }
                     }
             }
-            
-            log.log(Level.INFO, "START TIME " + new Date());            
+
+            log.log(Level.INFO, "START TIME " + new Date());
             try (JspWriterImpl out = new JspWriterImpl(response.getWriter())) {
                 CSVPrinter c = new CSVPrinter(out, CSVFormat.EXCEL);
 
                 if (samples.size() > 0) {
                     // Content type, disposition.
                     response.setContentType("text/csv");
-                    StringBuilder ctSb = new StringBuilder(
-                            "attachment;filename=fred-export-");
-                    ctSb.append(new SimpleDateFormat("yyyy-MM-dd").format(
-                            new Date()));
-                    ctSb.append(".csv");
-                    response.addHeader("Content-Disposition", ctSb.toString());
-
-                    boolean collectionFlag = (request.getParameter("collection") != null);
-                    boolean stratigraphyFlag = (request.getParameter(
-                            "stratigraphy") != null);
-                    boolean sedimentaryFlag = (request.getParameter(
-                            "sedimentary") != null);
-                    boolean localityFlag = collectionFlag || stratigraphyFlag || sedimentaryFlag;
-                    boolean adoptionFlag = (request.getParameter("adoption") != null);
-                    boolean paleontologyFlag = (request.getParameter(
-                            "paleontology") != null);
-                    boolean palListFlag = (request.getParameter("palList") != null);
+                    response.addHeader("Content-Disposition",
+                            String.format("attachment;filename=fred-export-%s-%tF.csv",
+                                    type.toString().toLowerCase(), new Date()));
 
                     //file header
                     c.printRecord(
@@ -183,7 +200,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                             "**************************************************************************************************************");
                     c.println();
 
-                    if (localityFlag) {
+                    if (type == Type.LOCATION) {
                         c.printRecord("********");
                         c.printRecord("Locality");
                         c.printRecord("********");
@@ -208,7 +225,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                                 c.print(each);
                             }
                         }
-                        
+
                         if (stratigraphyFlag) {
                             final String[] stratigraphyHeader = new String[]{
                                 "Stratigraphic Name", "Inferred Stage Lower",
@@ -241,7 +258,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                         }
                         c.println();
 
-                        for (Sample sample : samples) {                            
+                        for (Sample sample : samples) {
                             Feature feature = sample.getFeature();
                             if (featureUtil.isAllowedReadFeatureSite(user,
                                     feature)) {
@@ -274,7 +291,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                                         skipColumns(c, 5);
                                 }
                                 c.print(DBUtils.nvl(feature.getMapYear()));
-                                
+
                                 //TODO: needs some work to be done here
 //                                c.print(((sv != null) ? DBUtils.nvl(
 //                                        sv.getMethod()) : ""));
@@ -284,7 +301,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                                 if (featureUtil.isAllowedReadFeature(user,feature)) {
                                     c.print(DBUtils.nvl(feature.getLocality()).replaceAll(
                                             "\\s\\s+|\\n|\\r", " "));
-                                    
+
                                     //TODO: needs some work to be done here
 //                                    c.print(((sv != null) ? sv.getCountryName() : ""));
                                     c.print(DBUtils.nvl(
@@ -353,20 +370,20 @@ public class ExportServlet  extends FREDHibernateServlet {
                                         } else {
                                             skipColumns(c, 6);
                                         }
-                                       
+
                                         Set<Relationship> nearbys  = new HashSet<>();
                                         Set<Relationship> aboveBelows  = new HashSet<>();
                                         for (Relationship sampleRel : sample.getRelationships()) {
-                                            if (sampleRel.getRelationType().getName().equalsIgnoreCase(SAMPLE)) {                                               
+                                            if (sampleRel.getRelationType().getName().equalsIgnoreCase(SAMPLE)) {
                                                 if (sampleRel.getRelationshipType().getName().equalsIgnoreCase(NEARBY)) {
                                                     nearbys.add(sampleRel);
                                                 }
                                                 if (sampleRel.getRelationshipType().getName().equalsIgnoreCase(ABOVE) || sampleRel.getRelationshipType().getName().equalsIgnoreCase(BELOW) ) {
                                                     aboveBelows.add(sampleRel);
-                                                }     
-                                            }                                   
+                                                }
+                                            }
                                         }
-                                        
+
                                         if (nearbys.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : nearbys) {
@@ -377,7 +394,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                                         } else {
                                             c.print(null);
                                         }
-                                        
+
                                         if (nearbys.size() > 0 && aboveBelows.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : aboveBelows) {
@@ -388,20 +405,20 @@ public class ExportServlet  extends FREDHibernateServlet {
                                         } else {
                                             c.print(null);
                                         }
-                                        
+
                                         //Stratigraphic relationships
                                         Set<Relationship> stratBaseTops  = new HashSet<>();
                                         for (Relationship sampleRel : sample.getRelationships()) {
-                                            if (sampleRel.getRelationType().getName().equalsIgnoreCase(STRATIGRAPHIC)) {                                                
+                                            if (sampleRel.getRelationType().getName().equalsIgnoreCase(STRATIGRAPHIC)) {
                                                 if (sampleRel.getRelationshipType().getName().equalsIgnoreCase(ABOVE_BASE)
-                                                        || sampleRel.getRelationshipType().getName().equalsIgnoreCase(ABOVE_TOP) 
-                                                            || sampleRel.getRelationshipType().getName().equalsIgnoreCase(BELOW_TOP)                                                      
+                                                        || sampleRel.getRelationshipType().getName().equalsIgnoreCase(ABOVE_TOP)
+                                                            || sampleRel.getRelationshipType().getName().equalsIgnoreCase(BELOW_TOP)
                                                                 || sampleRel.getRelationshipType().getName().equalsIgnoreCase(BELOW_BASE)) {
                                                     stratBaseTops.add(sampleRel);
-                                                }     
-                                            }                                   
-                                        }                                    
-                                        
+                                                }
+                                            }
+                                        }
+
                                         if (nearbys.size() > 0 && stratBaseTops.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : stratBaseTops) {
@@ -411,15 +428,15 @@ public class ExportServlet  extends FREDHibernateServlet {
                                         } else {
                                             c.print(null);
                                         }
-                                        
+
                                         c.print(DBUtils.nvl(sample.getColumnMap()));
                                         c.print(DBUtils.nvl(sample.getDip()));
                                         c.print(DBUtils.nvl(sample.getDipDirection()));
                                         c.print(DBUtils.nvl(sample.getStrike()));
                                         c.print(DBUtils.nvl(sample.getFacing()));
                                         c.print(DBUtils.nvl(sample.getStratComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
-                                    }                                    
-                                    
+                                    }
+
                                     if (sedimentaryFlag) {
                                         c.print(((sample.getPrimaryGrainSize() != null) ? sample.getPrimaryGrainSize().getName() : ""));
                                         c.print(((sample.getSecondaryGrainSize() != null) ? sample.getSecondaryGrainSize().getName() : ""));
@@ -462,7 +479,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                         c.println();
                     }//end locality flag
 
-                    if (adoptionFlag) {
+                    if (type == Type.ADOPTION) {
                         c.printRecord("********");
                         c.printRecord("Adoption");
                         c.printRecord("********");
@@ -480,10 +497,10 @@ public class ExportServlet  extends FREDHibernateServlet {
                         c.println();
 
                         for (Sample sample : samples) {
-                            Set<Record> records = sample.getRecords();                            
-                            for (Record r : records) { 
-                                Adoption adoption = r.getAdoption(); 
-                                if (recordUtil.isAllowedReadRecord(user,r)) {                                        
+                            Set<Record> records = sample.getRecords();
+                            for (Record r : records) {
+                                Adoption adoption = r.getAdoption();
+                                if (recordUtil.isAllowedReadRecord(user,r)) {
                                     writeLocality(sample, c);
                                     if (adoption != null) {
                                         if (!FREDUtil.isEmpty(adoption.getAdoptors())) {
@@ -512,7 +529,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                                                     stage));
                                         } else {
                                             skipColumns(c, 6);
-                                        }                                   
+                                        }
                                         c.print(DBUtils.nvl(adoption.getComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
                                     }//end adoption!=null
                                     c.println();
@@ -522,7 +539,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                         c.println();
                     }
 
-                    if (paleontologyFlag) {
+                    if (type == Type.PALEONTOLOGY) {
                         c.printRecord("********");
                         c.printRecord("Paleontology");
                         c.printRecord("********");
@@ -535,12 +552,12 @@ public class ExportServlet  extends FREDHibernateServlet {
                             "Lab Number", "Collection Comments"};
                         c.printRecord((Object[]) paleontologyHeader);
 
-                       for (Sample sample : samples) { 
-                           Set<Record> records = sample.getRecords();                            
-                           for (Record r : records) {                                                          
+                       for (Sample sample : samples) {
+                           Set<Record> records = sample.getRecords();
+                           for (Record r : records) {
                                 if (recordUtil.isAllowedReadRecord(user, r)) {
                                     writeLocality(sample, c);
-                                    Paleontology paleontology = r.getPaleontology();  
+                                    Paleontology paleontology = r.getPaleontology();
                                     if (paleontology!= null) {
                                         if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
                                             StringBuilder sb = new StringBuilder();
@@ -551,7 +568,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                                         } else {
                                             c.print(null);
                                         }
-                                        
+
                                         c.print(DBUtils.nvl(
                                             FREDUtil.formatDateForOutput(
                                                     paleontology.getIdentificationDate(),
@@ -567,7 +584,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                                         } else {
                                             skipColumns(c, 6);
                                         }
-                                   
+
                                         c.print(DBUtils.nvl(
                                                 paleontology.getStageComments()).replaceAll(
                                                         "\\s\\s+|\\n|\\r", " "));
@@ -586,7 +603,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                         c.println();
                     }
 
-                    if (palListFlag) {
+                    if (type == Type.PALEONTOLOGY_TAXONOMIC) {
                         c.printRecord("********");
                         c.printRecord("Paleontology List");
                         c.printRecord("********");
@@ -595,8 +612,8 @@ public class ExportServlet  extends FREDHibernateServlet {
                         List<Paleontology> paleontologies = new Vector<Paleontology>();
                         int i = 0;
                         for (Sample sample : samples) {
-                            for (Record r : sample.getRecords()) { 
-                                Paleontology paleontology = r.getPaleontology();                            
+                            for (Record r : sample.getRecords()) {
+                                Paleontology paleontology = r.getPaleontology();
                                 if (paleontology != null && recordUtil.isAllowedReadPalList(user, paleontology)) {
                                     paleontologies.add(paleontology);
                                     if (++i == 250) {
@@ -721,7 +738,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                                             if (check.equals(nameAndGroup)) {
                                                 printMe = encodeTaxaString(palList);
                                                 break;
-                                            } 
+                                            }
 
                                         }
                                         c.print(printMe);
@@ -730,7 +747,7 @@ public class ExportServlet  extends FREDHibernateServlet {
                                 }
                                 c.println();
                             }
-                        } 
+                        }
                     }
 
                     new AuditUtil(FredHibernate.get().getDAOFactory()).addLogEntry(
@@ -746,7 +763,7 @@ public class ExportServlet  extends FREDHibernateServlet {
             }
         } catch (StorageAccessException | SQLException | NamingException | HibernateException e) {
             throw new ServletException(e);
-        } 
+        }
         log.log(Level.INFO, "END TIME " + new Date());
     }
 
@@ -844,5 +861,5 @@ public class ExportServlet  extends FREDHibernateServlet {
             c.print(null);
         }
     }
-    
+
 }
