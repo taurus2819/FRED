@@ -2,6 +2,7 @@
 <%@page import="nz.cri.gns.fred.util.FeatureUtil"%>
 <%@page import="nz.cri.gns.fred.util.FREDUtil"%>
 <%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"%>
+<%@page import="nz.cri.gns.core.Environment"%>
 <%@page import="nz.cri.gns.jsp.JspUtils"%>
 <%
     FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
@@ -44,11 +45,11 @@
                 <li>geological opinions about stratigraphic age</li>
             </ul>
             <p>FRED contains all <%=featureUtil.getTotalFeatureCount()%> locality records registered at regional recording centres since 1946, and was last updated on <%=FREDUtil.formatDateForOutput(featureUtil.getLastFeatureApprovalDate())%>.</p>
-            <p>Some samples collected from FRF localities are stored in the <a href="http://data.gns.cri.nz/npc">National Paleontological Collection (NPC)</a> at GNS Science.  Researchers may access these samples either through an on-site visit or by requesting a loan.</p>
+            <p>Some samples collected from FRF localities are stored in the <a href="<%=Environment.getDataUrl()%>/npc">National Paleontological Collection (NPC)</a> at GNS Science.  Researchers may access these samples either through an on-site visit or by requesting a loan.</p>
             <p>Geographic coordinates can be queried and downloaded by anyone.  Access to detailed information, and capability to contribute new site records or other data requires a username and password - registered users agree to abide by accepted <a href="conditions.jsp">Conditions of Use</a>.</p>
             <!--p>Registered users of FRED can obtain a live template for uploading their bulk data directly into the database from their <a href="folder_list.jsp">Data Entry page</a>. For unregistered researchers, who would like to contribute to FRED with their data, or those who prefer our database managers upload the information, we've provided a <a href="FRED_entry_template.xls">static Excel upload template</a>, which can be filled out and e-mailed for upload to <a href="mailto:J.Simes@gns.cri.nz?cc=m.terezow@gns.cri.nz&subject=Date to upload to FRED please&body=Hi John please find included some data to upload to FRED.%0A%0A">John Simes</a> or <a href="mailto:m.terezow@gns.cri.nz?cc=J.Simes@gns.cri.nz&subject=Date to upload to FRED please&body=Hi Marianna please find included some data to upload to FRED.%0A%0A">Marianna Terezow<a>. The <a href="FRED_entry_template.xls">spreadsheet</a> provides options and examples of the type and format of data accepted.</p-->
             <p>If you are a new user please see the <a href="quick_start.jsp">Quick Start Guide</a>.</p>
-            <p><span class="smalltext">Macintosh users: webmaps require Safari or Netscape 7+ browsers</span></p>
+            <p><span class="smalltext">Webmaps require a modern browser such as Chrome or Firefox</span></p>
         </td>
     </tr>
     <tr>

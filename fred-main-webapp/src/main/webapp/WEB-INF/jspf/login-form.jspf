@@ -11,7 +11,7 @@ login form as static html rather than fetching this from FREDIPSysLoginPage#draw
     <tr><td class="heading">GNS Staff</td><td>Please use your GNS Network login and password.  Contact IT Support if you are having login password problems or Chris Clowes if you require more access rights on FRED.</td></tr>
     <tr><td class="heading">External Users&nbsp;&nbsp;</td>
         <td>
-            <div>Please click <a href='http://data.gns.cri.nz/register/user_reg.jsp?DBase=FRED' target='register' class='boldlink'>here</a> to register for an account.</div>
+            <div>Please click <a href='<%=Environment.getDataUrl()%>/register/user_reg.jsp?DBase=FRED' target='register' class='boldlink'>here</a> to register for an account.</div>
             <div>If you have not changed your password since 23/11/2016 you will need to reset it using the <a href="<%=Environment.getDataUrl()%>/register/password.jsp">password reset page</a></div>
         </td>
     </tr>
@@ -24,7 +24,7 @@ login form as static html rather than fetching this from FREDIPSysLoginPage#draw
                     <tr><td colspan="2" style="text-align: right"><input type="submit" value="Log in"></td></tr>
                     <tr><td colspan="2" style="text-align: right"><input type="hidden" id="token" name="token" value="<%= request.getParameter("token")%>"></td></tr>
                     <tr><td>&nbsp;</td></tr>
-                    <tr><td colspan="2">If you have forgotten your password or want to change it click <a href="http://data.gns.cri.nz/register/password.jsp">here</a><br>(applies only to <b>External Users</b>)</td></tr>
+                    <tr><td colspan="2">If you have forgotten your password or want to change it click <a href="<%=Environment.getDataUrl()%>/register/password.jsp">here</a><br>(applies only to <b>External Users</b>)</td></tr>
                 </tbody></table>
         </form>
     </center>
