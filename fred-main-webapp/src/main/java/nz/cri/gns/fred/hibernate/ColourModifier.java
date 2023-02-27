@@ -1,8 +1,6 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
-import java.util.Set;
-import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class ColourModifier implements Serializable, nz.cri.gns.fred.model.ColourModifier {
@@ -18,15 +16,11 @@ public class ColourModifier implements Serializable, nz.cri.gns.fred.model.Colou
     /** persistent field */
     private String code;
 
-    /** persistent field */
-    private Set<Sample> samples;
-
     /** full constructor */
-    public ColourModifier(Integer modifierId, String name, String code, Set<Sample> samples) {
+    public ColourModifier(Integer modifierId, String name, String code) {
         this.modifierId = modifierId;
         this.name = name;
         this.code = code;
-        this.samples = samples;
     }
 
     /** default constructor */
@@ -55,14 +49,6 @@ public class ColourModifier implements Serializable, nz.cri.gns.fred.model.Colou
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public Set<Sample> getSamples() {
-        return this.samples;
-    }
-
-    public void setSamples(Set<Sample> samples) {
-        this.samples = samples;
     }
 
     @Override

@@ -41,22 +41,5 @@
         length="8"
     />
 
-    <!-- Associations -->
-  
-    <!-- bi-directional one-to-many association to Sample -->
-    <set
-        name="samples"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="WEATHERING_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.Sample"
-        />
-    </set>
-
 </class>
 </hibernate-mapping>

@@ -1,8 +1,6 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
-import java.util.Set;
-import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize {
@@ -18,19 +16,11 @@ public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize 
     /** persistent field */
     private String code;
 
-    /** persistent field */
-    private Set<Sample> samplesByPrimaryGrainsizeId;
-
-    /** persistent field */
-    private Set<Sample> samplesBySecondaryGrainsizeId;
-
     /** full constructor */
-    public GrainSize(Integer grainSizeId, String name, String code, Set<Sample> samplesByPrimaryGrainsizeId, Set<Sample> samplesBySecondaryGrainsizeId) {
+    public GrainSize(Integer grainSizeId, String name, String code) {
         this.grainSizeId = grainSizeId;
         this.name = name;
         this.code = code;
-        this.samplesByPrimaryGrainsizeId = samplesByPrimaryGrainsizeId;
-        this.samplesBySecondaryGrainsizeId = samplesBySecondaryGrainsizeId;
     }
 
     /** default constructor */
@@ -59,22 +49,6 @@ public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize 
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public Set<Sample> getSamplesByPrimaryGrainsizeId() {
-        return this.samplesByPrimaryGrainsizeId;
-    }
-
-    public void setSamplesByPrimaryGrainsizeId(Set<Sample> samplesByPrimaryGrainsizeId) {
-        this.samplesByPrimaryGrainsizeId = samplesByPrimaryGrainsizeId;
-    }
-
-    public Set<Sample> getSamplesBySecondaryGrainsizeId() {
-        return this.samplesBySecondaryGrainsizeId;
-    }
-
-    public void setSamplesBySecondaryGrainsizeId(Set<Sample> samplesBySecondaryGrainsizeId) {
-        this.samplesBySecondaryGrainsizeId = samplesBySecondaryGrainsizeId;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package nz.cri.gns.fred.model;
 
-import java.util.Set;
-
 import nz.cri.gns.core.NameableAndIdentifiable;
 
 public interface Hardness extends Comparable<Hardness>, NameableAndIdentifiable {
@@ -11,6 +9,4 @@ public interface Hardness extends Comparable<Hardness>, NameableAndIdentifiable 
 	public void setName(String name);
 	public String getCode();
 	public void setCode(String code);
-	public Set<Sample> getSamples();
-	public void setSamples(Set<Sample> samples);
 }
