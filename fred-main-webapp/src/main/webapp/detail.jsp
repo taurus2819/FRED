@@ -160,43 +160,6 @@
         } catch (Exception e) {
         }
 
-        boolean authorChk = true;
-        try {
-            authorChk = (Boolean) session.getAttribute("FRED.AuthorChk");
-        } catch (Exception e) {
-        }
-        if (request.getParameter("AuthorChk") != null) {
-            authorChk = request.getParameter("AuthorChk").equals("true");
-        }
-        session.setAttribute("FRED.AuthorChk", new Boolean(authorChk));
-        boolean sCountChk = false;
-        try {
-            sCountChk = (Boolean) session.getAttribute("FRED.SCountChk");
-        } catch (Exception e) {
-        }
-        if (request.getParameter("SCountChk") != null) {
-            sCountChk = request.getParameter("SCountChk").equals("true");
-        }
-        session.setAttribute("FRED.SCountChk", new Boolean(sCountChk));
-        boolean sCoordChk = false;
-        try {
-            sCoordChk = (Boolean) session.getAttribute("FRED.SCoordChk");
-        } catch (Exception e) {
-        }
-        if (request.getParameter("SCoordChk") != null) {
-            sCoordChk = request.getParameter("SCoordChk").equals("true");
-        }
-        session.setAttribute("FRED.SCoordChk", new Boolean(sCoordChk));
-        boolean commChk = false;
-        try {
-            commChk = (Boolean) session.getAttribute("FRED.CommChk");
-        } catch (Exception e) {
-        }
-        if (request.getParameter("CommChk") != null) {
-            commChk = request.getParameter("CommChk").equals("true");
-        }
-        session.setAttribute("FRED.CommChk", new Boolean(commChk));
-
         if (feature != null) {
             boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
             if (isAllowedReadFeature) {
@@ -242,13 +205,6 @@
                 customHTML.append("<img src=\"images/blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><input type=\"submit\" value=\"Add to Folder\" />");
                 customHTML.append("</form>");
                 il.add(new CustomHTMLLink(customHTML.toString()));
-            }
-            //Taxa list options
-            if (isAllowedReadFeature && sample != null && sampleUtil.getPaleontologyRecordCount(sample) > 0) {
-                il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&AuthorChk=" + ((authorChk) ? "false" : "true"), ((authorChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Taxonomic Author"));
-                il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&SCountChk=" + ((sCountChk) ? "false" : "true"), ((sCountChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Specimen Count"));
-                il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&SCoordChk=" + ((sCoordChk) ? "false" : "true"), ((sCoordChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Specimen Coords"));
-                il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&CommChk=" + ((commChk) ? "false" : "true"), ((commChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Taxonomic Comments"));
             }
             addButtons(et, il.toArray(new Link[il.size()]));
 
@@ -736,16 +692,12 @@
                 %><tr class="midColour"><th colspan="6"><%=taxaGroup.getName()%></th></tr><%
                     if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
                         %><tr class="midColour">
-                    <td class="heading">Taxonomic Name&nbsp;&nbsp;</td><%
-                        if (authorChk) {
-                    %><td class="heading">Author&nbsp;&nbsp;</td><%                                                                                                    }
-                        if (sCountChk) {
-                    %><td class="heading">Spec Count&nbsp;&nbsp;</td><%                                                                                                    }
-                        if (sCoordChk) {
-                    %><td class="heading">Spec Coord&nbsp;&nbsp;</td><%                                                                                                    }
-                        if (commChk) {
-                    %><td class="heading">Comments&nbsp;&nbsp;</td><%                                                                                                    }
-                    %><td>&nbsp;</td>
+                    <td class="heading">Taxonomic Name&nbsp;&nbsp;</td>
+                    <td class="heading">Author&nbsp;&nbsp;</td>
+                    <td class="heading">Spec Count&nbsp;&nbsp;</td>
+                    <td class="heading">Spec Coord&nbsp;&nbsp;</td>
+                    <td class="heading">Comments&nbsp;&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr><%
                     for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
                         Taxon taxon = taxa.getTaxon();
@@ -753,24 +705,17 @@
                     boolean taxonInNpc = TaxonomicUtil.isTaxonInNpc(taxon);
                     if (taxonInNpc) {
                         %><a href="http://data.gns.cri.nz/npc/catalogue/taxon.jsp?taxonId=<%=taxon.getTaxaId()%>" target="npc"><%
-                            }
-                            %><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i><%
-                                if (taxonInNpc) {
-                                %></a><%                                                                                                            }
-                        %>&nbsp;&nbsp;</td><%
-                            if (authorChk) {
-                        %><td><%=(taxon != null) ? DBUtils.nvl(taxa.getTaxon().getAuthor()) : ""%>&nbsp;&nbsp;</td><%
-                            }
-                            if (sCountChk) {
-                    %><td><%=DBUtils.nvl(taxa.getSpecimenCount())%>&nbsp;&nbsp;</td><%
-                        }
-                        if (sCoordChk) {
-                    %><td><%=DBUtils.nvl(taxa.getSpecimenCoords())%>&nbsp;&nbsp;</td><%
-                        }
-                        if (commChk) {
-                    %><td><%=DBUtils.nvl(taxa.getComments())%>&nbsp;&nbsp;</td><%
-                        }
-                    %><td><%
+                    }
+                    %><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i><%
+                    if (taxonInNpc) {
+                        %></a><%
+                    }
+                    %>&nbsp;&nbsp;</td>
+                    <td><%=(taxon != null) ? DBUtils.nvl(taxa.getTaxon().getAuthor()) : ""%>&nbsp;&nbsp;</td>
+                    <td><%=DBUtils.nvl(taxa.getSpecimenCount())%>&nbsp;&nbsp;</td>
+                    <td><%=DBUtils.nvl(taxa.getSpecimenCoords())%>&nbsp;&nbsp;</td>
+                    <td><%=DBUtils.nvl(taxa.getComments())%>&nbsp;&nbsp;</td>
+                    <td><%
                         for (MetaCat metaCat : taxa.getMetaCats()) {
                         %><a href="/online/DigitalDocument?src=<%=metaCat.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=metaCat.getMetaId()%>" alt="FRED Digital Document" /><br /><%=metaCat.getTitle()%></a><br /><%
                             }
