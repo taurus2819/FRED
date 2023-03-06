@@ -328,9 +328,9 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     public boolean equals(Object o) {
     	if (!(o instanceof Feature))
     		return false;
-    	if (featureId == null || ((Feature)o).featureId == null)
+    	if (featureId == null || ((Feature)o).getFeatureId() == null)
     		return false;
-    	return featureId.equals(((Feature)o).featureId);
+    	return featureId.equals(((Feature)o).getFeatureId());
     }
 	
 	public int hashCode() {

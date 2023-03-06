@@ -160,7 +160,7 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof UserView && ((UserView)o).userId.equals(userId);
+		return o instanceof UserView && ((UserView)o).getUserId().equals(userId);
 	}
 	
 	@Override

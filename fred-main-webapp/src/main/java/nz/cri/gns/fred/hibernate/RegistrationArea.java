@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.Feature;
@@ -69,8 +70,8 @@ public class RegistrationArea implements Serializable, nz.cri.gns.fred.model.Reg
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof RegistrationArea && ((RegistrationArea)o).regAreaId.equals(regAreaId);
-	}
+		return o instanceof RegistrationArea && ((RegistrationArea)o).getRegAreaId().equals(regAreaId);
+        }
 	
 	@Override
 	public int hashCode() {

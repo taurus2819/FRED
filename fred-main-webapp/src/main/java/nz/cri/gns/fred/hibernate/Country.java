@@ -65,7 +65,7 @@ public class Country implements Serializable, nz.cri.gns.fred.model.Country {
 	
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Country && ((Country)o).countryCode.equals(countryCode);
+		return o instanceof Country && ((Country)o).getCountryCode().equals(countryCode);
 	}
 	
 	@Override

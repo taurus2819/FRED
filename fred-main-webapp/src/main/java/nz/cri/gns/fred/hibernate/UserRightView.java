@@ -88,7 +88,7 @@ public class UserRightView implements Serializable, nz.cri.gns.fred.model.UserRi
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof UserRightView && ((UserRightView)o).userId.equals(userId);
+		return o instanceof UserRightView && ((UserRightView)o).getUserId().equals(userId);
 	}
 	
 	@Override

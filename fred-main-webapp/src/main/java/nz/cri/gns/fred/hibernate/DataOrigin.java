@@ -80,7 +80,7 @@ public class DataOrigin implements nz.cri.gns.fred.model.DataOrigin, Serializabl
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof DataOrigin && ((DataOrigin)o).originId.equals(originId);
+		return o instanceof DataOrigin && ((DataOrigin)o).getOriginId().equals(originId);
 	}
 	
 	@Override

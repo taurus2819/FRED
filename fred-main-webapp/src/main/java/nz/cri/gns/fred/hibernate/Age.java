@@ -125,7 +125,7 @@ public class Age implements Serializable, nz.cri.gns.fred.model.Age {
 	
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Age && ((Age)o).ageId.equals(ageId);
+		return o instanceof Age && ((Age)o).getAgeId().equals(ageId);
 	}
 	
 	@Override

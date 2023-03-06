@@ -184,12 +184,12 @@ public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.Backlo
 
     @Override
     public int compareTo(nz.cri.gns.fred.model.BacklogStatus arg0) {
-        return mapNumber.compareTo(((BacklogStatus) arg0).mapNumber);
+        return mapNumber.compareTo(((BacklogStatus) arg0).getMapNumber());
     }
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof BacklogStatus && ((BacklogStatus) o).objectId.equals(objectId);
+        return o instanceof BacklogStatus && ((BacklogStatus) o).getObjectId().equals(objectId);
     }
 
     @Override

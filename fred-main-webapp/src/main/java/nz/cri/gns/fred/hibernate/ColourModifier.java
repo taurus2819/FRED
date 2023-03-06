@@ -84,7 +84,7 @@ public class ColourModifier implements Serializable, nz.cri.gns.fred.model.Colou
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof ColourModifier && ((ColourModifier)o).modifierId.equals(modifierId);
+		return o instanceof ColourModifier && ((ColourModifier)o).getModifierId().equals(modifierId);
 	}
 	
 	@Override

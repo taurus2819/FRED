@@ -96,7 +96,7 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof RockColour && ((RockColour)o).colourId.equals(colourId);
+		return o instanceof RockColour && ((RockColour)o).getColourId().equals(colourId);
 	}
 	
 	@Override

@@ -61,7 +61,7 @@ public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGr
 
     @Override
 	public boolean equals(Object o) {
-    	return o instanceof FossilGroup && groupId != null && groupId.equals(((FossilGroup)o).groupId);
+    	return o instanceof FossilGroup && groupId != null && groupId.equals(((FossilGroup)o).getGroupId());
     }
 
 	public int compareTo(nz.cri.gns.fred.model.FossilGroup arg0) {

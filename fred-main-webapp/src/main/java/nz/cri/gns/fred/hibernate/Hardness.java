@@ -83,7 +83,7 @@ public class Hardness implements Serializable, nz.cri.gns.fred.model.Hardness {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Hardness && ((Hardness)o).hardnessId.equals(hardnessId);
+		return o instanceof Hardness && ((Hardness)o).getHardnessId().equals(hardnessId);
 	}
 	
 	@Override

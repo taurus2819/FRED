@@ -87,7 +87,7 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
     }
 
 	public int compareTo(nz.cri.gns.fred.model.Folder arg0) {
-		return name.compareTo(((Folder)arg0).name);
+		return name.compareTo(((Folder)arg0).getName());
 	}
 
 	public String getUniqueIdentifier() {

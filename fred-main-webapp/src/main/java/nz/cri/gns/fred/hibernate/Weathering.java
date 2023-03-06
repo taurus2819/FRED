@@ -84,7 +84,7 @@ public class Weathering implements Serializable, nz.cri.gns.fred.model.Weatherin
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Weathering && ((Weathering)o).weatheringId.equals(weatheringId);
+		return o instanceof Weathering && ((Weathering)o).getWeatheringId().equals(weatheringId);
 	}
 	
 	@Override

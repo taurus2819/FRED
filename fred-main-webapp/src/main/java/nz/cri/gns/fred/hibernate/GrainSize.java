@@ -96,8 +96,8 @@ public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize 
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof GrainSize && ((GrainSize)o).grainSizeId.equals(grainSizeId);
-	}
+		return o instanceof GrainSize && ((GrainSize)o).getGrainSizeId().equals(grainSizeId);
+        }
 	
 	@Override
 	public int hashCode() {

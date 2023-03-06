@@ -84,7 +84,7 @@ public class Carbonate implements Serializable, nz.cri.gns.fred.model.Carbonate 
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Carbonate && ((Carbonate)o).carbonateId.equals(carbonateId);
+		return o instanceof Carbonate && ((Carbonate)o).getCarbonateId().equals(carbonateId);
 	}
 	
 	@Override

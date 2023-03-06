@@ -354,7 +354,7 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof SiteView && ((SiteView)o).siteId.equals(siteId);
+		return o instanceof SiteView && ((SiteView)o).getSiteId().equals(siteId);
 	}
 	
 	@Override

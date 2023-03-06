@@ -181,7 +181,7 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof FrUserView && ((FrUserView)o).userId.equals(userId);
+		return o instanceof FrUserView && ((FrUserView)o).getUserId().equals(userId);
 	}
 	
 	@Override

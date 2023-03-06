@@ -47,7 +47,7 @@ public class SecurityClass implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof SecurityClass && ((SecurityClass)o).classId.equals(classId);
+		return o instanceof SecurityClass && ((SecurityClass)o).getClassId().equals(classId);
 	}
 	
 	@Override

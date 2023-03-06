@@ -47,7 +47,7 @@ public class StratigraphicUnit implements Serializable, nz.cri.gns.fred.model.St
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof StratigraphicUnit && ((StratigraphicUnit)o).name.equals(name);
+		return o instanceof StratigraphicUnit && ((StratigraphicUnit)o).getName().equals(name);
 	}
 	
 	@Override

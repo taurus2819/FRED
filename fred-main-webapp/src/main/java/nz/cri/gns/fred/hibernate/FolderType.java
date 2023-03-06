@@ -60,7 +60,7 @@ public class FolderType implements Serializable, nz.cri.gns.fred.model.FolderTyp
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof FolderType && ((FolderType)o).folderTypeId.equals(folderTypeId);
+		return o instanceof FolderType && ((FolderType)o).getFolderTypeId().equals(folderTypeId);
 	}
 	
 	@Override

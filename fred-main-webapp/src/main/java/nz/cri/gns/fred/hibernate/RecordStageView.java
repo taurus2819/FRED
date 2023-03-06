@@ -66,7 +66,7 @@ public class RecordStageView implements Serializable, nz.cri.gns.fred.model.Reco
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof RecordStageView && ((RecordStageView)o).id.equals(id);
+		return o instanceof RecordStageView && ((RecordStageView)o).getId().equals(id);
 	}
 
 	public int compareTo(nz.cri.gns.fred.model.RecordStageView arg0) {
