@@ -24,7 +24,7 @@ public abstract class FREDStaticIPSysJspPage extends FREDIPSysJspPage{
 		il[2] = new IconnedLink("about.jsp", "images/book.gif", "About");
 		il[3] = new IconnedLink("contacts.jsp", "images/register.gif", "Contacts");
 		il[4] = new IconnedLink("faq.jsp", "images/help.gif", "FAQ");
-		il[5] = new IconnedLink("whats_new.jsp", "images/book.gif", "Whats New");
+		il[5] = new IconnedLink("whats_new.jsp", "images/book.gif", "What&rsquo;s New");
 		il[6] = new IconnedLink("https://data.gns.cri.nz/register/user_reg.jsp?DBase=FRED", "images/register.gif", "Register for FRED account");
 		il[7] = new IconnedLink("conditions.jsp", "images/tc.gif", "Conditions of Use");
 		il[8] = new IconnedLink("https://data.gns.cri.nz/staff/email.jsp?id=frf&subject=FRF%20Feeedback", "images/register.gif", "Feedback");

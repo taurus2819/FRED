@@ -15,7 +15,7 @@
 
 <p>The FRF includes locality coordinates, collection details, stratigraphic position, relevant sedimentary data, and fossil identifications with paleontological opinion on geological age and paleoenvironment.</p>
 
-<p>New Zealand mainland data are organised according to 1:50 000 scale New Zealand map sheets (map series NZMS260), with fossil localities within each map sheet allocated a unique number.</p>
+<p>New Zealand mainland data are organised according to 1:50,000 scale New Zealand map sheets (map series NZMS260), with fossil localities within each map sheet allocated a unique number.</p>
 
 <p>Some samples collected from FRF localities are stored in the <a href="<%=Environment.getDataUrl()%>/npc/catalogue/index.jsp">National Paleontological Collection</a> at GNS Science. Researchers may access these samples either through an on-site visit or by requesting a loan.</p>
 
