@@ -68,11 +68,22 @@ deploy-dev:
     - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
   when: manual
 
-deploy-staging:
+# Staging environment accessed via https://data-dev.gns.cri.nz/fred
+deploy-staging-dev:
   tags:
     - docker
   stage: deploy
   script:
     - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=http://webapp-staging.gns.cri.nz:8005/manager/text tomcat7:redeploy
+    - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
+  when: manual
+
+# Staging environment accessed via https://data-uat.gns.cri.nz/fred
+deploy-staging-uat:
+  tags:
+    - docker
+  stage: deploy
+  script:
+    - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=http://webapp-staging.gns.cri.nz:7005/manager/text tomcat7:redeploy
     - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
   when: manual
