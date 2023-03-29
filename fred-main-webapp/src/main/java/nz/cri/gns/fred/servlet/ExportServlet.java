@@ -297,6 +297,8 @@ public class ExportServlet  extends FREDHibernateServlet {
 //                                        sv.getMethod()) : ""));
 //                                c.print(((sv != null) ? DBUtils.nvl(
 //                                        sv.getAccuracy()) : ""));
+                                // skip the method/accuracy columns commented out above
+                                skipColumns(c, 2);
 
                                 if (featureUtil.isAllowedReadFeature(user,feature)) {
                                     c.print(DBUtils.nvl(feature.getLocality()).replaceAll(
