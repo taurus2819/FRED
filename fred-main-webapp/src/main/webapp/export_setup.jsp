@@ -65,7 +65,7 @@
 	<tr>
 		<td class="heading">Paleontology Records&nbsp;&nbsp;</td>
 		<td><button onclick="submitType('PALEONTOLOGY')" style="min-width: 140px">Download Paleontology</button></td>
-		<td><button onclick="submitType('PALEONTOLOGY_TAXONOMIC')" style="min-width: 140px">Download Paleontology Taxonomic</button></td>
+		<td><button onclick="submitType('PALEONTOLOGY_TAXONOMIC')" style="min-width: 140px">Download Taxonomic List</button></td>
 	</tr>
 	</table><%
 	endDETable(pageContext);
