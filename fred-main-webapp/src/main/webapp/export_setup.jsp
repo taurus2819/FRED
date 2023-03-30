@@ -37,35 +37,31 @@
 	startDETable(pageContext);
 	%><table width="600" border="0">
 	<tr>
-		<td class="deHeading" colspan="4">Select Download</td>
+		<td class="deHeading" colspan="2">Select Download</td>
 	</tr>
 	<tr>
-		<td colspan="4"><p>Select what you would like to download and then press the appropriate <i>Download</i> button.</p>
+		<td colspan="3"><p>Select what you would like to download and then press the appropriate button.</p>
                     <p>A tab separated text file will be generated and you can either open or save it. </p><p>If a large number of localities are selected the process may take a few minutes.</p></td>
 	</tr>
 	<tr>
-		<td colspan="4" style="font-style:italic">Please note: use of this download facility is logged</td>
+		<td colspan="3" style="font-style:italic">Please note: use of this download facility is logged</td>
 	</tr>
 	<tr>
 		<td class="heading">Locality&nbsp;&nbsp;</td>
-		<td><input type="checkbox" name="collection" checked />Collection&nbsp;&nbsp;</td>
-		<td><input type="checkbox" name="stratigraphy" checked />Stratigraphy&nbsp;&nbsp;</td>
-		<td><input type="checkbox" name="sedimentary" checked />Sedimentary Feature&nbsp;&nbsp;</td>
-	</tr>
-        <tr>
-                <td></td>
-                <td colspan="3">
-                    <button onclick="submitType('LOCATION')" style="min-width: 140px">Download Locality</button>
+                <td colspan="2">
+                    <button onclick="submitType('LOCATION')" style="min-width: 160px">Locality and Collection</button>
                 </td>
         </tr>
 	<tr>
 		<td class="heading">Adoption Records&nbsp;&nbsp;</td>
-		<td><button onclick="submitType('ADOPTION')" style="min-width: 140px">Download Adoption</button></td>
+		<td colspan="2">
+                    <button onclick="submitType('ADOPTION')" style="min-width: 160px">Adoption</button>
+                </td>
 	</tr>
 	<tr>
 		<td class="heading">Paleontology Records&nbsp;&nbsp;</td>
-		<td><button onclick="submitType('PALEONTOLOGY')" style="min-width: 140px">Download Paleontology</button></td>
-		<td><button onclick="submitType('PALEONTOLOGY_TAXONOMIC')" style="min-width: 140px">Download Taxonomic List</button></td>
+		<td><button onclick="submitType('PALEONTOLOGY')" style="min-width: 160px">Paleontology Summary</button></td>
+		<td><button onclick="submitType('PALEONTOLOGY_TAXONOMIC')" style="min-width: 160px">Taxonomic List</button></td>
 	</tr>
 	</table><%
 	endDETable(pageContext);
