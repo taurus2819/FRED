@@ -1,12 +1,6 @@
 <%@page pageEncoding="utf-8"%>
-<%@page import="nz.cri.gns.fred.util.FeatureUtil"%>
-<%@page import="nz.cri.gns.fred.util.FREDUtil"%>
-<%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"%>
 <%@page import="nz.cri.gns.core.Environment"%>
 <%@page import="nz.cri.gns.jsp.JspUtils"%>
-<%
-    FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
-%>
 
 <table width="750" style="width:750px;" border="0">
 
