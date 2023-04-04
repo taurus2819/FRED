@@ -34,11 +34,11 @@ New Zealand Fossil Record File [Data set]. GNS Science.<br>
 <tr>
 <td colspan="2" valign="top">Links open in new window:<br>
 <ul>
-<li><a target="_blank" rel="noopener" href="../user_manual.pdf">User Manual</a></li>
-<li><a target="_blank" rel="noopener" href="https://data.gns.cri.nz/register/password.jsp">Reset Password</a></li>
-<li><a target="_blank" rel="noopener" href="https://data.gns.cri.nz/register/user_reg.jsp?DBase=FRED">New User Registration</a></li>
+<li><a target="_blank" rel="noopener" href="./user_manual.pdf">User Manual</a></li>
+<li><a target="_blank" rel="noopener" href="<%=Environment.getDataUrl()%>/register/password.jsp">Reset Password</a></li>
+<li><a target="_blank" rel="noopener" href="<%=Environment.getDataUrl()%>/register/user_reg.jsp?DBase=FRED">New User Registration</a></li>
 <li><a target="_blank" rel="noopener" href="whats_new.jsp">Recent News</a></li>
-<li><a target="_blank" rel="noopener" href="https://data.gns.cri.nz/staff/email.jsp?id=frf&subject=FRF%20Feeedback">Feedback/Report Faults</a></li>
+<li><a target="_blank" rel="noopener" href="<%=Environment.getDataUrl()%>/staff/email.jsp?id=frf&subject=FRF%20Feeedback">Feedback/Report Faults</a></li>
 <li><a target="_blank" rel="noopener" href="about.jsp">About the NZ Fossil Record File</a></li>
 </ul>
 <br></td>
