@@ -310,6 +310,8 @@ public class ExportServlet  extends FREDHibernateServlet {
 
                                 //TODO: needs some work to be done here
 //                                    c.print(((sv != null) ? sv.getCountryName() : ""));
+                                skipColumns(c, 1);  // skip the country column
+                                
                                 c.print(DBUtils.nvl(
                                         feature.getCoordComments()).replaceAll(
                                                 "\\s\\s+|\\n|\\r", " "));
