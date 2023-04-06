@@ -384,6 +384,7 @@
             %><tr class="lightColour"><td class="heading">Locality Comments</td><td><%=feature.getComments()%></td></tr><%
         }
 
+        out.flush();
         //Image/Files
         if (feature.getMetaCats().size() > 0) {
     %><tr class="lightColour"><td colspan="2" class="heading">Images/Files</td></tr>
@@ -404,6 +405,7 @@
                         if (sample != null) {
                             if (sampleUtil.isAllowedReadSample(user, sample)) {
                                 //Sample Data
+        out.flush();
         %><tr class="midColour"><th colspan="2">Sample Information<%
         if (!featType.equals(FREDConstants.OUTCROP)) {
             //add PDF link
@@ -595,7 +597,7 @@
                             }
                         }
 
-
+    out.flush();
     //Consensus age 
     for (nz.cri.gns.fred.model.SquirrelAgeView ageView : sample.getSquirrelAge()) {
         if (ageView.isDeterminedValue()) { 
@@ -614,6 +616,7 @@
         }
     }
 
+    out.flush();
     //Paleontology
     boolean hasPalRecords = false;
     for (Paleontology palRecord : sampleUtil.getPaleontologyRecords(sample)) {
