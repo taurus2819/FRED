@@ -383,7 +383,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
                             // Convert HTML code back to String here
                             String cleanedLocalityString = StringEscapeUtils.unescapeHtml4(feature.getLocality());
 				PDFUtil.addCells(table, new String[] {"Locality", cleanedLocalityString}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {"Country", ((sm != null) ? sm.getCountryCode(): null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Country", ((sm != null) ? featureUtil.getCountry(sm.getCountryCode()).toString(): null)}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Coordinate Comments", feature.getCoordComments()}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Locality Comments", feature.getComments()}, bodyFonts);
 				if (!featType.equals(FREDConstants.OUTCROP)) {
