@@ -252,8 +252,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.auditTable = auditTable;
    }
 
-    public SiteView getSiteView() {
-        System.err.println("Get site view called.");
+    public SiteView getSiteView() {        
         if(siteView == null)    {
             //load Site details from API. This might need more thoughts to make sure performance is ok
             siteView = SiteModelUtil.getSiteView(siteId);
