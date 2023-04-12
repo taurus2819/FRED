@@ -8,14 +8,21 @@
     FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
 %>
 
-<table width="850" style="width:850px;" border="0">
+<table width="750" style="width:750px;" border="0">
+
+<tr>
+<td colspan="3" valign="top">FRED is a computer database for the New Zealand Fossil Record File (FRF) which is a recording scheme for fossil localities in NZ and nearby regions.<br><br>
+FRED minimally contains registration information about fossil localities, including geographic coordinates, collection details, and sometimes stratigraphic and lithological information also.<br><br>	
+For many samples, taxonomic determinations and paleontological interpretations of stratigraphic age and paleoenvironment are available.
+</td>
+</tr>
 
 <tr>
 <td valign="top">Please cite as:</td>
 <td valign="top">GNS&nbsp;Science&nbsp;&amp;&nbsp;Geoscience&nbsp;Society&nbsp;of&nbsp;New&nbsp;Zealand&nbsp;(2003).<br>
 New Zealand Fossil Record File [Data set]. GNS Science.<br>
 <a href="https://doi.org/10.21420/JQQB-NK89">https://doi.org/10.21420/JQQB-NK89</a><br></td>
-<td rowspan="4" valign="top"><img src="images/1a_500R.png" width="180" height="250" class="border" alt="limestone with fossils"/></td>
+<td rowspan="4" valign="top"><img src="images/1a_500R.png" width="270" height="375" class="border" alt="limestone with fossils"/></td>
 </tr>
 
 <tr>
@@ -50,13 +57,6 @@ New Zealand Fossil Record File [Data set]. GNS Science.<br>
 <li>Windows: Chrome, Edge, Firefox</li>
 <li>Apple: Chrome, Safari</li>
 </ul>
-</td>
-</tr>
-
-<tr>
-<td colspan="3" valign="top">FRED is a computer database for the New Zealand Fossil Record File (FRF) which is a recording scheme for fossil localities in NZ and nearby regions<br><br>
-FRED minimally contains registration information about fossil localities, including geographic coordinates, collection details, and sometimes stratigraphic and lithological information also.<br><br>	
-For many samples, taxonomic determinations and paleontological interpretations of stratigraphic age and paleoenvironment are available.
 </td>
 </tr>
 
