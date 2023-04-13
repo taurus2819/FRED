@@ -1,3 +1,4 @@
+<%@page import="nz.cri.gns.fred.site.util.SiteModel"%>
 <%@page pageEncoding="utf-8"
         %><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
         %><%@page import="nz.cri.gns.fred.model.Adoption"
@@ -50,7 +51,8 @@
         %><%@page import="nz.cri.gns.fred.util.FREDUtil"
         %><%@page import="nz.cri.gns.fred.de.DataInputException"
         %><%@page import="nz.cri.gns.intranet.ServletUtils"
-%><%!
+        %><%@page import="nz.cri.gns.fred.site.util.SiteModel"%>
+<%!
     private static final Logger log = Logger.getLogger("detail.jsp");
 
     @Override
@@ -369,6 +371,7 @@
         }
         if (feature.getSiteView() != null) {
             sv = feature.getSiteView();
+//            System.out.println("Country CODE = " + sv.getCountryCode());
             LatLong ll = SiteModelUtil.getSiteLatLong(feature);
     %><tr class="lightColour"><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (WGS84)"%></td></tr><%
             }
@@ -387,7 +390,8 @@
     %><tr class="lightColour"><td class="heading">Locality</td><td><%=feature.getLocality()%></td></tr><%
         }
         if (sv != null && sv.getCountryName() != null) {
-    %><tr class="lightColour"><td class="heading">Country</td><td><%=sv.getCountryName()%></td></tr><%
+            SiteModel sm = SiteModelUtil.getSite(feature);
+    %><tr class="lightColour"><td class="heading">Country</td><td><%=featureUtil.getCountry(sm.getCountryCode())%></td></tr><%
         }
         if (feature.getCoordComments() != null) {
     %><tr class="lightColour"><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
