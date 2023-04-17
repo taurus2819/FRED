@@ -18,19 +18,11 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
     /** persistent field */
     private String code;
 
-    /** persistent field */
-    private Set<Sample> samplesBySecondaryColourId;
-
-    /** persistent field */
-    private Set<Sample> samplesByPrimaryColourId;
-
     /** full constructor */
-    public RockColour(Integer colourId, String name, String code, Set<Sample> samplesBySecondaryColourId, Set<Sample> samplesByPrimaryColourId) {
+    public RockColour(Integer colourId, String name, String code) {
         this.colourId = colourId;
         this.name = name;
         this.code = code;
-        this.samplesBySecondaryColourId = samplesBySecondaryColourId;
-        this.samplesByPrimaryColourId = samplesByPrimaryColourId;
     }
 
     /** default constructor */
@@ -61,22 +53,6 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
         this.code = code;
     }
 
-    public Set<Sample> getSamplesBySecondaryColourId() {
-        return this.samplesBySecondaryColourId;
-    }
-
-    public void setSamplesBySecondaryColourId(Set<Sample> samplesBySecondaryColourId) {
-        this.samplesBySecondaryColourId = samplesBySecondaryColourId;
-    }
-
-    public Set<Sample> getSamplesByPrimaryColourId() {
-        return this.samplesByPrimaryColourId;
-    }
-
-    public void setSamplesByPrimaryColourId(Set<Sample> samplesByPrimaryColourId) {
-        this.samplesByPrimaryColourId = samplesByPrimaryColourId;
-    }
-
     @Override
 	public String toString() {
         return name;
@@ -96,7 +72,7 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof RockColour && ((RockColour)o).colourId.equals(colourId);
+		return o instanceof RockColour && ((RockColour)o).getColourId().equals(colourId);
 	}
 	
 	@Override

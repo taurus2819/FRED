@@ -36,7 +36,7 @@ public class FolderRight implements Serializable, nz.cri.gns.fred.model.FolderRi
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof FolderRight && ((FolderRight)o).rightId.equals(rightId);
+		return o instanceof FolderRight && ((FolderRight)o).getRightId().equals(rightId);
 	}
 	
 	@Override

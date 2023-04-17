@@ -72,7 +72,7 @@ public class DrillType implements Serializable, nz.cri.gns.fred.model.DrillType 
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof DrillType && ((DrillType)o).drillTypeId.equals(drillTypeId);
+		return o instanceof DrillType && ((DrillType)o).getDrillTypeId().equals(drillTypeId);
 	}
 	
 	@Override

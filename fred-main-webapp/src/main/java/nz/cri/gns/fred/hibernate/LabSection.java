@@ -47,7 +47,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.paleontologies = paleontologies;
     }
 
-    public final Integer getLabSectionId() {
+    public Integer getLabSectionId() {
         return this.labSectionId;
     }
 
@@ -55,7 +55,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.labSectionId = labSectionId;
     }
 
-    public final Lab getLab() {
+    public Lab getLab() {
         return this.lab;
     }
 
@@ -63,7 +63,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.lab = lab;
     }
 
-    public final String getName() {
+    public String getName() {
         return this.name;
     }
 
@@ -71,7 +71,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.name = name;
     }
 
-    public final String getCode() {
+    public String getCode() {
         return this.code;
     }
 
@@ -79,7 +79,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.code = code;
     }
 
-    public final String getClosed() {
+    public String getClosed() {
         return this.closed;
     }
 
@@ -87,7 +87,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.closed = closed;
     }
 
-    public final Set<Paleontology> getPaleontologies() {
+    public Set<Paleontology> getPaleontologies() {
         return this.paleontologies;
     }
 
@@ -114,7 +114,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof LabSection && ((LabSection)o).labSectionId.equals(labSectionId);
+		return o instanceof LabSection && ((LabSection)o).getLabSectionId().equals(labSectionId);
 	}
 	
 	@Override

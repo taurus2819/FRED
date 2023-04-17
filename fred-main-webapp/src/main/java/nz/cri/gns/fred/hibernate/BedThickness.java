@@ -84,7 +84,7 @@ public class BedThickness implements Serializable, nz.cri.gns.fred.model.BedThic
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof BedThickness && ((BedThickness)o).thicknessId.equals(thicknessId);
+		return o instanceof BedThickness && ((BedThickness)o).getThicknessId().equals(thicknessId);
 	}
 	
 	@Override

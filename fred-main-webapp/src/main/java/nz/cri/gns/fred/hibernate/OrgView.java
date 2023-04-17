@@ -80,7 +80,7 @@ public class OrgView implements Serializable, nz.cri.gns.fred.model.OrgView {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof OrgView && ((OrgView)o).clientCode.equals(clientCode);
+		return o instanceof OrgView && ((OrgView)o).getClientCode().equals(clientCode);
 	}
 	
 	@Override

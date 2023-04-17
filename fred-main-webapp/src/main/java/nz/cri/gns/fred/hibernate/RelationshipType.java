@@ -81,7 +81,7 @@ public class RelationshipType implements Serializable, nz.cri.gns.fred.model.Rel
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof RelationshipType && ((RelationshipType)o).reltypeId.equals(reltypeId);
+		return o instanceof RelationshipType && ((RelationshipType)o).getReltypeId().equals(reltypeId);
 	}
 	
 	@Override

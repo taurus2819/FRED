@@ -1,8 +1,6 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
-import java.util.Set;
-import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class Weathering implements Serializable, nz.cri.gns.fred.model.Weathering {
@@ -18,15 +16,11 @@ public class Weathering implements Serializable, nz.cri.gns.fred.model.Weatherin
     /** persistent field */
     private String code;
 
-    /** persistent field */
-    private Set<Sample> samples;
-
     /** full constructor */
-    public Weathering(Integer weatheringId, String name, String code, Set<Sample> samples) {
+    public Weathering(Integer weatheringId, String name, String code) {
         this.weatheringId = weatheringId;
         this.name = name;
         this.code = code;
-        this.samples = samples;
     }
 
     /** default constructor */
@@ -57,14 +51,6 @@ public class Weathering implements Serializable, nz.cri.gns.fred.model.Weatherin
         this.code = code;
     }
 
-    public Set<Sample> getSamples() {
-        return this.samples;
-    }
-
-    public void setSamples(Set<Sample> samples) {
-        this.samples = samples;
-    }
-
     @Override
 	public String toString() {
         return name;
@@ -84,7 +70,7 @@ public class Weathering implements Serializable, nz.cri.gns.fred.model.Weatherin
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Weathering && ((Weathering)o).weatheringId.equals(weatheringId);
+		return o instanceof Weathering && ((Weathering)o).getWeatheringId().equals(weatheringId);
 	}
 	
 	@Override

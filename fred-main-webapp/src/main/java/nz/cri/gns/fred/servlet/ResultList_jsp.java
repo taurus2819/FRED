@@ -91,7 +91,6 @@ public class ResultList_jsp extends FREDHibernateServlet {
 
             // Define a vector of links
             Vector<Link> il = new Vector<Link>();
-            il.add(new IconnedLink(queryURL, "images/search.gif", "Search Again"));
             il.add(new IconnedLink("export_setup.jsp", "images/save.gif", "Download Results"));
 
             // Add to Folder link

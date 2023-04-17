@@ -110,7 +110,7 @@ public class Lab implements Serializable, nz.cri.gns.fred.model.Lab {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Lab && ((Lab)o).labId.equals(labId);
+		return o instanceof Lab && ((Lab)o).getLabId().equals(labId);
 	}
 	
 	@Override

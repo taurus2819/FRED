@@ -134,7 +134,7 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Stage && ((Stage)o).stageId.equals(stageId);
+		return o instanceof Stage && ((Stage)o).getStageId().equals(stageId);
 	}
 	
 	@Override

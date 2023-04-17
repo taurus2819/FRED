@@ -18,15 +18,11 @@ public class Hardness implements Serializable, nz.cri.gns.fred.model.Hardness {
     /** persistent field */
     private String code;
 
-    /** persistent field */
-    private Set<Sample> samples;
-
     /** full constructor */
-    public Hardness(Integer hardnessId, String name, String code, Set<Sample> samples) {
+    public Hardness(Integer hardnessId, String name, String code) {
         this.hardnessId = hardnessId;
         this.name = name;
         this.code = code;
-        this.samples = samples;
     }
 
     /** default constructor */
@@ -57,13 +53,6 @@ public class Hardness implements Serializable, nz.cri.gns.fred.model.Hardness {
         this.code = code;
     }
 
-    public Set<Sample> getSamples() {
-        return this.samples;
-    }
-
-    public void setSamples(Set<Sample> samples) {
-        this.samples = samples;
-    }
     @Override
 	public String toString() {
         return name;
@@ -83,7 +72,7 @@ public class Hardness implements Serializable, nz.cri.gns.fred.model.Hardness {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Hardness && ((Hardness)o).hardnessId.equals(hardnessId);
+		return o instanceof Hardness && ((Hardness)o).getHardnessId().equals(hardnessId);
 	}
 	
 	@Override

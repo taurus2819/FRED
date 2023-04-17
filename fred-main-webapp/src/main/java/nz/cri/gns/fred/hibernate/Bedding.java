@@ -96,7 +96,7 @@ public class Bedding implements Serializable, nz.cri.gns.fred.model.Bedding {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Bedding && ((Bedding)o).beddingId.equals(beddingId);
+		return o instanceof Bedding && ((Bedding)o).getBeddingId().equals(beddingId);
 	}
 	
 	@Override

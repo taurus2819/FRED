@@ -17,7 +17,17 @@
 
 	drawTop(out, et, request, response);
 
-	%><form method="get" action="export.jsp"><%
+	%>
+        <form method="get" name="export" action="export.jsp">
+            <input type="hidden" name="type" value="LOCATION"/>
+            <script type="text/javascript">
+                function submitType(type) {
+                    exportForm = document.forms['export'];
+                    exportForm.elements['type'].value = type;
+                    exportForm.submit();
+                }
+            </script>
+            <%
 	if (request.getParameter("featId") != null) {
 		%><input type="hidden" name="featId" value="<%=request.getParameter("featId")%>" /><%
 	} else if (request.getParameter("sampId") != null) {
@@ -27,32 +37,31 @@
 	startDETable(pageContext);
 	%><table width="600" border="0">
 	<tr>
-		<td class="deHeading" colspan="4">Fields to Download</td>
+		<td class="deHeading" colspan="2">Select Download</td>
 	</tr>
 	<tr>
-		<td colspan="4"><p>Select which types of fields you would like to download and then press the <i>Download</i> button.</p>  
+		<td colspan="3"><p>Select what you would like to download and then press the appropriate button.</p>
                     <p>A tab separated text file will be generated and you can either open or save it. </p><p>If a large number of localities are selected the process may take a few minutes.</p></td>
 	</tr>
 	<tr>
-		<td colspan="4" style="font-style:italic">Please note: use of this download facility is logged</td>
+		<td colspan="3" style="font-style:italic">Please note: use of this download facility is logged</td>
 	</tr>
 	<tr>
 		<td class="heading">Locality&nbsp;&nbsp;</td>
-		<td><input type="checkbox" name="collection" checked />Collection&nbsp;&nbsp;</td>
-		<td><input type="checkbox" name="stratigraphy" checked />Stratigraphy&nbsp;&nbsp;</td>
-		<td><input type="checkbox" name="sedimentary" checked />Sedimentary Feature&nbsp;&nbsp;</td>
-	</tr>
+                <td colspan="2">
+                    <button onclick="submitType('LOCATION')" style="min-width: 160px">Locality and Collection</button>
+                </td>
+        </tr>
 	<tr>
 		<td class="heading">Adoption Records&nbsp;&nbsp;</td>
-		<td><input type="checkbox" name="adoption" checked />Adoption fields</td>
+		<td colspan="2">
+                    <button onclick="submitType('ADOPTION')" style="min-width: 160px">Adoption</button>
+                </td>
 	</tr>
 	<tr>
 		<td class="heading">Paleontology Records&nbsp;&nbsp;</td>
-		<td><input type="checkbox" name="paleontology" checked />Header only</td>
-		<td><input type="checkbox" name="palList" checked />Taxonomic list</td>
-	</tr>
-	<tr>
-		<td><input type="submit" value="Download" /></td>
+		<td><button onclick="submitType('PALEONTOLOGY')" style="min-width: 160px">Paleontology Summary</button></td>
+		<td><button onclick="submitType('PALEONTOLOGY_TAXONOMIC')" style="min-width: 160px">Taxonomic List</button></td>
 	</tr>
 	</table><%
 	endDETable(pageContext);

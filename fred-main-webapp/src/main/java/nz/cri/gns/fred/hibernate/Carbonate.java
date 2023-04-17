@@ -1,8 +1,6 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
-import java.util.Set;
-import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class Carbonate implements Serializable, nz.cri.gns.fred.model.Carbonate {
@@ -18,15 +16,11 @@ public class Carbonate implements Serializable, nz.cri.gns.fred.model.Carbonate 
     /** persistent field */
     private String code;
 
-    /** persistent field */
-    private Set<Sample> samples;
-
     /** full constructor */
-    public Carbonate(Integer carbonateId, String name, String code, Set<Sample> samples) {
+    public Carbonate(Integer carbonateId, String name, String code) {
         this.carbonateId = carbonateId;
         this.name = name;
         this.code = code;
-        this.samples = samples;
     }
 
     /** default constructor */
@@ -57,14 +51,6 @@ public class Carbonate implements Serializable, nz.cri.gns.fred.model.Carbonate 
         this.code = code;
     }
 
-    public Set<Sample> getSamples() {
-        return this.samples;
-    }
-
-    public void setSamples(Set<Sample> samples) {
-        this.samples = samples;
-    }
-
     @Override
 	public String toString() {
         return name;
@@ -84,7 +70,7 @@ public class Carbonate implements Serializable, nz.cri.gns.fred.model.Carbonate 
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Carbonate && ((Carbonate)o).carbonateId.equals(carbonateId);
+		return o instanceof Carbonate && ((Carbonate)o).getCarbonateId().equals(carbonateId);
 	}
 	
 	@Override

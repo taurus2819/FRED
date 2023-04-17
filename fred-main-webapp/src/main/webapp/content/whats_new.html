@@ -1,19 +1,23 @@
 <table width="550" style="width:550px;" border="0">
-    <tr><td>
-            <p class="bigheading">Whats New</p>
+<tr><td>
+<p class="bigheading">What&rsquo;s New</p>
+<table border="0" cellspacing="5" cellpadding="0">
 
-            <table border="0" cellspacing="5" cellpadding="0">
-                <tr><td class="heading">2010 February:</td><td>Backlog data entry completed for the New Caledonia masterfile, held at Auckland University.  This completes the backlog data entry project, which has run from 2005.</td></tr>
-                <tr><td class="heading">2007 November:</td><td>Dynamic data downloads are now available.  Click on the <img src="images/save.gif" /> icon on a locality detail page or on a query result list.</td></tr>
-                <tr><td class="heading">2007 November:</td><td>The data entry spreadsheet has been extended to allow paleontology records (taxonomic lists) to be entered/edited.  The spreadsheet can be downloaded from <a href="folder_list.jsp">here</a>.</td></tr>
-                <tr><td class="heading">2006 October:</td><td>New <i>Advanced Query Builder</i> released.  This builder can be used to generate complex boolean queries using any field in the database.  The builder can be found <a href="buildframe.jsp">here</a>.</td></tr>
-                <tr><td class="heading">2006 July:</td><td>New FRF report format released.  Single or multiple forms can now be downloaded as PDFs for printing by clicking on the <img src="images/pdf_icon.gif" height="20" width="20" alt="PDF" /> icon in folders and <i>detail</i> pages.</td></tr>
-                <tr><td class="heading">2006 June:</td><td>Data entry spreadsheet released.  The spreadsheet allows Microsoft Excel users to add/edit localities directly from the spreadsheet.  Click <a href="folder_list.jsp" class="boldlink">here</a> to download.</td></tr>
-                <tr><td class="heading">2006 May:</td><td>FRED has a new internet address - <a href="http://www.fred.org.nz" target="_blank" class="boldlink">http://www.fred.org.nz</a></td></tr>
-                <tr><td class="heading">2006 March:</td><td>A map showing the location of localities is now available online.  Click on the link in the locality details page or when viewing the contents of your data entry folders.</td></tr>
-                <tr><td class="heading">2005 November:&nbsp;&nbsp;</td><td>Online registration of localities available for all registered users.  Website remodelled.  <a href="content/FRF_Nov05.pdf" target="brochure" class="boldlink">Brochure</a> on new online facilities available at Geological Society of New Zealand conference, Kaikoura.</td></tr>
-                <tr><td class="heading">2005 October:</td><td>"Backlog data" entry commenced at GNS Science in Lower Hutt.  This programme, which will take several years to complete, is entering full locality descriptions and some paleontological data for the c. 30000 localities so far represented in FRED only by grid coordinates.  We are commencing with the northern South Island, "Nelson" masterfile region.  In the first instance, only paleontological data deposited in the masterfile will be entered.</td></tr>
-                <tr><td class="heading">2003 July:</td><td>FRED database online in GNS site of World Wide Web</td></tr>
-            </table>
-        </td></tr>
+<tr><td class="heading">Polygon Search</td><td>The polygon search has actually been available for a long time, but it is tucked away at the bottom of the Simple Query form where it is easily overlooked so we have decided to highlight it here. This function permits users to zoom in on a map and mark out an arbitrary area of interest by drawing a polygon around it, which selects all of the fossil localities within the polygon for the query. In principle, you can select an area anywhere in the world, although of course there are relatively few FRF entries outside of New Zealand and the Ross Dependency. From the Simple Query form, press the button labelled &ldquo;Create map polygon&rdquo; to get started.</td></tr>
+
+<tr><td class="heading">Consensus Age</td><td>A partial implementation of the consensus age feature was added to FRED at the end of 2017 and full implementation completed in 2020. The idea is to automatically calculate a &ldquo;best fit&rdquo; age for each sample using all available information. In many cases, the calculation is trivial, because only one age assessment is available. In cases where a number of age assessments have been made, however, it is often convenient to have available an age which is consistent with all of them.<br><br>
+The fine detail of the &ldquo;rules&rdquo; by which the consensus ages are derived are quite complicated, but the general principles are easily explained:</p>
+<ul>
+<li>If one or more &ldquo;adopted ages&rdquo; have been manually assigned to the sample, the most recent one is taken.</li>
+<li>If other age assessments (known, inferred, paleontological) overlap, then the interval of overlap is taken as the consensus age.</li>
+<li>If other age assessments are mutually exclusive, the full age range required to include all of them is taken as the consensus age.</li>
+</ul>
+<br>Inclusive (&ldquo;broad&rdquo;) and exclusive (&ldquo;narrow&rdquo;) variations are provided, depending on whether you want to try and net all possibilities, or narrow down to a short list. Further explanation is available from hyperlinks on the form itself, but experimentation is probably the best way to find what works best for your own research.</td></tr>
+
+<tr><td class="heading">Featured Application</td><td>Over the years, FRF data have contributed directly to a great deal of both fundamental and economically significant applied Earth science, ranging from taxonomic studies to regional mapping. More recently, the ready availability of powerful desktop computing and ubiquitous analytical software such as R have allowed large custom data extracts to be statistically analysed to reveal important insights. One we will showcase here, by Womack and colleagues, investigated the long-term (~40 million years) relationship between climate, biodiversity, and biogeographic patterns. Using FRED data, Womack et al. (2021) showed that the shallow-marine fossil record of New Zealand exhibits a positive relationship between oceanic temperature and both the number of species and the number of ecological functional groups in an area. One implication of this relationship is that the duplication of functional roles by multiple species (functional redundancy) increases with temperature, a pattern that may have general relevance to marine ecosystems around the world and to the resilience of ecosystems in a warming world.<br><br>
+<i>Womack, TM; Crampton, JS; Hannah, MJ; Collins, KS 2021: A positive relationship between functional redundancy and temperature in Cenozoic marine ecosystems. Science 373: 1027–1029.</i><br><br>
+Several other case studies in which FRF data played a pivotal role are briefly described in Clowes et al. 2021, NZJGG 64: 62.</td></tr>
+
+</table>
+</td></tr>
 </table>
