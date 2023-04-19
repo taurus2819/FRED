@@ -18,7 +18,7 @@ login form as static html rather than fetching this from FREDIPSysLoginPage#draw
     <tr>
         <td colspan="2">
     <center>
-        <form name="loginform" method="post" action="login.jsp">
+        <form name="loginform" method="post" action="/login.jsp">
             <table border="0"><tbody><tr><td><b>Login name:</b></td><td><input name="loginname" autocomplete="off"></td></tr>
                     <tr><td><b>Password:</b></td><td><input name="loginpass" type="password" autocomplete="off"></td></tr>
                     <tr><td colspan="2" style="text-align: right"><input type="submit" value="Log in"></td></tr>
