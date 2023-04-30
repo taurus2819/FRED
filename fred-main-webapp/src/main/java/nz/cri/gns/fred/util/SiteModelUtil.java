@@ -220,6 +220,9 @@ public class SiteModelUtil extends ModelUtil {
                 case REG_FIJI:
                     mapsheet = "FJ";
                     break;
+                case REG_ROSS_SEA:
+                    mapsheet = "RS";
+                    break;
             }
                     
         }
