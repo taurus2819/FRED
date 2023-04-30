@@ -26,7 +26,7 @@ login form as static html rather than fetching this from FREDIPSysLoginPage#draw
                     <tr><td>&nbsp;</td></tr>
                     <tr><td colspan="2">If you have forgotten your password or want to change it click <a href="<%=Environment.getDataUrl()%>/register/password.jsp">here</a><br>(applies only to <b>External Users</b>)</td></tr>
                 </tbody></table>
-                <input type="hidden" name="loginpage" value="<%=request.getContextPath()%>">
+                <input type="hidden" name="loginpage" value="<%=request.getContextPath()%>/index.jsp">
         </form>
     </center>
 </td>
