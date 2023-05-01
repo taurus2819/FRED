@@ -210,7 +210,7 @@ public class SiteModelUtil extends ModelUtil {
         System.out.println("Feature reg are = " + feature.getRegistrationArea().getRegAreaId());
         SiteView sv = getSiteView(feature.getSiteId());   
         String mapsheet = null;
-        if(!sv.getNzms260Sheet().equals("invalid")){
+        if(!sv.getNzms260Sheet().equals("invalid")){ //all outside mainland NZ
             mapsheet = sv.getNzms260Sheet();
         }else{
             switch(feature.getRegistrationArea().getRegAreaId()){
@@ -223,8 +223,37 @@ public class SiteModelUtil extends ModelUtil {
                 case REG_ROSS_SEA:
                     mapsheet = "RS";
                     break;
-            }
-                    
+                case REG_TOKELAU:
+                    mapsheet = "TK";
+                    break;
+                case REG_SAMOA:
+                    mapsheet = "WS";
+                    break;
+                case REG_COOK_ISLANDS:
+                    mapsheet = "CK";
+                    break;
+                case REG_NIUE:
+                    mapsheet = "NU";
+                    break;
+                case REG_TONGA:
+                    mapsheet = "TO";
+                    break;
+                case REG_NORFOLK_ISLAND:
+                    mapsheet = "NF";
+                    break;
+                case REG_VANUATU:
+                    mapsheet = "VU";
+                    break;
+                case REG_PAPUA_NEW_GUINEA:
+                    mapsheet = "PG";
+                    break;
+                case REG_NEW_CALEDONIA:
+                    mapsheet = "NC";
+                    break;
+                case REG_OTHER:   //offshore regions
+                    mapsheet = "IW";
+                    break;                    
+            }                    
         }
         return mapsheet;
     }
