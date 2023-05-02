@@ -207,8 +207,55 @@ public class SiteModelUtil extends ModelUtil {
 
     public static String getFrNumberMapSheet(Feature feature) throws IOException {
         //get the NZMS260 coord - use the /details api from the site api. This provides the NZMS260 sheet 
-        SiteView sv = getSiteView(feature.getSiteId());        
-        return sv.getNzms260Sheet();
+        System.out.println("Feature reg are = " + feature.getRegistrationArea().getRegAreaId());
+        SiteView sv = getSiteView(feature.getSiteId());   
+        String mapsheet = null;
+        if(!sv.getNzms260Sheet().equals("invalid")){ //all outside mainland NZ
+            mapsheet = sv.getNzms260Sheet();
+        }else{
+            switch(feature.getRegistrationArea().getRegAreaId()){
+                case REG_CHATHAM_ISLANDS:
+                    mapsheet = "CH";
+                    break;
+                case REG_FIJI:
+                    mapsheet = "FJ";
+                    break;
+                case REG_ROSS_SEA:
+                    mapsheet = "RS";
+                    break;
+                case REG_TOKELAU:
+                    mapsheet = "TK";
+                    break;
+                case REG_SAMOA:
+                    mapsheet = "WS";
+                    break;
+                case REG_COOK_ISLANDS:
+                    mapsheet = "CK";
+                    break;
+                case REG_NIUE:
+                    mapsheet = "NU";
+                    break;
+                case REG_TONGA:
+                    mapsheet = "TO";
+                    break;
+                case REG_NORFOLK_ISLAND:
+                    mapsheet = "NF";
+                    break;
+                case REG_VANUATU:
+                    mapsheet = "VU";
+                    break;
+                case REG_PAPUA_NEW_GUINEA:
+                    mapsheet = "PG";
+                    break;
+                case REG_NEW_CALEDONIA:
+                    mapsheet = "NC";
+                    break;
+                case REG_OTHER:   //offshore regions
+                    mapsheet = "IW";
+                    break;                    
+            }                    
+        }
+        return mapsheet;
     }
 
     public static SiteModel getSite(Feature feature) throws IOException {
