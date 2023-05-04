@@ -251,7 +251,17 @@ public class SiteModelUtil extends ModelUtil {
                     mapsheet = "NC";
                     break;
                 case REG_OTHER:   //offshore regions
-                    mapsheet = "IW";
+//                    mapsheet = "IW";
+                    SiteModel site = getSite(feature);
+                    if(site.getLat() < 0 && site.getLon() > 0){  //lat is -ve and lon is +ve
+                        mapsheet = "SE" + Math.abs(Math.round(site.getLat())) + Math.abs(Math.round(site.getLon()));
+                    }else if(site.getLat() > 0 && site.getLon() > 0){ //lat is +ve and lon is +ve
+                        mapsheet = "NE" + Math.abs(Math.round(site.getLat())) + Math.abs(Math.round(site.getLon()));
+                    }else if(site.getLat() > 0 && site.getLon() < 0){ //lat is +ve and lon is -ve
+                        mapsheet = "NW" + Math.abs(Math.round(site.getLat())) + Math.abs(Math.round(site.getLon()));
+                    }else if(site.getLat() < 0 && site.getLon() < 0){ //lat is -ve and lon is -ve
+                        mapsheet = "SW" + Math.abs(Math.round(site.getLat())) + Math.abs(Math.round(site.getLon()));
+                    }
                     break;                    
             }                    
         }
