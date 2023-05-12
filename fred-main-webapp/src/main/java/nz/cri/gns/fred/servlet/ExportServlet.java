@@ -156,6 +156,55 @@ public class ExportServlet  extends FREDHibernateServlet {
                         "**************************************************************************************************************");
                 c.println();
 
+                c.flush();
+
+                // now that we've written the file header we'll start the possibly
+                // expensive task of fetching the data. We write the header first so
+                // the user can see that some file is being created straight away.
+                // rather than leave them wondering if anything is going to happen
+                if (request.getParameter("featId") != null) {
+                    Integer featureId;
+                    try {
+                        featureId = Integer.parseInt(request.getParameter("featId"));
+                    } catch (NumberFormatException e) {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                                "Invalid featId. Not a number");
+                        return;
+                    }
+                    Feature feature = featureUtil.getFeature(featureId);
+                    for (Sample sample : feature.getSamples()) {
+                        samples.add(sample);
+                    }
+                } else if (request.getParameter("sampId") != null) {
+                    samples.add(sampleUtil.getSample(Integer.parseInt(
+                            request.getParameter("sampId"))));
+                } else if (session.getAttribute("FRED.samples") != null && ((List<Sample>) session.getAttribute(
+                        "FRED.samples")).size() > 0) {
+                    List<Sample> samps = (List<Sample>) session.getAttribute(
+                            "FRED.samples");
+                    //use samples (if comes from simple and adv searches)
+                    for (Sample samp : samps) {
+                        FredHibernate.get().currentSession().refresh(samp);
+                        samples.add(samp);
+                    }
+                } else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute(
+                        "FRED.features")).size() > 0) {
+                    List<Feature> features = (List<Feature>) session.getAttribute(
+                            "FRED.features");
+                    //use features for localityServlet
+                    for (Feature feature : features) {
+                        FredHibernate.get().currentSession().refresh(feature);
+                        Set<Sample> featSamples = feature.getSamples();
+                        if (featSamples != null && featSamples.size() > 0) {
+                            for (Sample sample : featSamples) {
+                                samples.add(sample);
+                            }
+                        }
+                    }
+                }
+
+                log.log(Level.INFO, "START TIME " + new Date());
+
                 if (type == Type.LOCATION) {
                     c.printRecord("********");
                     c.printRecord("Locality");
@@ -213,54 +262,6 @@ public class ExportServlet  extends FREDHibernateServlet {
                         }
                     }
                     c.println();
-                    c.flush();
-
-                    // now that we've written the file header we'll start the possibly
-                    // expensive task of fetching the data. We write the header first so
-                    // the user can see that some file is being created straight away.
-                    // rather than leave them wondering if anything is going to happen
-                    if (request.getParameter("featId") != null) {
-                        Integer featureId;
-                        try {
-                            featureId = Integer.parseInt(request.getParameter("featId"));
-                        } catch (NumberFormatException e) {
-                            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                                    "Invalid featId. Not a number");
-                            return;
-                        }
-                        Feature feature = featureUtil.getFeature(featureId);
-                        for (Sample sample : feature.getSamples()) {
-                            samples.add(sample);
-                        }
-                    } else if (request.getParameter("sampId") != null) {
-                        samples.add(sampleUtil.getSample(Integer.parseInt(
-                                request.getParameter("sampId"))));
-                    } else if (session.getAttribute("FRED.samples") != null && ((List<Sample>) session.getAttribute(
-                            "FRED.samples")).size() > 0) {
-                        List<Sample> samps = (List<Sample>) session.getAttribute(
-                                "FRED.samples");
-                        //use samples (if comes from simple and adv searches)
-                        for (Sample samp : samps) {
-                            FredHibernate.get().currentSession().refresh(samp);
-                            samples.add(samp);
-                        }
-                    } else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute(
-                            "FRED.features")).size() > 0) {
-                        List<Feature> features = (List<Feature>) session.getAttribute(
-                                "FRED.features");
-                        //use features for localityServlet
-                        for (Feature feature : features) {
-                            FredHibernate.get().currentSession().refresh(feature);
-                            Set<Sample> featSamples = feature.getSamples();
-                            if (featSamples != null && featSamples.size() > 0) {
-                                for (Sample sample : featSamples) {
-                                    samples.add(sample);
-                                }
-                            }
-                        }
-                    }
-
-                    log.log(Level.INFO, "START TIME " + new Date());
 
                     for (Sample sample : samples) {
                         Feature feature = sample.getFeature();
