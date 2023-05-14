@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.FREDHibernateServlet;
@@ -167,6 +168,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
             session.setAttribute("dataEntryRedirect", "result_list.jsp?Page=" + pageNum);
 
             List<Sample> samples = null;
+            List<Sample> validSamples = new ArrayList<>();
             List<Feature> features = null;
             List<Object> resultsList = new Vector<Object>();
             if (useStored) {
@@ -276,18 +278,52 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 }
                 
                 FREDQuery query = FREDUtil.getFREDQuery(state);
-//                queryString = query.getQueryAsString();
-                String hq = query.getHQLQuery("simple", sampHqlStr.toString());
+/****************OLD QUERY****************/
 
-                String sampHql = sampHqlStr.toString();
-             
-                //if polygon vertices are set, apply spatial filter
-                if (idString != null && idString.length() > 0) {
-                    samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
-                } else {
-                    samples = sampleUtil.getLightweightSamples(hq);
+//                String hq = query.getHQLQuery("simple", sampHqlStr.toString());
+//
+//                //if polygon vertices are set, apply spatial filter
+//                    if (idString != null && idString.length() > 0) {
+//                        samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
+//                    } else {
+//                        System.out.println("Samples before = " + samples);
+//                        samples = sampleUtil.getLightweightSamples(hq);
+//                    }
+                    
+/****************OLD QUERY****************/
+
+/****************NEW Query***************/
+
+                List<Integer> siteIdList = query.getSimpleQuery("simple", sampHqlStr.toString());
+                
+                List<Integer[]> batches = batchedQueryItems(siteIdList);
+                int sampleSize = 0;
+                for(int i = 0; i < batches.size(); i++){
+                    List<Integer> batch = Arrays.asList(batches.get(i));
+                    String batchIdList = batch
+                            .stream()
+                            .map(String::valueOf)
+                            .collect(Collectors.joining(","));
+
+                    String hq = String.format("SELECT DISTINCT s.sampleId FROM Sample AS s WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND s.feature.siteId IN (%s)", batchIdList);
+
+                    String sampHql = sampHqlStr.toString();
+
+                    //if polygon vertices are set, apply spatial filter
+                    if (idString != null && idString.length() > 0) {
+                        samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
+                    } else {    
+                        samples = sampleUtil.getLightweightSamples(hq);
+                        if(samples.size() > 0 || samples != null){
+                            validSamples.addAll(samples);
+                            sampleSize = sampleSize + validSamples.size();
+                        }
+                    }
                 }
-                features = featureUtil.getFeaturesBySampleSubquery(samples);
+                System.out.println("SampleSize = " + sampleSize);
+/*********************NEW Query****************/
+
+                features = featureUtil.getFeaturesBySampleSubquery(validSamples);
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 
             }
@@ -610,6 +646,25 @@ public class ResultList_jsp extends FREDHibernateServlet {
             samples = sampleUtil.getLightweightSamples(querySQL);
         }
         return samples;
+    }
+
+    private List<Integer[]> batchedQueryItems(List<Integer> siteIdList) {
+        
+        int batchSize = 100; // Specify the desired batch size
+        List<Integer[]> batches = new ArrayList<>();
+        int currentIndex = 0;
+
+        while (currentIndex < siteIdList.size()) {
+            int remaining = siteIdList.size() - currentIndex;
+            int currentBatchSize = Math.min(batchSize, remaining);
+
+            Integer[] batch = new Integer[currentBatchSize];
+            System.arraycopy(siteIdList.toArray(), currentIndex, batch, 0, currentBatchSize);
+
+            batches.add(batch);
+            currentIndex += currentBatchSize;
+        }
+        return batches;
     }
 
 }
