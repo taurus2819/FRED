@@ -244,11 +244,9 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 
     public String getHQLQuery(String type, String query) throws InvalidOperatorException, InvalidValueException {
         //return super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
-        String hqlQuery;
-        
+        String hqlQuery;        
         //debugging
-        hqlQuery = super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", null, null, null);
-        
+        hqlQuery = super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", null, null, null);        
         
         if("Adv".equals(type)){
             hqlQuery = super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
@@ -256,11 +254,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
             hqlQuery = query;
         }
         String debugQuery = hqlQuery;
-//        System.out.println("HQLQUERY = " + hqlQuery);
-       /* if(hqlQuery.contains("SITE_API.COUNTRY_CODE"))
-        {
-            hqlQuery = "SELECT DISTINCT s.sampleId FROM Sample AS s WHERE (s.audit.status = 'approved' AND s.feature.audit.status = 'approved')";
-        }*/
+        
         //fetch SITE ID list from API here and embed into HQL query
         if (hqlQuery.contains("SITE_API")) {
             String patternString = "SITE_API.([A-Z0-9_]+) = '([A-Za-z0-9\\s]+)'";
@@ -326,8 +320,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
                 System.err.println("Value: " + m.group(2));
 //                System.out.println("Attribute: " + m.group(1) + ", " + "Value: " + m.group(2));
                 siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
-                System.err.println(String.format("# of sites: %d \n%s", siteIds.size(), siteIds));
-                System.out.println("Size of SiteIDS = " + siteIds.size());
+//                System.err.println(String.format("# of sites: %d \n%s", siteIds.size(), siteIds));
+//                System.out.println("Size of SiteIDS = " + siteIds.size());
             }
             if(!match)    {
                 hqlQuery = hqlQuery.replaceAll(patternString, "1=1");
