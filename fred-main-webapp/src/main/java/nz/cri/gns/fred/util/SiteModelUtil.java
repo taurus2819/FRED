@@ -207,7 +207,6 @@ public class SiteModelUtil extends ModelUtil {
 
     public static String getFrNumberMapSheet(Feature feature) throws IOException {
         //get the NZMS260 coord - use the /details api from the site api. This provides the NZMS260 sheet 
-        System.out.println("Feature reg are = " + feature.getRegistrationArea().getRegAreaId());
         SiteView sv = getSiteView(feature.getSiteId());   
         String mapsheet = null;
         if(!sv.getNzms260Sheet().equals("invalid")){ //all outside mainland NZ
