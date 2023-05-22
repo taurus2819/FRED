@@ -182,13 +182,6 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 }
                 FREDQuery query = FREDUtil.getFREDQuery(state);
                 queryString = query.getQueryAsString();
- /******************OLD ADV QUERY*************************************/           
-//                String hq = query.getHQLQuery("Adv", "");
-//                samples = sampleUtil.getLightweightSamples(hq);;
-//                features = featureUtil.getFeaturesBySampleSubquery(hq);
- /******************OLD ADV QUERY*************************************/  
- 
- /********************NEW ADV QUERY***************************/
  
                 List<Integer> siteIdList = query.getSimpleQuery("Adv", "");
                 
@@ -208,13 +201,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                             sampleSize = sampleSize + validSamples.size();
                         }       
                 }
-                System.out.println("SampleSize = " + sampleSize);
                 features = featureUtil.getFeaturesBySampleSubquery(validSamples);
- 
-  /********************NEW ADV QUERY***************************/
- 
-                //auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
-//                log.log(Level.INFO, "Hibernate Query " + hq);
             } else {
                 queryString = queryStringParam;
                 //Account for large number of SAMPLE_IDs provided by polygon filter
