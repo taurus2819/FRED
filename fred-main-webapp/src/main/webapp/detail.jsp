@@ -705,7 +705,12 @@
                     for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
                         Taxon taxon = taxa.getTaxon();
                 %><tr class="lightColour"><td><%
-                    boolean taxonInNpc = TaxonomicUtil.isTaxonInNpc(taxon);
+                    boolean taxonInNpc = false;
+                    //skip the taxonInNpx check as it makes an http request to check NPC and
+                    //then parses the result which slows the detail page load down to a craw
+                    //this check should be reinstated if the isTaxonInNpc check is sped up
+                    //maybe by checking a shared table
+                    //boolean taxonInNpx = TaxonomicUtil.isTaxonInNpc(taxon);
                     if (taxonInNpc) {
                         %><a href="http://data.gns.cri.nz/npc/catalogue/taxon.jsp?taxonId=<%=taxon.getTaxaId()%>" target="npc"><%
                     }
