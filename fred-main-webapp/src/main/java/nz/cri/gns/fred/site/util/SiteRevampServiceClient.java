@@ -74,6 +74,22 @@ public class SiteRevampServiceClient {
         return siteDetails;
     }
     
+    public static String validateSite(int epsg, String format, String easting, String northing){    
+        String validationInfo = null;
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<String>(headers);
+        // TODO: need proper error handling exceptions if httpResponse
+        //http://localhost:8080/site/api/v1/util/validCoord?epsg=4326&format=D&easting=-44.87&northing=169.84
+        String endpoint = Environment.getEnvVar("DEFAULT_SITE_API_URL", LOCALHOST) + "/util/validCoord?epsg=" + epsg + "&format=" + format + "&easting=" + easting +
+                                                                                                            "&northing=" + northing;
+        try{
+            validationInfo = restTemplate.getForObject(endpoint, String.class);
+        }catch(RestClientException rce){
+            rce.printStackTrace();
+        }
+        return validationInfo;
+    }
+    
     public static String insertSite(JsonNode siteDetails){    
         String newSiteInfo = null;
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -10,12 +10,14 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
+import javax.servlet.ServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.FactoryConfigurationError;
@@ -58,6 +60,7 @@ import nz.cri.gns.util.map.WGS84;
 import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
 import org.xml.sax.SAXException;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
+import org.json.JSONObject;
 
 
 public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryForm {
@@ -525,7 +528,27 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         if(site == null ){
             try {
                 smi = createNewSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
-                site = SiteModelUtil.insertSite(smi);
+                System.out.println("EPSG, Format, Easting, Northing =  " + smi.getEpsg() + ", Format = " + smi.getFormat() + ", easting = " + smi.getEasting()
+                                    + ", northing = " + smi.getNorthing() + ", Latitude = " + smi.getLatitude() + ", Longitude = " + smi.getLongitude());
+                ObjectMapper objMapper = new ObjectMapper();
+                JSONObject validationJson = null;                
+                try {
+                    validationJson = new JSONObject(SiteModelUtil.validateSite(smi));
+                } catch (ParseException ex) {
+                    Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                System.out.println("Validation JSON = " + validationJson);
+                if(validationJson.getString("message").length() > 0){
+                    request.setAttribute("errorMessage", validationJson.getString("message"));
+//                    request.getSession()..getRequestDispatcher("general_operations_error.jsp");
+                    try {
+                        throw new ServletException(validationJson.getString("message"));
+                    } catch (ServletException ex) {
+                        Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }else{
+                    site = SiteModelUtil.insertSite(smi);
+                }
             } catch (IOException  e) {
                     log.log(Level.SEVERE, null, e);
                 try {

@@ -280,7 +280,7 @@ public class SiteModelUtil extends ModelUtil {
         }
         return sm;
     }
-
+    
     /**
      * inserts an appropriate record from the Site API for the given site , inserting if
      * necessary
@@ -305,6 +305,26 @@ public class SiteModelUtil extends ModelUtil {
                 " : " + e.getOriginalMessage());
         }
         return sm;
+    }
+
+    /**
+     * Validates if the lat/long coordinates are valid 
+     *
+     * @throws IOException
+     * 
+     * return a SiteModel
+     */
+    public static String validateSite(SiteModelInput smi) throws IOException, ParseException {
+        String validationMessage = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        String inputSiteModel = objectMapper.writeValueAsString(smi);
+        JSONObject jsonObj = new JSONObject(inputSiteModel);
+        String easting = !jsonObj.get("easting").equals(null) ? jsonObj.getString("easting") : jsonObj.getString("longitude");
+        String northing = !jsonObj.get("northing").equals(null) ? jsonObj.getString("northing") : jsonObj.getString("latitude");
+        int epsg = jsonObj.getInt("epsg");
+        String format = jsonObj.getString("format");
+        validationMessage = SiteRevampServiceClient.validateSite(epsg, format, easting, northing);
+        return validationMessage;
     }
     
     public static void updateSite(Integer siteId, SiteModelInput smi) throws IOException {
