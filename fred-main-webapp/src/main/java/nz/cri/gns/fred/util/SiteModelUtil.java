@@ -253,13 +253,13 @@ public class SiteModelUtil extends ModelUtil {
 //                    mapsheet = "IW";
                     SiteModel site = getSite(feature);
                     if(site.getLat() < 0 && site.getLon() > 0){  //lat is -ve and lon is +ve
-                        mapsheet = "SE" + Math.abs(Math.round(site.getLat())) + Math.abs(Math.round(site.getLon()));
+                        mapsheet = "SE" + Math.abs((int)site.getLat().doubleValue()) + Math.abs((int)site.getLon().doubleValue());
                     }else if(site.getLat() > 0 && site.getLon() > 0){ //lat is +ve and lon is +ve
-                        mapsheet = "NE" + Math.abs(Math.round(site.getLat())) + Math.abs(Math.round(site.getLon()));
+                        mapsheet = "NE" + Math.abs((int)site.getLat().doubleValue()) + Math.abs((int)site.getLon().doubleValue());
                     }else if(site.getLat() > 0 && site.getLon() < 0){ //lat is +ve and lon is -ve
-                        mapsheet = "NW" + Math.abs(Math.round(site.getLat())) + Math.abs(Math.round(site.getLon()));
+                        mapsheet = "NW" + Math.abs((int)site.getLat().doubleValue()) + Math.abs((int)site.getLon().doubleValue());
                     }else if(site.getLat() < 0 && site.getLon() < 0){ //lat is -ve and lon is -ve
-                        mapsheet = "SW" + Math.abs(Math.round(site.getLat())) + Math.abs(Math.round(site.getLon()));
+                        mapsheet = "SW" + Math.abs((int)site.getLat().doubleValue()) + Math.abs((int)site.getLon().doubleValue());
                     }
                     break;                    
             }                    
