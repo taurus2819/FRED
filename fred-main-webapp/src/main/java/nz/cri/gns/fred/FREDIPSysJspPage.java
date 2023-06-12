@@ -54,7 +54,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
         et.setLogoutIconURL("images/logout.gif");
         et.setDisplayLogout(true);
         et.setLoginIconURL("images/login.gif");
-        et.setDisplayLogin(true);
+        et.setDisplayLogin(false);
         et.setShowGnsLogo(true);
         et.setUseNavigationColumn(true);
         et.addStyleSheet("fred.css");
