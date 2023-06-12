@@ -81,6 +81,10 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
                     new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query"), 
                     new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query"), 
                     new IconnedLink("map_frame.jsp", "images/map.gif", "Interactive Map"), 
+                    new IconnedLink("quick_start.jsp", "images/book.gif", "Quick Start"),
+                    new IconnedLink("contacts.jsp", "images/register.gif", "Contacts"),
+                    new IconnedLink("faq.jsp", "images/help.gif", "FAQ"),
+                    new IconnedLink("conditions.jsp", "images/tc.gif", "Conditions of Use"),
                     new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin")
                 });
         et.addScript("scripts/watermark.js");
