@@ -46,7 +46,6 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
         return fredRights;
     }
 
-
     protected NewExtranetTemplate getExtranetTemplate(HttpSession session) {
         return getFREDTemplate(session);
     }
@@ -72,6 +71,9 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
         logos[0] = new KeyValueObject("http://www.gsnz.org.nz", "images/gsnz_header_black.gif");
         et.setHeaderLogos(logos);
 
+        User currentUser = getUser(session);
+        boolean disableWhenNotLoggedIn = currentUser == null;
+
         //set FRNumber lik
         String htmlLink = "<img src=\"images/blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><form method=\"post\" action=\"locality\" name=\"FRNumJumpForm\" style=\"display: inline; margin: 0;\">"
                 + "<input type=\"text\" size=\"12\" id=\"frTBox\" name=\"frNum\" class=\"watermark\" style=\"border: 0; font-size: 10pt;\" value=\"Enter FR Num\" onFocus=\"clearTextbox('frTBox','Enter FR Num');\" onBlur=\"showDefaultText('frTBox','Enter FR Num');\" />&nbsp;"
@@ -80,15 +82,15 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
                     new CustomHTMLLink(htmlLink), 
                     new IconnedLink("index.jsp", "images/home.gif", "FRED Home"), 
                     new IconnedLink("http://data.gns.cri.nz/npc/index.jsp", "images/home.gif", "NPC Database"), 
-                    new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry"), 
+                    ControllableLink.disableable(new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry"), disableWhenNotLoggedIn),
                     new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query"), 
-                    new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query"), 
+                    ControllableLink.disableable(new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query"), disableWhenNotLoggedIn),
                     new IconnedLink("map_frame.jsp", "images/map.gif", "Interactive Map"), 
                     new IconnedLink("quick_start.jsp", "images/book.gif", "Quick Start"),
                     new IconnedLink("contacts.jsp", "images/register.gif", "Contacts"),
                     new IconnedLink("faq.jsp", "images/help.gif", "FAQ"),
                     new IconnedLink("conditions.jsp", "images/tc.gif", "Conditions of Use"),
-                    new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin")
+                    ControllableLink.disableable(new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin"), disableWhenNotLoggedIn)
                 });
         et.addScript("scripts/watermark.js");
         return et;
