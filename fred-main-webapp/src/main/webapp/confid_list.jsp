@@ -42,7 +42,7 @@
 	AuditUtil auditUtil = new AuditUtil(factory);
 	RecordUtil recordUtil = new RecordUtil(factory);
 	
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLoadingMessage(true);
 	addButtons(et, new IconnedLink[] {
 			new IconnedLink("buildframe_record.jsp", "images/search.gif", "Search for Confidential Data"),

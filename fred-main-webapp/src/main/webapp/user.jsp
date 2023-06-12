@@ -19,7 +19,7 @@
 %><%
 	UserUtil userUtil = new UserUtil(FredHibernate.get().getDAOFactory());
 
-	NewExtranetTemplate et = getExtranetTemplate();
+	NewExtranetTemplate et = getExtranetTemplate(request.getSession());
 	drawTop(out, et, request, response);
 
 	GregorianCalendar cal = new GregorianCalendar();

@@ -55,7 +55,7 @@ public class De_jsp extends FREDHibernateServlet {
             }
 
             response.setContentType("text/html;charset=utf-8");
-            ExtranetTemplate et = h.getExtranetTemplate();
+            ExtranetTemplate et = h.getExtranetTemplate(session);
 
             DataEntryForm dataEntryForm = null;
 

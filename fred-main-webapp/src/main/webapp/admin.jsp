@@ -8,7 +8,7 @@
 
 %><%
 
-    NewExtranetTemplate et = getExtranetTemplate();
+    NewExtranetTemplate et = getExtranetTemplate(request.getSession());
     drawTop(out, et, request, response);
 
 %><p>

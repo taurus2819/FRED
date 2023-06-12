@@ -29,7 +29,7 @@
 	User user =(User) getUser(session);
 
 
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);

@@ -4,7 +4,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%
 	
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
         et.addStyleSheet(Environment.getDataUrl().replace("http://", "https://")+"/web-app-msg/tomcat_paleo/fred.css");
 	try {
 		drawTop(out, et, request, response);

@@ -39,7 +39,7 @@
 		FeatureUtil featureUtil = new FeatureUtil(factory);
 		User user =(User) getUser(session);
 	
-		ExtranetTemplate et = getExtranetTemplate();
+		ExtranetTemplate et = getExtranetTemplate(request.getSession());
 		et.setDisplayLoadingMessage(true);
 		addButtons(et, new IconnedLink[] {
 				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to Folders"),

@@ -29,7 +29,7 @@
 	User user = (User)getUser(session);
 	String backURL = request.getParameter("backURL");
         
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	
 	if (request.getParameter("GroupID") == null) {
 		addButtons(et, new IconnedLink[] {

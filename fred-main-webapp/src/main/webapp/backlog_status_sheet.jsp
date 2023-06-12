@@ -24,7 +24,7 @@
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	AuditUtil auditUtil = new AuditUtil(factory);
 
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setUseNavigationColumn(false);
 	et.setDisplayLoadingMessage(true);
 

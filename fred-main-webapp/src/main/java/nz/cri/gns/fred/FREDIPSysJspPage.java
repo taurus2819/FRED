@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
@@ -45,11 +46,13 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
         return fredRights;
     }
 
-    protected NewExtranetTemplate getExtranetTemplate() {
-        return FREDIPSysJspPage.getFREDTemplate();
+
+    protected NewExtranetTemplate getExtranetTemplate(HttpSession session) {
+        return getFREDTemplate(session);
     }
 
-    public static NewExtranetTemplate getFREDTemplate() {
+
+    public static NewExtranetTemplate getFREDTemplate(HttpSession session) {
         NewExtranetTemplate et = new NewExtranetTemplate();
         et.setLogoutIconURL("images/logout.gif");
         et.setDisplayLogout(true);

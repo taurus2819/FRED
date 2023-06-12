@@ -26,7 +26,7 @@
 	FolderUtil folderUtil = new FolderUtil(factory);
 	TaxonomicUtil taxaUtil = new TaxonomicUtil(factory);
 		
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	//et.setDisplayLoadingMessage(true);
 	addButtons(et, new IconnedLink[] {new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder"),
 			new IconnedLink("confid_list.jsp?q=" + Math.random(), "images/lock.gif", "Confidential Data List")});

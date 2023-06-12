@@ -53,7 +53,7 @@ public class XLSUploadServlet extends FREDHibernateServlet {
         response.setContentType("text/html;charset=utf-8");
         JspWriterImpl out = new JspWriterImpl(response.getOutputStream());
         
-        ExtranetTemplate et = h.getExtranetTemplate();
+        ExtranetTemplate et = h.getExtranetTemplate(request.getSession());
         et.addStyleSheet("css/log.css");
         h.drawTop(out, et, request, response);
         

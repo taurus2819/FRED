@@ -47,7 +47,7 @@
 	AuditUtil auditUtil = new AuditUtil(factory);
 	TaxonomicUtil taxonomicUtil = new TaxonomicUtil(factory);
 
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLoadingMessage(true);
 	et.setUseNavigationColumn(false);
                 

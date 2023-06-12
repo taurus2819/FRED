@@ -40,7 +40,7 @@ public class Dp_jsp extends FREDHibernateServlet {
             return;
         }
 
-        ExtranetTemplate et = h.getExtranetTemplate();
+        ExtranetTemplate et = h.getExtranetTemplate(session);
         h.addButtons(et, new IconnedLink[]{
             new IconnedLink((String) session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT), "images/back_arrow.gif", "Back to Data Entry"),
             new IconnedLink((String) session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT), "images/cancel.gif", "Quit")

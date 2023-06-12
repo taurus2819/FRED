@@ -104,7 +104,7 @@
         FeatureUtil featureUtil = new FeatureUtil(factory);
         RecordUtil recordUtil = new RecordUtil(factory);
 
-        ExtranetTemplate et = getExtranetTemplate();
+        ExtranetTemplate et = getExtranetTemplate(request.getSession());
         et.setUseNavigationColumn(false);
         et.setDisplayLoadingMessage(true);
 

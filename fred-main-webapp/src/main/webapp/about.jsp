@@ -2,7 +2,7 @@
 %><%@page	extends="nz.cri.gns.fred.FREDStaticIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	drawTop(out, et, request, response);
 
         %>
