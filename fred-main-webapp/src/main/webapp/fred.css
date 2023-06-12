@@ -48,6 +48,11 @@
 	padding-bottom: 3px;
 }
 
+#navlist span.link-disabled > a {
+    pointer-events: none !important;
+    opacity: 0.5;
+}
+
 #navlist a:hover {
 	background-color: #DCCE80;
 }
@@ -115,3 +120,4 @@ th {
      border:1px solid #000;
      padding:18px;
 }
+
