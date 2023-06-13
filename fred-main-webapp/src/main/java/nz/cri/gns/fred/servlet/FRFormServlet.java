@@ -106,37 +106,56 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
             List<Sample> samples = new Vector<Sample>();
             List<Feature> features = new Vector<Feature>();
 
-            if (request.getParameter("RecIDs") != null) {
-                String[] recIDs = request.getParameterValues("RecIDs");
-                for (int i = 0; i < recIDs.length; i++) {
-                    try {
-                        Record record = recordUtil.getRecord(Integer.parseInt(recIDs[i]));
-                        records.add(record);
-                    } catch (Exception _e) {
-                    }
-                }
-            }
-            if (request.getParameter("SampIDs") != null) {
-                String[] sampIDs = request.getParameterValues("SampIDs");
-                for (int i = 0; i < sampIDs.length; i++) {
-                    try {
-                        Sample sample = sampleUtil.getSample(Integer.parseInt(sampIDs[i]));
-                        if (sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
-                            features.add(sample.getFeature());
-                        } else {
+            if (request.getParameter("FeatureID") != null) {
+                // FeatureID is a new parameter that will fetch the feature information
+                // including all the samples and records that are owned by that feature.
+                // It replaces FeatIDs/SampIDs/RecIDs that had been built with FeatureUtil.getFullLocalityPDFURL
+                try {
+                    Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatureID")));
+                    features.add(feature);
+                    for (Sample sample : feature.getSamples()) {
+                        if (!FREDConstants.OUTCROP.equals(feature.getFeatureType())) {
                             samples.add(sample);
                         }
-                    } catch (Exception _e) {
+                        for (Record record : sample.getRecords()) {
+                            records.add(record);
+                        }
+                    }
+                } catch (Exception _e) {
+                }
+            } else {
+                if (request.getParameter("RecIDs") != null) {
+                    String[] recIDs = request.getParameterValues("RecIDs");
+                    for (int i = 0; i < recIDs.length; i++) {
+                        try {
+                            Record record = recordUtil.getRecord(Integer.parseInt(recIDs[i]));
+                            records.add(record);
+                        } catch (Exception _e) {
+                        }
                     }
                 }
-            }
-            if (request.getParameter("FeatIDs") != null) {
-                String[] featIDs = request.getParameterValues("FeatIDs");
-                for (int i = 0; i < featIDs.length; i++) {
-                    try {
-                        Feature feature = featureUtil.getFeature(Integer.parseInt(featIDs[i]));
-                        features.add(feature);
-                    } catch (Exception _e) {
+                if (request.getParameter("SampIDs") != null) {
+                    String[] sampIDs = request.getParameterValues("SampIDs");
+                    for (int i = 0; i < sampIDs.length; i++) {
+                        try {
+                            Sample sample = sampleUtil.getSample(Integer.parseInt(sampIDs[i]));
+                            if (sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+                                features.add(sample.getFeature());
+                            } else {
+                                samples.add(sample);
+                            }
+                        } catch (Exception _e) {
+                        }
+                    }
+                }
+                if (request.getParameter("FeatIDs") != null) {
+                    String[] featIDs = request.getParameterValues("FeatIDs");
+                    for (int i = 0; i < featIDs.length; i++) {
+                        try {
+                            Feature feature = featureUtil.getFeature(Integer.parseInt(featIDs[i]));
+                            features.add(feature);
+                        } catch (Exception _e) {
+                        }
                     }
                 }
             }

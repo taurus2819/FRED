@@ -1407,6 +1407,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         );
     }
 
+    /**
+     * @deprecated User "FeatureID=x" instead of spinning the entity model wheel here
+     * building a link that may not be clicked anyway
+     */
     public String getFullLocalityPDFURL(Feature feature) {
         StringBuffer sb = new StringBuffer("FeatIDs=").append(feature.getFeatureId());
         for (Sample sample : feature.getSamples()) {

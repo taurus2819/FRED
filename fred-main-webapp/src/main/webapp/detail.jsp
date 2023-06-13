@@ -175,7 +175,7 @@
             il.add(new IconnedLink("export_setup.jsp?" + ((sample != null) ? "sampId=" + sample.getSampleId() : "featId=" + feature.getFeatureId()), "images/save.gif", "Download"));
             if (isAllowedReadFeature) {
                 il.add(new IconnedLink("audit_detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId()) + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1") + "&backText=Back%20To%20Locality", "images/loc.gif", "Audit Details"));
-                il.add(new IconnedLink("frf/frf/frf.pdf?" + featureUtil.getFullLocalityPDFURL(feature) + "&q=" + Math.random(), "images/pdf_icon.gif", "Print Fossil Record Form"));
+                il.add(new IconnedLink("frf/frf.pdf?FeatureID=" + feature.getFeatureId() + "&q=" + Math.random(), "images/pdf_icon.gif", "Print Fossil Record Form"));
             }
             //Add to Folder link
             if (isAllowedReadFeature && feature.getAudit().getStatus().equals(FREDConstants.APPROVED) && (new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {
