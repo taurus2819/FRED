@@ -22,6 +22,7 @@ import nz.cri.gns.jsp.Link;
 import nz.cri.gns.jsp.NewExtranetTemplate;
 import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.xls.upload.XlsUploadUtils;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
@@ -73,6 +74,10 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
         User currentUser = getUser(session);
         boolean disableWhenNotLoggedIn = currentUser == null;
+        boolean hideWhenNotAdminUser = !(currentUser != null
+                // The following code is lifted from IPSysJspPage.checkUserAccess which we can't call
+                // from here becaues that method is not static
+                && ((UserDetails)currentUser).getAuthorities().contains(FREDAdminIPSysJspPage.ADMIN_RIGHTS));
 
         //set FRNumber lik
         String htmlLink = "<img src=\"images/blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><form method=\"post\" action=\"locality\" name=\"FRNumJumpForm\" style=\"display: inline; margin: 0;\">"
@@ -90,7 +95,9 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
                     new IconnedLink("contacts.jsp", "images/register.gif", "Contacts"),
                     new IconnedLink("faq.jsp", "images/help.gif", "FAQ"),
                     new IconnedLink("conditions.jsp", "images/tc.gif", "Conditions of Use"),
-                    ControllableLink.disableable(new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin"), disableWhenNotLoggedIn)
+                    ControllableLink.hideable(
+                            new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin"),
+                            hideWhenNotAdminUser)
                 });
         et.addScript("scripts/watermark.js");
         return et;
