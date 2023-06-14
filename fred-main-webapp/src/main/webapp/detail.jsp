@@ -59,7 +59,9 @@
     public IpGrantedAuthority getRequiredRights() {
         return null;
     }
-%><%!    public String getName(HttpServletRequest request) {
+
+    @Override
+    public String getName(HttpServletRequest request) {
         try {
             String sampID = request.getParameter("ID");
             String featID = request.getParameter("FeatID");
@@ -76,7 +78,30 @@
             return "FRED :: The Fossil Record Electronic Database";
         }
     }
-%><%!    public static void addRepeatingCells(PrintWriter out, String heading, Object[] text, boolean newLines) {
+
+    /**
+     * Builds an frf link for the given FrNumber.
+     *
+     * The FRFormServlet does not mind what you pass to if in the filename part of the
+     * query. So we can build a filename that is useful to the user as this will become
+     * the filename should the user save the PDF output.
+     *
+     * @param frNum becomes the main part of the link filename
+     * @param queryPart the query parameter(s) that identify what the FRFormServlet should
+     *          populate the doc with. e.g `SampIDs=x&SampIDs=y`
+     * @param namePart a secondary name part to distingish doc filenames that may otherwise
+     *          looks the same. E.g `locality` or `paleo` etc
+     */
+    private String buildFrfLink(FrNumber frNum, String queryPart, String namePart) {
+        String filename = frNum.getFrNumber().replaceAll("/", "_");
+        if (namePart != null) {
+            filename = filename + "-" + namePart;
+        }
+        return String.format("frf/%s.pdf?%s&q=%f",
+                            filename, queryPart, Math.random());
+    }
+
+    public static void addRepeatingCells(PrintWriter out, String heading, Object[] text, boolean newLines) {
         if (text.length > 0) {
             if (newLines) {
                 out.println("<tr class=\"lightColour\"><td class=\"heading\">" + heading + "</td><td>" + DBUtils.nvl(text[0]));
@@ -175,7 +200,7 @@
             il.add(new IconnedLink("export_setup.jsp?" + ((sample != null) ? "sampId=" + sample.getSampleId() : "featId=" + feature.getFeatureId()), "images/save.gif", "Download"));
             if (isAllowedReadFeature) {
                 il.add(new IconnedLink("audit_detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId()) + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1") + "&backText=Back%20To%20Locality", "images/loc.gif", "Audit Details"));
-                il.add(new IconnedLink("frf/frf.pdf?FeatureID=" + feature.getFeatureId() + "&q=" + Math.random(), "images/pdf_icon.gif", "Print Fossil Record Form"));
+                il.add(new IconnedLink(buildFrfLink(feature.getFrNumber(), "FeatureID=" + feature.getFeatureId(), null), "images/pdf_icon.gif", "Print Fossil Record Form"));
             }
             //Add to Folder link
             if (isAllowedReadFeature && feature.getAudit().getStatus().equals(FREDConstants.APPROVED) && (new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {
@@ -284,7 +309,7 @@
     <tr class="midColour">
         <th colspan="2">
             Locality Information&nbsp;&nbsp;&nbsp;
-            <a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print"/></a>
+            <a href="<%=buildFrfLink(feature.getFrNumber(), "FeatIDs=" + feature.getFeatureId(), "locality")%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print"/></a>
         </th>
     </tr>
     <tr class="lightColour"><td class="heading">FR Number</td><td class="heading"><%=((feature.getFrNumber() != null) ? feature.getFrNumber().getFrNumber() : "not yet allocated")%></td></tr><%
@@ -409,7 +434,7 @@
         %><tr class="midColour"><th colspan="2">Sample Information<%
         if (!featType.equals(FREDConstants.OUTCROP)) {
             //add PDF link
-            %>&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></a><%
+            %>&nbsp;&nbsp;&nbsp;<a href="<%=buildFrfLink(feature.getFrNumber(), "SampIDs=" + sample.getSampleId(), "sample")%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></a><%
         }
                 %></th></tr><%
                     if (!featType.equals(FREDConstants.OUTCROP)) {
@@ -558,7 +583,7 @@
                     %><tr><td>&nbsp;</td></tr><%//Adoption
                         for (Adoption adoRecord : sampleUtil.getAdoptionRecords(sample)) {
                             if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
-        %><tr class="midColour"><th colspan="2">Adoption Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=adoRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></th></tr><%
+        %><tr class="midColour"><th colspan="2">Adoption Information&nbsp;&nbsp;&nbsp;<a href="<%=buildFrfLink(feature.getFrNumber(), "RecIDs=" + adoRecord.getRecordId(), "adoption")%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></th></tr><%
         if (recordUtil.isRecordConfidential(adoRecord.getRecord())) {
                 %><tr class="lightColour"><td style="text-align: left; color: #FF0000" colspan="2">This adoption record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(adoRecord.getRecord())%>.<%=(adoRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(adoRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
                     }
@@ -626,7 +651,7 @@
             <tr class="midColour">
                 <th colspan="2">
                     Paleontology Information&nbsp;&nbsp;&nbsp;
-                    <a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank">
+                    <a href="<%=buildFrfLink(feature.getFrNumber(), "RecIDs=" + palRecord.getRecordId(), "paleo")%>" target="_blank">
                     <img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" />
                 </th>
             </tr>
@@ -771,9 +796,11 @@
     <tr class="midColour"><th colspan="2"><%=featType%> Samples</th></tr><%
         for (Sample locSample : FeatureUtil.getSortedSamples(feature)) {
             if (sampleUtil.isAllowedReadSample(user, locSample)) {
+                String depthDesc = SampleUtil.getDrillHoleDepthDescription(locSample);
+                String fileNameSafeDepth = depthDesc.replaceAll("\\.", "_");
             %><tr class="lightColour">
-        <td><a href="detail.jsp?ID=<%=locSample.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample) + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
-        <td><a href="frf/frf.pdf?SampIDs=<%=locSample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></a></td>
+        <td><a href="detail.jsp?ID=<%=locSample.getSampleId() + backStr%>"><%=depthDesc + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
+        <td><a href="<%=buildFrfLink(feature.getFrNumber(), "SampIDs=" + locSample.getSampleId(), fileNameSafeDepth)%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></a></td>
     </tr><%
                 }
             }
