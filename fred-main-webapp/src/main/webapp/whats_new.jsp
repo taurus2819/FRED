@@ -4,7 +4,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.website.ContentProvider"
 %><%
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	ContentProvider contentProvider = getContentProvider(getPageState(request, response));
 	drawTop(out, et, request, response);
 

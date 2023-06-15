@@ -39,7 +39,7 @@
 	UserUtil userUtil = new UserUtil(FredHibernate.get().getDAOFactory());
 	User user = (User)getUser(session);
 
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	addButtons(et, new IconnedLink[] {
 			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
 		});

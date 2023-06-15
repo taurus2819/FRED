@@ -9,7 +9,7 @@
 		return "FRED :: Advanced Query Builder (Record)";
 	}
 %><%
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLoadingMessage(true);
 	
 	drawTop(out, et, request, response, true);

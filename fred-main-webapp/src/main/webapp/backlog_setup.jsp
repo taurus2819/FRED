@@ -43,7 +43,7 @@ try {
 		}
 		featureUtil.addToBacklog(folderTo, request.getParameter("mapSheet"), Integer.parseInt(request.getParameter("start")), Integer.parseInt(request.getParameter("end")), folder, user);
 	}
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLoadingMessage(true);
 	addButtons(et, new IconnedLink[] {
 			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")});

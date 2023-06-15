@@ -39,7 +39,7 @@
 	SampleUtil sampleUtil = new SampleUtil(factory);
 	TaxonomicUtil taxaUtil = new TaxonomicUtil(factory);
 
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLogin(false);
 	et.setButtons(new IconnedLink[0]);
 

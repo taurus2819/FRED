@@ -7,15 +7,13 @@ public abstract class FREDAdminIPSysJspPage extends FREDIPSysJspPage{
 
     private static final long serialVersionUID = 20050818L;
     
-	private static IpGrantedAuthority adminRights;
+    public static final IpGrantedAuthority ADMIN_RIGHTS =
+            new IpGrantedAuthority(FredGrantedAuthorities.FR_ADMIN);
 
-	@Override
-	public IpGrantedAuthority getRequiredRights() {
-		if (adminRights == null) {
-			adminRights = new IpGrantedAuthority(FredGrantedAuthorities.FR_ADMIN);
-		} 
-        return adminRights;
-	}
+    @Override
+    public IpGrantedAuthority getRequiredRights() {
+        return ADMIN_RIGHTS;
+    }
 	
 }
 

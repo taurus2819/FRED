@@ -9,7 +9,7 @@
 	}
 %><%
 
-	ExtranetTemplate et = FREDIPSysJspPage.getFREDTemplate();
+	ExtranetTemplate et = FREDIPSysJspPage.getFREDTemplate(request.getSession());
 
 	drawTop(out, et, request, response);
 

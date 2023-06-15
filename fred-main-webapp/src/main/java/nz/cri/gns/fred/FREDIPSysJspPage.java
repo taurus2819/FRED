@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
@@ -21,6 +22,7 @@ import nz.cri.gns.jsp.Link;
 import nz.cri.gns.jsp.NewExtranetTemplate;
 import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.xls.upload.XlsUploadUtils;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
@@ -45,16 +47,17 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
         return fredRights;
     }
 
-    protected NewExtranetTemplate getExtranetTemplate() {
-        return FREDIPSysJspPage.getFREDTemplate();
+    protected NewExtranetTemplate getExtranetTemplate(HttpSession session) {
+        return getFREDTemplate(session);
     }
 
-    public static NewExtranetTemplate getFREDTemplate() {
+
+    public static NewExtranetTemplate getFREDTemplate(HttpSession session) {
         NewExtranetTemplate et = new NewExtranetTemplate();
         et.setLogoutIconURL("images/logout.gif");
         et.setDisplayLogout(true);
         et.setLoginIconURL("images/login.gif");
-        et.setDisplayLogin(true);
+        et.setDisplayLogin(false);
         et.setShowGnsLogo(true);
         et.setUseNavigationColumn(true);
         et.addStyleSheet("fred.css");
@@ -69,6 +72,13 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
         logos[0] = new KeyValueObject("http://www.gsnz.org.nz", "images/gsnz_header_black.gif");
         et.setHeaderLogos(logos);
 
+        User currentUser = getUser(session);
+        boolean disableWhenNotLoggedIn = currentUser == null;
+        boolean hideWhenNotAdminUser = !(currentUser != null
+                // The following code is lifted from IPSysJspPage.checkUserAccess which we can't call
+                // from here becaues that method is not static
+                && ((UserDetails)currentUser).getAuthorities().contains(FREDAdminIPSysJspPage.ADMIN_RIGHTS));
+
         //set FRNumber lik
         String htmlLink = "<img src=\"images/blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><form method=\"post\" action=\"locality\" name=\"FRNumJumpForm\" style=\"display: inline; margin: 0;\">"
                 + "<input type=\"text\" size=\"12\" id=\"frTBox\" name=\"frNum\" class=\"watermark\" style=\"border: 0; font-size: 10pt;\" value=\"Enter FR Num\" onFocus=\"clearTextbox('frTBox','Enter FR Num');\" onBlur=\"showDefaultText('frTBox','Enter FR Num');\" />&nbsp;"
@@ -77,11 +87,17 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
                     new CustomHTMLLink(htmlLink), 
                     new IconnedLink("index.jsp", "images/home.gif", "FRED Home"), 
                     new IconnedLink("http://data.gns.cri.nz/npc/index.jsp", "images/home.gif", "NPC Database"), 
-                    new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry"), 
+                    ControllableLink.disableable(new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry"), disableWhenNotLoggedIn),
                     new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query"), 
-                    new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query"), 
+                    ControllableLink.disableable(new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query"), disableWhenNotLoggedIn),
                     new IconnedLink("map_frame.jsp", "images/map.gif", "Interactive Map"), 
-                    new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin")
+                    new IconnedLink("quick_start.jsp", "images/book.gif", "Quick Start"),
+                    new IconnedLink("contacts.jsp", "images/register.gif", "Contacts"),
+                    new IconnedLink("faq.jsp", "images/help.gif", "FAQ"),
+                    new IconnedLink("conditions.jsp", "images/tc.gif", "Conditions of Use"),
+                    ControllableLink.hideable(
+                            new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin"),
+                            hideWhenNotAdminUser)
                 });
         et.addScript("scripts/watermark.js");
         return et;

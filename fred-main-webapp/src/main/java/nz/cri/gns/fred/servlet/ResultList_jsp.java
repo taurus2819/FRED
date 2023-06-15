@@ -87,7 +87,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
             int pageSize = 50;
 
             // Define the extranet template for this page
-            ExtranetTemplate et = h.getExtranetTemplate();
+            ExtranetTemplate et = h.getExtranetTemplate(session);
             et.setDisplayLoadingMessage(true);
 
             // Define a vector of links

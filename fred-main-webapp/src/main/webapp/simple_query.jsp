@@ -26,7 +26,7 @@
 	}
 %><%
 	DAOFactory factory = FredHibernate.get().getDAOFactory();
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLoadingMessage(true);
 	
 	User user = (User) getUser(session);

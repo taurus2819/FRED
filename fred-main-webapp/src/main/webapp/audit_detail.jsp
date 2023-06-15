@@ -50,7 +50,7 @@
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	RecordUtil recordUtil = new RecordUtil(factory);
 	
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	
 	String backURL = request.getParameter("backURL");
 	if (backURL != null && backURL.length() == 0)

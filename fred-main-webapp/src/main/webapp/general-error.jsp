@@ -1,6 +1,6 @@
 <%@page pageEncoding="utf-8" extends="nz.cri.gns.fred.FREDStaticIPSysJspPage" import="nz.cri.gns.jsp.ExtranetTemplate,nz.cri.gns.core.Environment"%><%@page isErrorPage="true"%>
 <%
-    ExtranetTemplate et = getExtranetTemplate();
+    ExtranetTemplate et = getExtranetTemplate(request.getSession());
     et.addStyleSheet(Environment.getDataUrl().replace("http://", "https://") + "/web-app-msg/tomcat_paleo/fred.css");
 
     drawTop(out, et, request, response);

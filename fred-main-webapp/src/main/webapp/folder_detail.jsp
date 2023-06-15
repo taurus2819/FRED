@@ -56,7 +56,7 @@
 	User user =(User) getUser(session);
 	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
 	
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLoadingMessage(true);
 	et.addScript("/online/scripts/ajax.js");
 	

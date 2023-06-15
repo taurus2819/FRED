@@ -7,7 +7,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%
 	
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	try {
 		FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
 		BacklogStatusUtil bsUtil = new BacklogStatusUtil(FredHibernate.get().getDAOFactory());

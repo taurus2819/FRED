@@ -36,7 +36,7 @@ public String getName(HttpServletRequest request) {
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	RecordUtil recordUtil = new RecordUtil(factory);
 	
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ID") != null) {

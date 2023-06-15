@@ -10,7 +10,7 @@
 	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	StageUtil stageUtil = new StageUtil(factory);
 	
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	drawTop(out, et, request, response);
 
 	if (request.getParameter("x") != null) {

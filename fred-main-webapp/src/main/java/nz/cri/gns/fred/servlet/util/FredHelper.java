@@ -33,8 +33,8 @@ public class FredHelper extends FREDIPSysJspPage {
         throw new RuntimeException("Do not use this method.");
     }
 
-    public NewExtranetTemplate getExtranetTemplate() {
-        return FREDIPSysJspPage.getFREDTemplate();
+    public NewExtranetTemplate getExtranetTemplate(HttpSession session) {
+        return getFREDTemplate(session);
     }
 
     public void drawTop(JspWriter out, ExtranetTemplate et,

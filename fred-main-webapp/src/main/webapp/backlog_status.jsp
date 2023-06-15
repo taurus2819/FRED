@@ -75,7 +75,7 @@
 	BacklogStatusUtil bsUtil = new BacklogStatusUtil(factory);
 	FolderUtil folderUtil = new FolderUtil(factory);
 
-	ExtranetTemplate et = getExtranetTemplate();
+	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setUseNavigationColumn(false);
 	et.setDisplayLoadingMessage(true);
 

@@ -13,7 +13,9 @@ import com.lowagie.text.pdf.PdfPTable;
 
 public class PDFUtil {
     
-                   private static SpecialCharactersFormatting charFormatting = new SpecialCharactersFormatting();
+        public static final String NOT_AVAILABLE = "N/A";
+
+        private static SpecialCharactersFormatting charFormatting = new SpecialCharactersFormatting();
 
 	public static void addCell(PdfPTable table, Object text, Font font) {
 		addCell(table, text, font, Element.ALIGN_LEFT, 1);
@@ -45,7 +47,7 @@ public class PDFUtil {
 			if (newLines) {
 				addCells(table, new Object[] {heading, text[0]}, fonts);
 				for (int i = 1; i < text.length; i++)
-					addCells(table, new Object[] {null, text[i]}, fonts);
+					addCells(table, new Object[] {"", text[i]}, fonts);
 			} else {
 				StringBuffer textLine = new StringBuffer();
 				for (int i = 0; i < text.length; i++) {
@@ -56,7 +58,7 @@ public class PDFUtil {
 				addCells(table, new String[] {heading, textLine.toString()}, fonts);
 			}
 		} else {
-			addCells(table, new String[] {heading, null}, fonts);
+			addCells(table, new String[] {heading, NOT_AVAILABLE}, fonts);
 		}
 	}
 
