@@ -55,10 +55,11 @@ public class ResultList_jsp extends FREDHibernateServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        String whereSQL = request.getParameter("WhereSQL");
-        String siteApiString = request.getParameter("SiteApiString");
-        String tableName = request.getParameter("TableName");
-        String queryStringParam = request.getParameter("QueryString");
+
+        String whereSQL = (String)request.getAttribute("WhereSQL");
+        String siteApiString = (String)request.getAttribute("SiteApiString");
+        String tableName = (String)request.getAttribute("TableName");
+        String queryStringParam = (String)request.getAttribute("QueryString");
         String page = request.getParameter("Page");
         String type = request.getParameter("Type");
 
