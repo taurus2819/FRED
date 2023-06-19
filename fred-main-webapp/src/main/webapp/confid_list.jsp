@@ -45,7 +45,7 @@
 	ExtranetTemplate et = getExtranetTemplate(request.getSession());
 	et.setDisplayLoadingMessage(true);
 	addButtons(et, new IconnedLink[] {
-			new IconnedLink("buildframe_record.jsp", "images/search.gif", "Search for Confidential Data"),
+			new IconnedLink("build_record.jsp", "images/search.gif", "Search for Confidential Data"),
 			new IconnedLink("confid_list.jsp?q=" + Math.random(), "images/lock.gif", "Data Soon to be Open-File"),
 			new IconnedLink("confid_list.jsp?Type=All&q=" + Math.random(), "images/lock.gif", "All Data")
 		});

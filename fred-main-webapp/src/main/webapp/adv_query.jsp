@@ -26,17 +26,16 @@ public IpGrantedAuthority getRequiredRights() {
   <title>FRED :: The Fossil Record Electronic Database</title>
   <link rel="stylesheet" href="/online/style/link_styles_internal.css" type="text/css" />
   <link rel="stylesheet" href="fred.css" type="text/css" />
+  <script>
+      window.onload = (event) => {
+          // we set the iframe height in our parent on load so it never needs to be scrolled.
+          parent.document.getElementById("querydisp").height = window.document.body.scrollHeight;
+      };
+  </script>
   </head>
-  <body>
-    <div id="navBarWrap">
-   <div class="left">
-
-   <div id="navBarSpacer">
-   </div>
-   <div id="navPositioner">
-   </div>
-   </div>
-  <div id="contentWrapInner"><%
+  <body style="overflow: hidden">
+      <div id="contentWrapInner" style="margin-left: 0px;">
+  <%
 	PageState state = new PageState(request, response, getServletContext());
 	FREDQuery query = FREDUtil.getFREDQuery(state);
 	if (request.getParameter(AdvancedQuery.LEFT_BRACKET) != null) try {
@@ -45,13 +44,13 @@ public IpGrantedAuthority getRequiredRights() {
 			query.getQueryElement(0).setLogic(null);
 		//Reset the form
 		%><script><!--
-			parent.buildpanel.<%=AdvancedQuery.FORM_RESET_FUNCTION%>(parent.buildpanel.document.forms['<%=AdvancedQuery.FORM_NAME%>']);
+			parent.<%=AdvancedQuery.FORM_RESET_FUNCTION%>(parent.document.forms['<%=AdvancedQuery.FORM_NAME%>']);
 		//--></script><%
 	} catch (Exception e) {
 		%><div style="color: red"><%=e.getMessage()%></div><%
 	} else if (request.getParameter("spatial") != null) {
 		%><script><!--
-		parent.buildpanel.doSpatial(<%=request.getParameter("top")%>,<%=request.getParameter("right")%>,<%=request.getParameter("bottom")%>,<%=request.getParameter("left")%>);
+		parent.doSpatial(<%=request.getParameter("top")%>,<%=request.getParameter("right")%>,<%=request.getParameter("bottom")%>,<%=request.getParameter("left")%>);
 		//--></script><%
 	}
 	
@@ -107,6 +106,7 @@ public IpGrantedAuthority getRequiredRights() {
 		e.printStackTrace(new java.io.PrintWriter(out));
 	}
 	
-	%></div>
+	%>
+        </div>
 	</body>
 	</html>

@@ -121,3 +121,13 @@ th {
      padding:18px;
 }
 
+.detable {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+iframe#querydisp {
+    border: none;
+    width: 100%;
+}
+
