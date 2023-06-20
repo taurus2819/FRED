@@ -256,7 +256,7 @@
 		<option value="Murihiku">Murihiku</option>
 		<option value="Dunedin">Dunedin</option>
 	</select>
-	&nbsp;&nbsp;</td><td><i>Select a <a href="http://www.gns.cri.nz/research/qmap/aboutqmap.html" target="_blank">QMap</a> sheet</i></td></tr>
+	&nbsp;&nbsp;</td><td><i>Select a <a href="https://www.gns.cri.nz/data-and-resources/digital-qmap-geological-maps-at-1250000/" target="_blank">QMap</a> sheet</i></td></tr>
 	<tr class="lightColour"><td class="heading">Field Number/Drillhole Name&nbsp;&nbsp;</td><td><input type="text" name="FieldNum" size="30" />&nbsp;&nbsp;<td><i>Enter part of a field number or drillhole name</i></td></tr><%
 	
 	if (user != null) {
