@@ -298,6 +298,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public List<Sample> getLightweightSamples(String sampleSubquery) throws StorageAccessException {
+//        sampleSubquery = "SELECT DISTINCT s.sampleId FROM Sample AS s JOIN s.records AS record JOIN record.paleontology.listEntries \n" +
+//"AS pal WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND UPPER(pal.taxon.taxonomicName) LIKE '%AGATHIS%' AND record.audit.status = 'approved'\n" +
+//" AND s.feature.siteId IN (28,100,101,105,106,108,109,110,116,127,129,130,132,133,141,145,146,147,148,186,195,199,203,204,\n" +
+//" 205,206,207,211,216,2144,2149,2151,2152,2156,2158,2160,2164,2169,2184,2191,2196,2198,2201,2202,2208,2214,2215,2216,2220,\n" +
+//" 2224,2225,2227,2229,3074,3077,3078,3079,3081,3604,3637,3642,3644,3645,3649,3650,3653,3656,3660,3672,4078,4079,4084,4088,\n" +
+//" 4111,4119,4120,4121,4122,4186,4228,4230,4231,4232,4233,4249,4256,4257,4268,4280,4311,4312,4329,6236,6243,6244,6245,6246,6247,6248,6249)";
         return fredDAO.getList("select new Sample(s.sampleId) FROM Sample AS s WHERE s.sampleId in (" + sampleSubquery + ")", Sample.class);
     }
 

@@ -56,6 +56,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
         String whereSQL = request.getParameter("WhereSQL");
+        String siteApiString = request.getParameter("SiteApiString");
         String tableName = request.getParameter("TableName");
         String queryStringParam = request.getParameter("QueryString");
         String page = request.getParameter("Page");
@@ -169,6 +170,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
 
             List<Sample> samples = null;
             List<Sample> validSamples = new ArrayList<>();
+            List<Sample> querySamples = new ArrayList<>();
             List<Feature> features = null;
             List<Object> resultsList = new Vector<Object>();
             if (useStored) {
@@ -294,17 +296,31 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 
                 FREDQuery query = FREDUtil.getFREDQuery(state);
                 if(!(sampHqlStr.toString()).contains("SITE_API")){
-                           
+                    System.out.println("\n****No Site api*******");
+                    System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
+                    System.out.println("****No Site api*******\n");
                     String hq = query.getHQLQuery("simple", sampHqlStr.toString());
 
                     //if polygon vertices are set, apply spatial filter
                     if (idString != null && idString.length() > 0) {
+                        System.out.println("\n*****Spatial******");
+                        System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
+                        System.out.println("hq = " + hq); 
+                        System.out.println("*****Spatial******\n");
                         samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
                     } else {
+                        System.out.println("\n*****Non Spatial******");
+                        System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
+                        System.out.println("hq = " + hq); 
+                        System.out.println("*****Non Spatial******\n");
                         samples = sampleUtil.getLightweightSamples(hq);
                     }
                     features = featureUtil.getFeaturesBySampleSubquery(samples);
                 }else{  
+                    System.out.println("\n***Site API********");
+                    System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
+                    System.out.println("SiteAPIString = " + siteApiString);
+                    System.out.println("***Site API*******\n");
                     List<Integer> siteIdList = query.getSimpleQuery("simple", sampHqlStr.toString());
 
                     List<Integer[]> batches = batchedQueryItems(siteIdList);
@@ -316,21 +332,75 @@ public class ResultList_jsp extends FREDHibernateServlet {
                                 .map(String::valueOf)
                                 .collect(Collectors.joining(","));
 
-                        String hq = String.format("SELECT DISTINCT s.sampleId FROM Sample AS s WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND s.feature.siteId IN (%s)", batchIdList);
+//                        String hq = String.format("SELECT DISTINCT s.sampleId FROM Sample AS s WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND s.feature.siteId IN (%s)", batchIdList);
 
+/****/
+                        StringBuilder queryToGetSamplesFromSiteids = new StringBuilder();
+                        queryToGetSamplesFromSiteids.append("SELECT DISTINCT s.sampleId FROM Sample AS s WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' ");
+                        queryToGetSamplesFromSiteids.append(" AND s.feature.siteId IN (%s)");
+                        
+//                        String hqlQuery = "SELECT DISTINCT s.sampleId\n" +
+//                                            "FROM Sample AS s\n" +
+//                                            "JOIN s.records AS record\n" +
+//                                            "JOIN record.paleontology.listEntries AS pal\n" +
+//                                            "WHERE s.audit.status = 'approved'\n" +
+//                                            "  AND s.feature.audit.status = 'approved'\n" +
+//                                            "  AND UPPER(pal.taxon.taxonomicName) LIKE '%AGATHIS%'\n" +
+//                                            "  AND record.audit.status = 'approved'\n" +
+//                                            "  AND s.feature.siteId IN (%s)";
+//                        
+//                        String testQuery = "SELECT DISTINCT s.sampleId FROM Sample AS s JOIN s.records AS record"
+//                                + " JOIN record.paleontology.listEntries AS pal WHERE s.audit.status = 'approved' "
+//                                + "AND s.feature.audit.status = 'approved' AND UPPER(pal.taxon.taxonomicName) LIKE "
+//                                + "'%AGATHIS%' AND record.audit.status = 'approved'";
+                                                
+                        
+                        String hq = String.format(queryToGetSamplesFromSiteids.toString(), batchIdList);
+                        System.out.println("HQ Sql string = " + hq);
+
+/****/
     //                    String sampHql = sampHqlStr.toString();
 
                         //if polygon vertices are set, apply spatial filter
                         if (idString != null && idString.length() > 0) {
+                            System.out.println("\n******Site API***Spatial******");
+                            System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
+                            System.out.println("hq = " + hq); 
+                            System.out.println("******Site API***Spatial******\n");
                             samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
-                        } else {    
-                            samples = sampleUtil.getLightweightSamples(hq);
                             if(samples.size() > 0 || samples != null){
                                 validSamples.addAll(samples);
                                 sampleSize = sampleSize + validSamples.size();
                             }
+                        } else {    
+                            System.out.println("\n******Site API***Non Spatial******");
+                            System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
+                            System.out.println("hq = " + hq); 
+                            System.out.println("******Site API***Non Spatial******\n");
+                            samples = sampleUtil.getLightweightSamples(hq);   //this gets a list of R27 samples - this is an example
+                            if(samples.size() > 0 || samples != null){
+                                querySamples.addAll(samples);
+                                sampleSize = sampleSize + validSamples.size();
+                                String hqlQuery = sampHqlStr.toString();
+                                hqlQuery = hqlQuery.replace(siteApiString, "");
+                                System.out.println("hqlQuery = " + hqlQuery);
+                                validSamples = sampleUtil.getLightweightSamples(hqlQuery);
+                            }
+//                            Sample[] samplesAsArray = validSamples.toArray(Sample[]::new);
+//                            System.out.println("\n samplesAsArrayOfStrings = " + samplesAsArray);
+//                            String hqlQuery = sampHqlStr.toString();
+//                            hqlQuery = hqlQuery.replace(siteApiString, "");
+//                            System.out.println("hqlQuery = " + hqlQuery);
+//                            querySamples = sampleUtil.getLightweightSamples(hqlQuery);
+                            
                         }
                     }
+                    //call the getSpatiallyFilteredSamples() with the agathis query
+                    //SELECT DISTINCT s.sampleId FROM Sample AS s JOIN s.records AS record JOIN record.paleontology.listEntries AS pal
+//                    WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND UPPER(pal.taxon.taxonomicName) 
+//                    LIKE '%AGATHIS%' AND record.audit.status = 'approved'
+                    
+                    
                     features = featureUtil.getFeaturesBySampleSubquery(validSamples); 
                 }
 
@@ -670,6 +740,25 @@ public class ResultList_jsp extends FREDHibernateServlet {
 
             Integer[] batch = new Integer[currentBatchSize];
             System.arraycopy(siteIdList.toArray(), currentIndex, batch, 0, currentBatchSize);
+
+            batches.add(batch);
+            currentIndex += currentBatchSize;
+        }
+        return batches;
+    }
+    
+    private List<Sample[]> batchedSampleQueryItems(List<Sample> sampleList) {
+        
+        int batchSize = 100; // Specify the desired batch size
+        List<Sample[]> batches = new ArrayList<>();
+        int currentIndex = 0;
+
+        while (currentIndex < sampleList.size()) {
+            int remaining = sampleList.size() - currentIndex;
+            int currentBatchSize = Math.min(batchSize, remaining);
+
+            Sample[] batch = new Sample[currentBatchSize];
+            System.arraycopy(sampleList.toArray(), currentIndex, batch, 0, currentBatchSize);
 
             batches.add(batch);
             currentIndex += currentBatchSize;

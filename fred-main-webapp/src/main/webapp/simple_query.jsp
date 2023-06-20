@@ -59,6 +59,7 @@
 	function generateSQL(form) {
 		var queryString = "";
 		var whereSQL = "s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND ";
+                var siteApiString = "";
 		var tableName = "Sample AS s";
 		var frNum;
 		var aStart = "";
@@ -68,10 +69,12 @@
 		with (form) {
 			if (Map.value.length > 0) {
 				whereSQL = whereSQL + "SITE_API.NZMG_SHEET = '" + Map.value.toUpperCase() + "' AND ";
+				siteApiString = siteApiString + "SITE_API.NZMG_SHEET = '" + Map.value.toUpperCase() + "' AND ";
 				queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
 			}
 			if (QMap.value != "-") {
 				whereSQL = whereSQL + "SITE_API.QMAP_SHEET = '" + QMap.value + "' AND ";
+                                siteApiString = siteApiString + "SITE_API.QMAP_SHEET = '" + QMap.value + "' AND ";
 				queryString = queryString + "QMAP Sheet LIKE '" + QMap.value + "' AND ";
 			}
 			if (FieldNum.value.length > 0) {
@@ -199,6 +202,7 @@
 			if (queryString.length > 0)	{
 				queryString = queryString.substring(0, queryString.length - 5);
 			}
+                        SiteApiString.value = siteApiString;
 			QueryString.value = queryString;
 			TableName.value = tableName;
 		}
@@ -314,6 +318,7 @@
 	}
 	%></table></p>
 	<input type="hidden" name="WhereSQL" value="" />
+	<input type="hidden" name="SiteApiString" value="" />
 	<input type="hidden" name="QueryString" value="" />
 	<input type="hidden" name="TableName" value="" />
 	<input type="hidden" id="idList" name="idList" value="" />
