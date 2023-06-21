@@ -31,6 +31,7 @@ import nz.cri.gns.fred.util.StageUtil;
 public class SimpleQueryServlet extends FREDHibernateServlet {
 
     private static final Logger log = Logger.getLogger(SimpleQueryServlet.class.getCanonicalName());
+
     private final ThreadLocal<StageUtil> stageUtil = new ThreadLocal<>();
 
     @Override
@@ -148,6 +149,46 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
                     constraints.add("record.audit.status = 'approved'");
                     tableJoins.add(" JOIN s.records AS record JOIN record.paleontology.listEntries AS pal");
                 }
+                
+                Optional<Integer> squirrelNarrowAge = paramAsInt(request, "SquirrelNarrowAgeFrom");
+                Optional<Integer> squirrelWideAge = paramAsInt(request, "SquirrelWideAgeFrom");
+                if (squirrelNarrowAge.isPresent() || squirrelWideAge.isPresent()) {
+                    tableJoins.add("JOIN s.squirrelAge as squirrelAge");
+                }                
+                squirrelNarrowAge.flatMap(this::getAge)
+                        .ifPresent(a1 -> {
+                            Age a2 = paramAsInt(request, "SquirrelNarrowAgeTo")
+                                    .flatMap(this::getAge)
+                                    .orElse(a1);
+                            // we sort the user provide ages so they just need to think about the endpoints
+                            // and not have to get the correct order
+                            Age[] ages = toSortedRange(a2, a1);
+                            Age ageFrom = ages[1];
+                            Age ageTo = ages[0];
+                            String aQuery = ageFrom.getName() + " to " + ageTo.getName();
+                            if (ageFrom.equals(ageTo)) {
+                                aQuery = ageFrom.getName();
+                            }
+                            constraints.add("(squirrelAge.narrowBaseAge > " + ageTo.getTopAge() + " AND squirrelAge.narrowTopAge < " + ageFrom.getBaseAge() + ")");
+                            queryStrings.add("Consensus narrow age= " + aQuery);
+                        });
+                squirrelWideAge.flatMap(this::getAge)
+                        .ifPresent(a1 -> {
+                            Age a2 = paramAsInt(request, "SquirrelWideAgeTo")
+                                    .flatMap(this::getAge)
+                                    .orElse(a1);
+                            // we sort the user provide ages so they just need to think about the endpoints
+                            // and not have to get the correct order
+                            Age[] ages = toSortedRange(a2, a1);
+                            Age ageFrom = ages[1];
+                            Age ageTo = ages[0];
+                            String aQuery = ageFrom.getName() + " to " + ageTo.getName();
+                            if (ageFrom.equals(ageTo)) {
+                                aQuery = ageFrom.getName();
+                            }
+                            constraints.add("(squirrelAge.wideBaseAge > " + ageTo.getTopAge() + " AND squirrelAge.wideTopAge < " + ageFrom.getBaseAge() + ")");
+                            queryStrings.add("Consensus wide age= " + aQuery);
+                        });
             }
         } catch (NumberFormatException e) {
             // we map any NFE from paramAsInt|Float to a servlet exception here.
@@ -207,6 +248,16 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
             return Optional.empty();
         }
         return Optional.of(value);
+    }
+
+    /**
+     * @return array containing a1 and a2 where the first element is the smaller of the two
+     */
+    private <T extends Number> Number[] toSortedRange(T a1, T a2) {
+        if (a1.doubleValue() < a2.doubleValue()) {
+            return new Number[] {a1, a2};
+        }
+        return new Number[] {a2, a1};
     }
 
     private String replaceSingleQuote(String value) {

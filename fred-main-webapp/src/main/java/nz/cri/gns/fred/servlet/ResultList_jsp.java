@@ -41,7 +41,6 @@ import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
-import nz.cri.gns.fred.util.StageUtil;
 
 public class ResultList_jsp extends FREDHibernateServlet {
 
@@ -76,7 +75,6 @@ public class ResultList_jsp extends FREDHibernateServlet {
             SampleUtil sampleUtil = new SampleUtil(factory);
             FeatureUtil featureUtil = new FeatureUtil(factory);
             AuditUtil auditUtil = new AuditUtil(factory);
-            StageUtil stageUtil = new StageUtil(factory);
 
             // Define HTTP state variables
             PageState state = new PageState(request, response, getServletContext());
@@ -200,90 +198,12 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 //Account for large number of SAMPLE_IDs provided by polygon filter
                 String idString = request.getParameter("idList");
 
-                // Calculate Squirrel Narrow ages.
-                // "From" is always older than "To". This means that (From > To) as the ages are the positive number of years ago.
-                boolean hasSquirrelAge = false;
-                Integer sqNarrowAgeFromId = paramAsInt(request, "SquirrelNarrowAgeFrom");
-                Integer sqNarrowAgeToId = paramAsInt(request, "SquirrelNarrowAgeTo");
-                Double sqNarrowAgeFrom = 999.9;
-                Double sqNarrowAgeTo = 0.0;
-                if (null != sqNarrowAgeFromId) {
-                    sqNarrowAgeFrom = stageUtil.getAge(sqNarrowAgeFromId).getBaseAge();
-                    hasSquirrelAge = true;
-                }
-                if (null != sqNarrowAgeToId) {
-                    sqNarrowAgeTo = stageUtil.getAge(sqNarrowAgeToId).getTopAge();
-                    hasSquirrelAge = true;
-                }
-                // Swap ages if the user got them the wrong way around.
-                if (hasSquirrelAge && sqNarrowAgeFrom < sqNarrowAgeTo) {
-                    Double swap = sqNarrowAgeFrom;
-                    sqNarrowAgeFrom = sqNarrowAgeTo;
-                    sqNarrowAgeTo = swap;
-                }
-                
-                Integer sqWideAgeFromId = paramAsInt(request, "SquirrelWideAgeFrom");
-                Integer sqWideAgeToId = paramAsInt(request, "SquirrelWideAgeTo");
-                Double sqWideAgeFrom = 999.9;
-                Double sqWideAgeTo = 0.0;
-                if (null != sqWideAgeFromId) {
-                    sqWideAgeFrom = stageUtil.getAge(sqWideAgeFromId).getBaseAge();
-                    hasSquirrelAge = true;
-                }
-                if (null != sqWideAgeToId) {
-                    sqWideAgeTo = stageUtil.getAge(sqWideAgeToId).getTopAge();
-                    hasSquirrelAge = true;
-                }
-                // Swap ages if the user got them the wrong way around.
-                // 'From' is older (base age). 'To' is newer (top age). 
-                if (hasSquirrelAge && sqWideAgeFrom < sqWideAgeTo) {
-                    Double swap = sqWideAgeFrom;
-                    sqWideAgeFrom = sqWideAgeTo;
-                    sqWideAgeTo = swap;
-                }
-
                 StringBuilder sampHqlStr = new StringBuilder();
                 sampHqlStr.append("SELECT DISTINCT s.sampleId FROM ");
                 sampHqlStr.append(tableName);
 
-                if (hasSquirrelAge) {
-                    sampHqlStr.append(" JOIN s.squirrelAge as squirrelAge ");
-                }
-
                 sampHqlStr.append(" WHERE ");
                 sampHqlStr.append(whereSQL);
-
-                if (hasSquirrelAge) {
-                    // Grumble mumble. We should use parameters here.
-//                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge > ");
-//                    sampHqlStr.append(sqNarrowAgeTo);
-//                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge < ");
-//                    sampHqlStr.append(sqNarrowAgeFrom);
-
-                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge <= ");
-                    sampHqlStr.append(sqNarrowAgeFrom);
-                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge >= ");
-                    sampHqlStr.append(sqNarrowAgeTo);
-
-                    sampHqlStr.append(") AND (squirrelAge.wideBaseAge > ");
-                    sampHqlStr.append(sqWideAgeTo);
-                    sampHqlStr.append(") AND (squirrelAge.wideTopAge < ");
-                    sampHqlStr.append(sqWideAgeFrom);
-                    sampHqlStr.append(") ");
-                    
-                    // Show this to the user.
-                    StringBuilder s = new StringBuilder(queryString);
-                    s.append(" AND Consensus narrow age from  ");
-                    s.append(sqNarrowAgeFrom);
-                    s.append(" to ");
-                    s.append(sqNarrowAgeTo);
-                    s.append(" AND Consensus wide age from ");
-                    s.append(sqWideAgeFrom);
-                    s.append(" to ");
-                    s.append(sqWideAgeTo);
-                    queryString = s.toString();
-                    
-                }
                 
                 FREDQuery query = FREDUtil.getFREDQuery(state);
                 if(!(sampHqlStr.toString()).contains("SITE_API")){
