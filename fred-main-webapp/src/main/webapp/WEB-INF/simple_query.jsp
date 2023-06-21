@@ -36,57 +36,19 @@
 	%><script language="JavaScript">
 	function submitForm() {
                         var form = document.getElementsByName("QueryForm")[0];
-                        if (generateSQL(form)) {
+                        if (validateForm(form)) {
                             form.submit();
                         }
 	}
 	
-	function trim(str)
-	{
-		return( (""+str).replace(/^\s*([\s\S]*\S+)\s*$|^\s*$/,'$1') );
-	}
-	
-	function replaceSingleQuote(str1) {
-		while(str1.indexOf("'") != -1) {
-			str1 = str1.replace("'", "&quot");
-		}
-		while(str1.indexOf("&quot") != -1) {
-			str1 = str1.replace("&quot", "''");
-		}
-		return str1;
-	}
-	
-	function generateSQL(form) {
-		var queryString = "";
-		var whereSQL = "s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND ";
-                var siteApiString = "";
-		var tableName = "Sample AS s";
-		var frNum;
-		var aStart = "";
-		var aStop = "";
-		var aQuery = "";
-		var palListFlag = false;
+
+	function validateForm(form) {
 		with (form) {
-			if (Map.value.length > 0) {
-                                whereSQL = whereSQL + "s.feature.frNumber.mapSheet = '" + Map.value.toUpperCase() + "' AND ";
-				queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
-			}
-			if (QMap.value != "-") {
-				whereSQL = whereSQL + "SITE_API.QMAP_SHEET = '" + QMap.value + "' AND ";
-                                siteApiString = siteApiString + "SITE_API.QMAP_SHEET = '" + QMap.value + "'";
-				queryString = queryString + "QMAP Sheet LIKE '" + QMap.value + "' AND ";
-			}
-			if (FieldNum.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.feature.featureName) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Field Number = " + FieldNum.value + " AND ";
-			}<%
+			<%
 			
 		if (user != null) {
-			%>if (Coll.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(person.name) LIKE '%" + replaceSingleQuote(Coll.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Collector = " + Coll.value + " AND ";
-				tableName = tableName + " JOIN s.collectors AS person";
-			}
+			%>
+
 			if (YearFrom.value.length > 0) {
 				if (isNaN(YearFrom.value) || YearFrom.value.length != 4) {
 					alert("Year must be numeric and 4 digits");
@@ -97,42 +59,9 @@
 						alert("Year must be numeric and 4 digits");
 						return false;
 					}
-					whereSQL = whereSQL + "s.collectionDate BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearTo.value + "' AND ";
-					queryString = queryString + "Collection Date BETWEEN " + YearFrom.value + " AND " + YearTo.value + " AND ";
-				} else {
-					whereSQL = whereSQL + "s.collectionDate BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearFrom.value + "' AND ";
-					queryString = queryString + "Collection Date = " + YearFrom.value + " AND ";
 				}
 			}
-			if (StratName.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.stratUnit) LIKE '%" + replaceSingleQuote(StratName.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Stratigraphic Name = " + StratName.value + " AND ";
-			}
-			if (StratAtt.checked) {
-				whereSQL = whereSQL + "(s.dip IS NOT NULL OR s.dipDirection IS NOT NULL OR s.strike IS NOT NULL) AND ";
-				queryString = queryString + "Stratal Attitude present AND ";
-			}
-			if (RockNat.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.rockNature) LIKE '%" + replaceSingleQuote(RockNat.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Nature of Rock Unit = " + RockNat.value + " AND ";
-			}
-			if (DepEnv.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.depositionEnv) LIKE '%" + replaceSingleQuote(DepEnv.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Deposition Environment = " + DepEnv.value + " AND ";
-			}
 
-			if (TaxonomicGroup.value != "-") {
-				whereSQL = whereSQL + "pal.taxonomicGroup.name = '" + TaxonomicGroup.value + "' AND ";
-				queryString = queryString + "Taxonomic Group = " + TaxonomicGroup.value + " AND ";
-				palListFlag = true;
-			}
-			if (Taxon.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(pal.taxon.taxonomicName) LIKE '%" + replaceSingleQuote(Taxon.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Taxonomic Name = " + Taxon.value + " AND ";
-				palListFlag = true;
-			}
-
-			
 			//check only stage name or numeric values entered
 			if (StageFrom.value != "-" && AgeFrom.value.length > 0) {
 				alert("Please select only a stage name or a numeric age");
@@ -146,13 +75,6 @@
 					  alert ("Stage Names are the wrong way around"); StageFrom.select();
 					  return false;
 					}
-					aStart = ageStart[StageFrom.value];
-					aStop = ageStop[StageTo.value];
-					aQuery = StageFrom.options[StageFrom.options.selectedIndex].text + " to " + StageTo.options[StageTo.options.selectedIndex].text;
-				} else {
-					aStart = ageStart[StageFrom.value];
-					aStop = ageStop[StageFrom.value];
-					aQuery = StageFrom.options[StageFrom.options.selectedIndex].text;
 				}
 			} else if (StageTo.value != "-") {
 				alert ("From stage not selected");
@@ -171,39 +93,15 @@
 					  AgeFrom.select();
 					  return false;
 					}
-					aStart = AgeFrom.value;
-					aStop = AgeTo.value;
-					aQuery = AgeFrom.value + " to " + AgeTo.value;
-				} else {
-					aStart = AgeFrom.value;
-					aStop = AgeFrom.value;
-					aQuery = AgeFrom.value;
 				}
 			} else if (AgeTo.value.length > 0) {
 				alert ("From Age not entered");
 				AgeFrom.select();
 				return false;
-			}
-			if (aStart != "") {
-				whereSQL = whereSQL + "(sampleStageView.baseAge > " + aStop + " AND sampleStageView.topAge < " + aStart + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology') AND ";
-				tableName = tableName + " JOIN s.sampleStageViews AS sampleStageView";
-				queryString = queryString + "Age= " + aQuery + " AND ";
-			}
-              
-			if (palListFlag) {
-				whereSQL = whereSQL + "record.audit.status = 'approved' AND ";
-				tableName = tableName + " JOIN s.records AS record JOIN record.paleontology.listEntries AS pal";
 			}<%
 		}
-			%>if (whereSQL.length > 0)
-			whereSQL = whereSQL.substring(0, whereSQL.length - 5);
-			WhereSQL.value = whereSQL;
-			if (queryString.length > 0)	{
-				queryString = queryString.substring(0, queryString.length - 5);
-			}
-                        SiteApiString.value = siteApiString;
-			QueryString.value = queryString;
-			TableName.value = tableName;
+
+			%>
 		}
 		return true;
 	}
@@ -316,10 +214,6 @@
 		%><tr class="lightColour"><td colspan="3">More query fields are available to logged in users</td></tr><%
 	}
 	%></table></p>
-	<input type="hidden" name="WhereSQL" value="" />
-	<input type="hidden" name="SiteApiString" value="" />
-	<input type="hidden" name="QueryString" value="" />
-	<input type="hidden" name="TableName" value="" />
 	<input type="hidden" id="idList" name="idList" value="" />
 	<input type="hidden" id="polygon" name="polygon" value="" />
         <p><input type="button" value="Submit Query" onclick="submitForm()" /></p>

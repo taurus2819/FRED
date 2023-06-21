@@ -157,11 +157,7 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
         tableName = tableName + tableJoins.stream().collect(Collectors.joining(" ", " ", ""));
         String whereSQL = constraints.stream().collect(Collectors.joining(" AND "));
         log.log(Level.INFO, "Generated query: {0} {1}", new Object[]{tableName, whereSQL});
-        // TODO remove following log (it's only for validating correct query is built
-        log.log(Level.INFO, "page query:      {0} {1}", new Object[]{
-            request.getParameter("TableName"),
-            request.getParameter("WhereSQL")
-        });
+
         request.setAttribute("TableName", tableName);
         request.setAttribute("WhereSQL", whereSQL);
         request.setAttribute("QueryString", queryStrings.stream().collect(Collectors.joining(" AND ")));
