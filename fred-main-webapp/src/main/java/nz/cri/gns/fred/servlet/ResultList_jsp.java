@@ -171,6 +171,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
             List<Sample> samples = null;
             List<Sample> validSamples = new ArrayList<>();
             List<Sample> querySamples = new ArrayList<>();
+            List<Integer> sampleIdList = new ArrayList<>();
             List<Feature> features = null;
             List<Object> resultsList = new Vector<Object>();
             if (useStored) {
@@ -378,22 +379,26 @@ public class ResultList_jsp extends FREDHibernateServlet {
                             System.out.println("hq = " + hq); 
                             System.out.println("******Site API***Non Spatial******\n");
                             samples = sampleUtil.getLightweightSamples(hq);   //this gets a list of R27 samples - this is an example
-                            if(samples.size() > 0 || samples != null){
-                                querySamples.addAll(samples);
+                            if(samples.size() > 0){
+                                sampleIdList.clear();
+                                for(Sample sample : samples){
+                                    sampleIdList.add(sample.getSampleId());
+                                }
 //                                sampleSize = sampleSize + validSamples.size();
+                                String criteriaSampleList = sampleIdList
+                                                            .stream()
+                                                            .map(String::valueOf)
+                                                            .collect(Collectors.joining(","));
                                 String hqlQuery = sampHqlStr.toString();
                                 hqlQuery = hqlQuery.replace(siteApiString, "");
-                                hqlQuery = hqlQuery + "AND s.sampleId IN  (%s)";
-                                System.out.println("hqlQuery = " + hqlQuery);
-                                String criteriaQuery = String.format(hqlQuery, querySamples);   //criteriaQuery is the query of taxonomic name(like AGATHIS) inside the list of SAmple containing only R27
-                                validSamples = sampleUtil.getLightweightSamples(criteriaQuery);
+                                String subQuery = " AND s.sampleId IN  (%s)";
+                                String criteriaQuery = String.format(subQuery, criteriaSampleList);  
+                                hqlQuery = hqlQuery + criteriaQuery;
+                                System.out.println("\nhqlQuery = " + hqlQuery); 
+                                validSamples = sampleUtil.getLightweightSamples(hqlQuery);
                             }
 //                            Sample[] samplesAsArray = validSamples.toArray(Sample[]::new);
 //                            System.out.println("\n samplesAsArrayOfStrings = " + samplesAsArray);
-//                            String hqlQuery = sampHqlStr.toString();
-//                            hqlQuery = hqlQuery.replace(siteApiString, "");
-//                            System.out.println("hqlQuery = " + hqlQuery);
-//                            querySamples = sampleUtil.getLightweightSamples(hqlQuery);
                             
                         }
                     }
