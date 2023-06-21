@@ -69,14 +69,7 @@
 				return false;
 			}
 
-			if (StageFrom.value != "-") {
-				if (StageTo.value != "-") {
-					if (ageStart[StageTo.value] > ageStart[StageFrom.value] || ageStop[StageFrom.value] < ageStop[StageTo.value]) {
-					  alert ("Stage Names are the wrong way around"); StageFrom.select();
-					  return false;
-					}
-				}
-			} else if (StageTo.value != "-") {
+			if (StageFrom.value === "-" && StageTo.value !== "-") {
 				alert ("From stage not selected");
 				StageFrom.focus();
 				return false;
@@ -85,11 +78,6 @@
 				if (AgeTo.value.length > 0) {
 					if (isNaN(AgeFrom.value) || isNaN(AgeTo.value)) {
 					  alert ("Non-numeric ages entered");
-					  AgeFrom.select();
-					  return false;
-					}
-					if (parseFloat(AgeFrom.value, 10) < parseFloat(AgeTo.value, 10)) {
-					  alert ("Numeric ages wrong way around");
 					  AgeFrom.select();
 					  return false;
 					}
@@ -110,22 +98,8 @@
         window.open('map_popup_frame.jsp','popuppage','width=960,toolbar=1,resizable=1,scrollbars=yes,height=700,top=100,left=100');
     }
 	
-	</script><%
-
-	if (user != null) {
-		//build array of stage ages
-		int maxAgeId = new StageUtil(factory).getMaxAgeId();
-		%><script language="JavaScript">
-		var ageStart = new Array(<%=(maxAgeId + 1)%>);
-		var ageStop = new Array(<%=(maxAgeId + 1)%>);<%
-		for (Age age : new StageUtil(factory).getAges()) {
-			%>ageStart[<%=age.getAgeId()%>] = <%=age.getBaseAge()%>;
-			ageStop[<%=age.getAgeId()%>] = <%=age.getTopAge()%>;<%
-		}
-		%></script><%
-	}
-	
-	%><form name="QueryForm" action="simple_query.jsp" method="post" >
+	</script>
+        <form name="QueryForm" action="simple_query.jsp" method="post" >
 	<p><table border="0" cellpadding="3" cellspacing="2" width="600">
             <div><input type="hidden" id="token" name="token" /></div>
 	<tr class="lightColour"><td class="heading">NZMS260 Sheet&nbsp;&nbsp;</td><td><input type="text" name="Map" size="10" />&nbsp;&nbsp;</td><td><i>Enter a <a href="http://www.linz.govt.nz/topography/topo-maps/nz-med-scale-maps/index.aspx" target="_blank">NZ 1:50,000 map</a> sheet</i></td></tr>

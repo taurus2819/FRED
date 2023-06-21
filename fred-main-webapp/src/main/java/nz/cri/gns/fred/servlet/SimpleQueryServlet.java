@@ -79,10 +79,11 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
                     queryStrings.add("Collector = " + coll);
                     tableJoins.add(" JOIN s.collectors AS person");
                 });
-                param(request, "YearFrom").ifPresent(yearFrom -> {
-                    param(request, "YearTo").ifPresentOrElse(yearTo -> {
-                        constraints.add("s.collectionDate BETWEEN '01-JAN-" + yearFrom + "' AND '31-DEC-" + yearTo + "'");
-                        queryStrings.add("Collection Date BETWEEN " + yearFrom + " AND " + yearTo);
+                paramAsInt(request, "YearFrom").ifPresent(yearFrom -> {
+                    paramAsInt(request, "YearTo").ifPresentOrElse(yearTo -> {
+                        Number[] years = toSortedRange(yearFrom, yearTo);
+                        constraints.add("s.collectionDate BETWEEN '01-JAN-" + years[0] + "' AND '31-DEC-" + years[1] + "'");
+                        queryStrings.add("Collection Date BETWEEN " + years[0] + " AND " + years[1]);
                     }, () -> {
                         constraints.add("s.collectionDate BETWEEN '01-JAN-" + yearFrom + "' AND '31-DEC-" + yearFrom + "'");
                         queryStrings.add("Collection Date = " + yearFrom);
@@ -121,13 +122,18 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
 
                 paramAsInt(request, "StageFrom")
                         .flatMap(this::getAge)
-                        .ifPresent(stageFrom -> {
-                            Age stageTo = paramAsInt(request, "StageTo")
+                        .ifPresent(s1 -> {
+                            Age s2 = paramAsInt(request, "StageTo")
                                     .flatMap(this::getAge)
-                                    .orElse(stageFrom);
-                            String aQuery = "Age= " + stageFrom.getName() + " to " + stageTo.getName();
+                                    .orElse(s1);
+                            // we sort the user provide ages so they just need to think about the endpoints
+                            // and not have to get the correct order
+                            Age[] ages = toSortedRange(s2, s1);
+                            Age stageFrom = ages[1];
+                            Age stageTo = ages[0];
+                            String aQuery = stageFrom.getName() + " to " + stageTo.getName();
                             if (stageFrom.equals(stageTo)) {
-                                aQuery = "Age= " + stageFrom.getName();
+                                aQuery = stageFrom.getName();
                             }
                             constraints.add("(sampleStageView.baseAge > " + stageTo.getTopAge() + " AND sampleStageView.topAge < " + stageFrom.getBaseAge() + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology')");
                             tableJoins.add(" JOIN s.sampleStageViews AS sampleStageView");
@@ -136,11 +142,12 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
 
                 paramAsFloat(request, "AgeFrom").ifPresent(ageFrom -> {
                     Float ageTo = paramAsFloat(request, "AgeTo").orElse(ageFrom);
-                    String aQuery = "Age= " + ageFrom + " to " + ageTo;
+                    Number[] ages = toSortedRange(ageFrom, ageTo);
+                    String aQuery = ages[0] + " to " + ages[1];
                     if (ageFrom.equals(ageTo)) {
-                        aQuery = "Age= " + ageFrom;
+                        aQuery = String.valueOf(ages[0]);
                     }
-                    constraints.add("(sampleStageView.baseAge > " + ageTo + " AND sampleStageView.topAge < " + ageFrom + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology')");
+                    constraints.add("(sampleStageView.baseAge > " + ages[0] + " AND sampleStageView.topAge < " + ages[1] + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology')");
                     tableJoins.add(" JOIN s.sampleStageViews AS sampleStageView");
                     queryStrings.add("Age= " + aQuery);
                 });
@@ -248,6 +255,13 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
             return Optional.empty();
         }
         return Optional.of(value);
+    }
+
+    private Age[] toSortedRange(Age a1, Age a2) {
+        if (a1.compareTo(a2) < 0) {
+            return new Age[]{a1, a2};
+        }
+        return new Age[]{a2, a1};
     }
 
     /**
