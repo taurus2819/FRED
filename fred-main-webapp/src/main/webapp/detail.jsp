@@ -93,7 +93,10 @@
      *          looks the same. E.g `locality` or `paleo` etc
      */
     private String buildFrfLink(FrNumber frNum, String queryPart, String namePart) {
-        String filename = frNum.getFrNumber().replaceAll("/", "_");
+        String filename = "fr-not-allocated";
+        if (frNum != null && frNum.getFrNumber() != null) {
+            filename = frNum.getFrNumber().replaceAll("/", "_");
+        }
         if (namePart != null) {
             filename = filename + "-" + namePart;
         }
