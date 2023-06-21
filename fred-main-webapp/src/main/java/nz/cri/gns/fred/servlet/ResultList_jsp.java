@@ -380,11 +380,13 @@ public class ResultList_jsp extends FREDHibernateServlet {
                             samples = sampleUtil.getLightweightSamples(hq);   //this gets a list of R27 samples - this is an example
                             if(samples.size() > 0 || samples != null){
                                 querySamples.addAll(samples);
-                                sampleSize = sampleSize + validSamples.size();
+//                                sampleSize = sampleSize + validSamples.size();
                                 String hqlQuery = sampHqlStr.toString();
                                 hqlQuery = hqlQuery.replace(siteApiString, "");
+                                hqlQuery = hqlQuery + "AND s.sampleId IN  (%s)";
                                 System.out.println("hqlQuery = " + hqlQuery);
-                                validSamples = sampleUtil.getLightweightSamples(hqlQuery);
+                                String criteriaQuery = String.format(hqlQuery, querySamples);   //criteriaQuery is the query of taxonomic name(like AGATHIS) inside the list of SAmple containing only R27
+                                validSamples = sampleUtil.getLightweightSamples(criteriaQuery);
                             }
 //                            Sample[] samplesAsArray = validSamples.toArray(Sample[]::new);
 //                            System.out.println("\n samplesAsArrayOfStrings = " + samplesAsArray);
