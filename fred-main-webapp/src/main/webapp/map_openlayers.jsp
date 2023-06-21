@@ -262,7 +262,7 @@
                         number: features[0].attributes["fr_number"], 
                         feature_type: features[0].attributes["feature_type"], 
                         locality: features[0].attributes["locality"]};
-                    selectedFeature.geometry.transform(p4326, p900913);
+                    //converting between SRSs no longer required with new GeoServer instance
                     if (selectedLayer != null) {
                         selectedLayer.addFeatures(selectedFeature);
                     } 
@@ -279,7 +279,7 @@
                         number: features[i].attributes["fr_number"], 
                         feature_type: features[i].attributes["feature_type"], 
                         locality: features[i].attributes["locality"]};
-                        selectedFeature.geometry.transform(p4326, p900913);
+                        //converting between SRSs no longer required with new GeoServer instance
                         if (selectedLayer != null) {
                             selectedLayer.addFeatures(selectedFeature);
                         } 
