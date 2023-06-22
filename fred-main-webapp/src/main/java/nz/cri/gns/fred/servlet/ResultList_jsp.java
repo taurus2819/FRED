@@ -347,18 +347,10 @@ public class ResultList_jsp extends FREDHibernateServlet {
 //                                            "WHERE s.audit.status = 'approved'\n" +
 //                                            "  AND s.feature.audit.status = 'approved'\n" +
 //                                            "  AND UPPER(pal.taxon.taxonomicName) LIKE '%AGATHIS%'\n" +
-//                                            "  AND record.audit.status = 'approved'\n" +
-//                                            "  AND s.feature.siteId IN (%s)";
-//                        
-//                        String testQuery = "SELECT DISTINCT s.sampleId FROM Sample AS s JOIN s.records AS record"
-//                                + " JOIN record.paleontology.listEntries AS pal WHERE s.audit.status = 'approved' "
-//                                + "AND s.feature.audit.status = 'approved' AND UPPER(pal.taxon.taxonomicName) LIKE "
-//                                + "'%AGATHIS%' AND record.audit.status = 'approved'";
-                                                
+//                                            "  AND record.audit.status = 'approved'\n" 
                         
                         String hq = String.format(queryToGetSamplesFromSiteids.toString(), batchIdList);
                         System.out.println("HQ Sql string = " + hq);
-
 /****/
     //                    String sampHql = sampHqlStr.toString();
 
@@ -388,31 +380,22 @@ public class ResultList_jsp extends FREDHibernateServlet {
                                 String criteriaSampleList = sampleIdList
                                                             .stream()
                                                             .map(String::valueOf)
-                                                            .collect(Collectors.joining(","));
-                                String hqlQuery = sampHqlStr.toString();
-                                hqlQuery = hqlQuery.replace(siteApiString, "");
+                                                            .collect(Collectors.joining(",")); //list of NZMS260  or Qmap sheet id's; each id converted to string 
+                                String hqlQuery = sampHqlStr.toString();                    //original query with the SITE API and the other criteria (for exaple taxonomic)included
+                                hqlQuery = hqlQuery.replace(siteApiString, "");             //replace the SITE API part inside the query   
                                 String subQuery = " AND s.sampleId IN  (%s)";
                                 String criteriaQuery = String.format(subQuery, criteriaSampleList);  
                                 hqlQuery = hqlQuery + criteriaQuery;
                                 System.out.println("\nhqlQuery = " + hqlQuery); 
-                                validSamples = sampleUtil.getLightweightSamples(hqlQuery);
+                                validSamples.addAll(sampleUtil.getLightweightSamples(hqlQuery));
                             }
 //                            Sample[] samplesAsArray = validSamples.toArray(Sample[]::new);
-//                            System.out.println("\n samplesAsArrayOfStrings = " + samplesAsArray);
-                            
+//                            System.out.println("\n samplesAsArrayOfStrings = " + samplesAsArray);                            
                         }
-                    }
-                    //call the getSpatiallyFilteredSamples() with the agathis query
-                    //SELECT DISTINCT s.sampleId FROM Sample AS s JOIN s.records AS record JOIN record.paleontology.listEntries AS pal
-//                    WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND UPPER(pal.taxon.taxonomicName) 
-//                    LIKE '%AGATHIS%' AND record.audit.status = 'approved'
-                    
-                    
+                    }                   
                     features = featureUtil.getFeaturesBySampleSubquery(validSamples); 
                 }
-
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
-
             }
             int numRecords = features.size();
             if (numRecords > 0) {
