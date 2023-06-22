@@ -135,7 +135,7 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
                             if (stageFrom.equals(stageTo)) {
                                 aQuery = stageFrom.getName();
                             }
-                            constraints.add("(sampleStageView.baseAge > " + stageTo.getTopAge() + " AND sampleStageView.topAge < " + stageFrom.getBaseAge() + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology')");
+                            constraints.add("(sampleStageView.baseAge >= " + stageTo.getTopAge() + " AND sampleStageView.topAge <= " + stageFrom.getBaseAge() + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology')");
                             tableJoins.add(" JOIN s.sampleStageViews AS sampleStageView");
                             queryStrings.add("Age= " + aQuery);
                         });
@@ -147,7 +147,7 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
                     if (ageFrom.equals(ageTo)) {
                         aQuery = String.valueOf(ages[0]);
                     }
-                    constraints.add("(sampleStageView.baseAge > " + ages[0] + " AND sampleStageView.topAge < " + ages[1] + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology')");
+                    constraints.add("(sampleStageView.baseAge >= " + ages[0] + " AND sampleStageView.topAge <= " + ages[1] + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology')");
                     tableJoins.add(" JOIN s.sampleStageViews AS sampleStageView");
                     queryStrings.add("Age= " + aQuery);
                 });
@@ -176,7 +176,7 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
                             if (ageFrom.equals(ageTo)) {
                                 aQuery = ageFrom.getName();
                             }
-                            constraints.add("(squirrelAge.narrowBaseAge > " + ageTo.getTopAge() + " AND squirrelAge.narrowTopAge < " + ageFrom.getBaseAge() + ")");
+                            constraints.add("(squirrelAge.narrowBaseAge >= " + ageTo.getTopAge() + " AND squirrelAge.narrowTopAge <= " + ageFrom.getBaseAge() + ")");
                             queryStrings.add("Consensus narrow age= " + aQuery);
                         });
                 squirrelWideAge.flatMap(this::getAge)
@@ -193,7 +193,7 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
                             if (ageFrom.equals(ageTo)) {
                                 aQuery = ageFrom.getName();
                             }
-                            constraints.add("(squirrelAge.wideBaseAge > " + ageTo.getTopAge() + " AND squirrelAge.wideTopAge < " + ageFrom.getBaseAge() + ")");
+                            constraints.add("(squirrelAge.wideBaseAge >= " + ageTo.getTopAge() + " AND squirrelAge.wideTopAge <= " + ageFrom.getBaseAge() + ")");
                             queryStrings.add("Consensus wide age= " + aQuery);
                         });
             }
