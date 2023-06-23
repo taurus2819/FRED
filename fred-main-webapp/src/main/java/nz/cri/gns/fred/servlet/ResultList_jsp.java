@@ -297,31 +297,16 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 
                 FREDQuery query = FREDUtil.getFREDQuery(state);
                 if(!(sampHqlStr.toString()).contains("SITE_API")){
-                    System.out.println("\n****No Site api*******");
-                    System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
-                    System.out.println("****No Site api*******\n");
                     String hq = query.getHQLQuery("simple", sampHqlStr.toString());
 
                     //if polygon vertices are set, apply spatial filter
                     if (idString != null && idString.length() > 0) {
-                        System.out.println("\n*****Spatial******");
-                        System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
-                        System.out.println("hq = " + hq); 
-                        System.out.println("*****Spatial******\n");
                         samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
                     } else {
-                        System.out.println("\n*****Non Spatial******");
-                        System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
-                        System.out.println("hq = " + hq); 
-                        System.out.println("*****Non Spatial******\n");
                         samples = sampleUtil.getLightweightSamples(hq);
                     }
                     features = featureUtil.getFeaturesBySampleSubquery(samples);
-                }else{  
-                    System.out.println("\n***Site API********");
-                    System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
-                    System.out.println("SiteAPIString = " + siteApiString);
-                    System.out.println("***Site API*******\n");
+                }else{
                     List<Integer> siteIdList = query.getSimpleQuery("simple", sampHqlStr.toString());
 
                     List<Integer[]> batches = batchedQueryItems(siteIdList);
@@ -338,51 +323,36 @@ public class ResultList_jsp extends FREDHibernateServlet {
                         queryToGetSamplesFromSiteids.append(" AND s.feature.siteId IN (%s)");
                         
                         String hq = String.format(queryToGetSamplesFromSiteids.toString(), batchIdList);
-                        System.out.println("HQ Sql string = " + hq);
-    //                    String sampHql = sampHqlStr.toString();
 
                         //if polygon vertices are set, apply spatial filter
                         if (idString != null && idString.length() > 0) {
-                            System.out.println("\n******Site API***Spatial******");
-                            System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
-                            System.out.println("hq = " + hq); 
-                            System.out.println("******Site API***Spatial******\n");
                             samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
                             if(samples.size() > 0 || samples != null){
                                 validSamples.addAll(samples);
                                 sampleSize = sampleSize + validSamples.size();
                             }
                         } else {    
-                            System.out.println("\n******Site API***Non Spatial******");
-                            System.out.println("sampHqlStr = " + sampHqlStr.toString()); 
-                            System.out.println("hq = " + hq); 
-                            System.out.println("******Site API***Non Spatial******\n");
                             samples = sampleUtil.getLightweightSamples(hq);   //this gets a list of R27 samples - this is an example
                             List<Integer> sampleIdList = new ArrayList<>();
                             if(samples.size() > 0){                                
                                 if(sampHqlStr.toString().contains("JOIN")){   
                                     sampleIdList.clear();
-//                                    for(Sample sample : samples){
-//                                        sampleIdList.add(sample.getSampleId());
-//                                    }
                                     sampleIdList = samples.stream()
                                                    .map(Sample::getSampleId)
                                                    .collect(Collectors.toList());
                                     String criteriaSampleList = sampleIdList
                                                                 .stream()
                                                                 .map(String::valueOf)
-                                                                .collect(Collectors.joining(",")); //list of NZMS260  or Qmap sheet id's; each id converted to string 
-                                    String hqlQuery = sampHqlStr.toString();                    //original query with the SITE API and the other criteria (for exaple taxonomic)included
-                                    hqlQuery = hqlQuery.replace(siteApiString, "");             //replace the SITE API part inside the query   
+                                                                .collect(Collectors.joining(",")); 
+                                    String hqlQuery = sampHqlStr.toString();                   
+                                    hqlQuery = hqlQuery.replace(siteApiString, "");       
                                     String subQuery = " AND s.sampleId IN  (%s)";
                                     String criteriaQuery = String.format(subQuery, criteriaSampleList);  
-                                    hqlQuery = hqlQuery + criteriaQuery;
-                                    System.out.println("\nhqlQuery = " + hqlQuery); 
+                                    hqlQuery = hqlQuery + criteriaQuery; 
                                     validSamples.addAll(sampleUtil.getLightweightSamples(hqlQuery));                                
 //                                    Sample[] samplesAsArray = validSamples.toArray(Sample[]::new);
-//                                    System.out.println("\n samplesAsArrayOfStrings = " + samplesAsArray);  
                                 } else{                               
-                                    validSamples.addAll(samples); //this has only R27 if you are searching only the NZMS260 or Qmap sheet
+                                    validSamples.addAll(samples); //this has only mapsheets if you are searching only the NZMS260 or Qmap sheet
                                 }
                             }                          
                         }
@@ -730,24 +700,4 @@ public class ResultList_jsp extends FREDHibernateServlet {
         }
         return batches;
     }
-    
-    private List<Sample[]> batchedSampleQueryItems(List<Sample> sampleList) {
-        
-        int batchSize = 100; // Specify the desired batch size
-        List<Sample[]> batches = new ArrayList<>();
-        int currentIndex = 0;
-
-        while (currentIndex < sampleList.size()) {
-            int remaining = sampleList.size() - currentIndex;
-            int currentBatchSize = Math.min(batchSize, remaining);
-
-            Sample[] batch = new Sample[currentBatchSize];
-            System.arraycopy(sampleList.toArray(), currentIndex, batch, 0, currentBatchSize);
-
-            batches.add(batch);
-            currentIndex += currentBatchSize;
-        }
-        return batches;
-    }
-
 }
