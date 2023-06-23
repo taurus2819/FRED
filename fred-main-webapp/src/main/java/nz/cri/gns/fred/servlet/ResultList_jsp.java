@@ -171,7 +171,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
             List<Sample> samples = null;
             List<Sample> validSamples = new ArrayList<>();
             List<Sample> querySamples = new ArrayList<>();
-            List<Integer> sampleIdList = new ArrayList<>();
+            
             List<Feature> features = null;
             List<Object> resultsList = new Vector<Object>();
             if (useStored) {
@@ -332,26 +332,13 @@ public class ResultList_jsp extends FREDHibernateServlet {
                                 .stream()
                                 .map(String::valueOf)
                                 .collect(Collectors.joining(","));
-
-//                        String hq = String.format("SELECT DISTINCT s.sampleId FROM Sample AS s WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND s.feature.siteId IN (%s)", batchIdList);
-
-/****/
+                        
                         StringBuilder queryToGetSamplesFromSiteids = new StringBuilder();
                         queryToGetSamplesFromSiteids.append("SELECT DISTINCT s.sampleId FROM Sample AS s WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' ");
                         queryToGetSamplesFromSiteids.append(" AND s.feature.siteId IN (%s)");
                         
-//                        String hqlQuery = "SELECT DISTINCT s.sampleId\n" +
-//                                            "FROM Sample AS s\n" +
-//                                            "JOIN s.records AS record\n" +
-//                                            "JOIN record.paleontology.listEntries AS pal\n" +
-//                                            "WHERE s.audit.status = 'approved'\n" +
-//                                            "  AND s.feature.audit.status = 'approved'\n" +
-//                                            "  AND UPPER(pal.taxon.taxonomicName) LIKE '%AGATHIS%'\n" +
-//                                            "  AND record.audit.status = 'approved'\n" 
-                        
                         String hq = String.format(queryToGetSamplesFromSiteids.toString(), batchIdList);
                         System.out.println("HQ Sql string = " + hq);
-/****/
     //                    String sampHql = sampHqlStr.toString();
 
                         //if polygon vertices are set, apply spatial filter
@@ -371,28 +358,35 @@ public class ResultList_jsp extends FREDHibernateServlet {
                             System.out.println("hq = " + hq); 
                             System.out.println("******Site API***Non Spatial******\n");
                             samples = sampleUtil.getLightweightSamples(hq);   //this gets a list of R27 samples - this is an example
-                            if(samples.size() > 0){
-                                sampleIdList.clear();
-                                for(Sample sample : samples){
-                                    sampleIdList.add(sample.getSampleId());
+                            List<Integer> sampleIdList = new ArrayList<>();
+                            if(samples.size() > 0){                                
+                                if(sampHqlStr.toString().contains("JOIN")){   
+                                    sampleIdList.clear();
+//                                    for(Sample sample : samples){
+//                                        sampleIdList.add(sample.getSampleId());
+//                                    }
+                                    sampleIdList = samples.stream()
+                                                   .map(Sample::getSampleId)
+                                                   .collect(Collectors.toList());
+                                    String criteriaSampleList = sampleIdList
+                                                                .stream()
+                                                                .map(String::valueOf)
+                                                                .collect(Collectors.joining(",")); //list of NZMS260  or Qmap sheet id's; each id converted to string 
+                                    String hqlQuery = sampHqlStr.toString();                    //original query with the SITE API and the other criteria (for exaple taxonomic)included
+                                    hqlQuery = hqlQuery.replace(siteApiString, "");             //replace the SITE API part inside the query   
+                                    String subQuery = " AND s.sampleId IN  (%s)";
+                                    String criteriaQuery = String.format(subQuery, criteriaSampleList);  
+                                    hqlQuery = hqlQuery + criteriaQuery;
+                                    System.out.println("\nhqlQuery = " + hqlQuery); 
+                                    validSamples.addAll(sampleUtil.getLightweightSamples(hqlQuery));                                
+//                                    Sample[] samplesAsArray = validSamples.toArray(Sample[]::new);
+//                                    System.out.println("\n samplesAsArrayOfStrings = " + samplesAsArray);  
+                                } else{                               
+                                    validSamples.addAll(samples); //this has only R27 if you are searching only the NZMS260 or Qmap sheet
                                 }
-//                                sampleSize = sampleSize + validSamples.size();
-                                String criteriaSampleList = sampleIdList
-                                                            .stream()
-                                                            .map(String::valueOf)
-                                                            .collect(Collectors.joining(",")); //list of NZMS260  or Qmap sheet id's; each id converted to string 
-                                String hqlQuery = sampHqlStr.toString();                    //original query with the SITE API and the other criteria (for exaple taxonomic)included
-                                hqlQuery = hqlQuery.replace(siteApiString, "");             //replace the SITE API part inside the query   
-                                String subQuery = " AND s.sampleId IN  (%s)";
-                                String criteriaQuery = String.format(subQuery, criteriaSampleList);  
-                                hqlQuery = hqlQuery + criteriaQuery;
-                                System.out.println("\nhqlQuery = " + hqlQuery); 
-                                validSamples.addAll(sampleUtil.getLightweightSamples(hqlQuery));
-                            }
-//                            Sample[] samplesAsArray = validSamples.toArray(Sample[]::new);
-//                            System.out.println("\n samplesAsArrayOfStrings = " + samplesAsArray);                            
+                            }                          
                         }
-                    }                   
+                    }                 
                     features = featureUtil.getFeaturesBySampleSubquery(validSamples); 
                 }
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
