@@ -4,7 +4,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -72,12 +76,18 @@ public class FREDQuery extends HqlQuery implements NumberSource {
     private static final HqlJoin SAMPLE_STAGE_VIEW_JOIN = new HqlJoin(false, "sampleStageView");
     private static final String EDIT_TABLE = "s.audit.auditEdits";
     private static final HqlJoin EDIT_JOIN = new HqlJoin(false, "edit");
+    
+    private static int ORACLE_MAX_QUERY_LIST_SIZE = 1000;
 
     protected int lastUsedId = 900000;
 
     //protected List<Person> people = null;
     protected List<Age> ages = null;
     protected List<FrUserView> frUsers = null;
+    protected int maxQueryListSize = ORACLE_MAX_QUERY_LIST_SIZE;
+    protected Function<String, List<Integer>> sitesBySpatialFilter =
+            (spatialFilter) -> SiteModelUtil.requestSitesBySpatialFilter(spatialFilter);
+    
 
     public FREDQuery() {
         //this.people = getValues("FROM Person AS p", Person.class);
@@ -243,9 +253,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
     }
 
     public String getHQLQuery(String type, String query) throws InvalidOperatorException, InvalidValueException {
-        //return super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
-        String hqlQuery;        
-        //debugging
+        String hqlQuery;      
+                
         hqlQuery = super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", null, null, null);        
         
         if("Adv".equals(type)){
@@ -262,33 +271,30 @@ public class FREDQuery extends HqlQuery implements NumberSource {
             Pattern pattern = Pattern.compile(patternString);
             Matcher m = pattern.matcher(hqlQuery); 
             boolean match = false;
-            List<Integer> siteIds = new ArrayList<>();
             while(m.find())    {   //TODO concatenate multiple spatial queries
                 match = true;
-                System.err.println("Attribute: " + m.group(1));
-                System.err.println("Value: " + m.group(2));
-//                System.out.println("Attribute: " + m.group(1) + ", " + "Value: " + m.group(2));
-                siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
-                System.err.println(String.format("# of sites: %d \n%s", siteIds.size(), siteIds));
+                List<Integer> siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
+                // there is an Oracle limit on how many items can be in an IN clause.
+                // so we need to split these up into many IN clauses that are or'ed
+                // together - this code kindly provided by Glenn Walbran
+                List<String> siteIdLists = new ArrayList<>();
+                for (int i = 0; i < siteIds.size(); i = i + maxQueryListSize) {
+                    List<Integer> sublist = siteIds.subList(i, Math.min(i + maxQueryListSize, siteIds.size())); 
+                    String idList = sublist.stream()
+                            .map(String::valueOf)
+                            .collect(Collectors.joining(","));
+                    siteIdLists.add(idList);
+                }
+                String siteIdClause = siteIdLists.stream()
+                        .map(s -> String.format("s.feature.siteId IN (%s)", s))
+                        .collect(Collectors.joining(" or ", "(", ")"));
                 
-                String idList = siteIds.subList(0, Math.min(1000, siteIds.size()))    //TODO - fix by splitting request into sections (JDBC limit of 1000 items per list)
-                .stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(",")); 
-                
-                hqlQuery = hqlQuery.replaceAll(String.format(patternTemplateString, m.group(1), m.group(2)), String.format("s.feature.siteId IN (%s)", idList)); 
-                System.err.println(String.format("hqlQuery: %s", hqlQuery));
-                
-                System.err.println(String.format("===>debugQuery (pre): %s", debugQuery));
-                System.err.println(String.format("Regex #1: %s, Regex #2: %s", m.group(1), m.group(2)));
-                debugQuery = debugQuery.replaceAll(String.format(patternTemplateString, m.group(1), m.group(2)), String.format("s.feature.siteId IN (%s)", idList.substring(0,10))); 
-                System.err.println(String.format("===>debugQuery (post): %s", debugQuery));
+                hqlQuery = hqlQuery.replaceFirst(String.format(patternTemplateString, m.group(1), m.group(2)), siteIdClause);              
             }
             if(!match)    {
                 hqlQuery = hqlQuery.replaceAll(patternString, "1=1");
             }
-        }
-        
+        }        
         return hqlQuery;
     }
     
@@ -314,20 +320,36 @@ public class FREDQuery extends HqlQuery implements NumberSource {
             Matcher m = pattern.matcher(hqlQuery); 
             boolean match = false;
             
+            int count = 0;
+            List<Integer> nzms260siteIds = new ArrayList<>();
+            List<Integer> qmapsiteIds = new ArrayList<>();
             while(m.find())    {   //TODO concatenate multiple spatial queries
                 match = true;
+                count++;
                 System.err.println("Attribute: " + m.group(1));
                 System.err.println("Value: " + m.group(2));
-//                System.out.println("Attribute: " + m.group(1) + ", " + "Value: " + m.group(2));
-                siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
-//                System.err.println(String.format("# of sites: %d \n%s", siteIds.size(), siteIds));
-//                System.out.println("Size of SiteIDS = " + siteIds.size());
+                if (m.group(1).equals("NZMG_SHEET"))
+                {
+                    nzms260siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
+                }else if(m.group(1).equals("QMAP_SHEET")){
+                    qmapsiteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
+                }
+                if(count >1){
+                    siteIds.clear();
+                    Set<Integer> qmapSets = new HashSet<>(qmapsiteIds);
+                    for(Integer id : nzms260siteIds){
+                        if(qmapSets.contains(id)){
+                            siteIds.add(id);
+                        }
+                    }
+                }else{
+                    siteIds.addAll(SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) )));
+                }
             }
             if(!match)    {
                 hqlQuery = hqlQuery.replaceAll(patternString, "1=1");
             }
-        }
-        
+        }        
         return siteIds;
     }
 

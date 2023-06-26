@@ -179,6 +179,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 features = (List<Feature>) session.getAttribute("FRED.features");
                 queryString = (String) session.getAttribute("FRED.queryString");
             } else if ("Adv".equals(type)) {
+                long startTime =  System.currentTimeMillis();
                 if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_WEBSITE_ACCESS))) {
                     // TODO: what access should they have? I can't find it.
                     return;
@@ -186,26 +187,14 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 FREDQuery query = FREDUtil.getFREDQuery(state);
                 queryString = query.getQueryAsString();
  
-                List<Integer> siteIdList = query.getSimpleQuery("Adv", "");
-                
-                List<Integer[]> batches = batchedQueryItems(siteIdList);
-                int sampleSize = 0;
-                for(int i = 0; i < batches.size(); i++){
-                    List<Integer> batch = Arrays.asList(batches.get(i));
-                    String batchIdList = batch
-                            .stream()
-                            .map(String::valueOf)
-                            .collect(Collectors.joining(","));
-
-                    String hq = String.format("SELECT DISTINCT s.sampleId FROM Sample AS s WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND s.feature.siteId IN (%s)", batchIdList);
-                    samples = sampleUtil.getLightweightSamples(hq);
-                        if(samples.size() > 0 || samples != null){
-                            validSamples.addAll(samples);
-                            sampleSize = sampleSize + validSamples.size();
-                        }       
-                }
-                features = featureUtil.getFeaturesBySampleSubquery(validSamples);
+                String hq = query.getHQLQuery("Adv", "");
+                samples = sampleUtil.getLightweightSamples(hq);;
+                features = featureUtil.getFeaturesBySampleSubquery(hq);
+                //auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
+                log.log(Level.INFO, "Adv elapsed time = " + ((new Date()).getTime() - startTime));
+                log.log(Level.INFO, "Hibernate Query " + hq);
             } else {
+                long startTime =  System.currentTimeMillis();
                 queryString = queryStringParam;
                 //Account for large number of SAMPLE_IDs provided by polygon filter
                 String idString = request.getParameter("idList");
@@ -358,6 +347,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                         }
                     }                 
                     features = featureUtil.getFeaturesBySampleSubquery(validSamples); 
+                    log.log(Level.INFO, "Simple elapsed time = " + ((new Date()).getTime() - startTime));
                 }
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
             }
