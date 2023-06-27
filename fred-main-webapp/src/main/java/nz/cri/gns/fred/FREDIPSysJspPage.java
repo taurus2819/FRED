@@ -63,6 +63,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
         et.addStyleSheet("fred.css");
         et.addScript("showhide.js");
         et.setGoogleAnalyticsCode("UA-3641432-1");
+        et.setGoogleAnalytics4Code("G-D2LR9012DK");
         et.setImageBase("images/fred.gif");
         et.setNavListHeading("Quick search:");
         et.setNewTemplateImage("images/fred_banner.jpg");
