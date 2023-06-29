@@ -68,13 +68,12 @@
 		var palListFlag = false;
 		with (form) {
 			if (Map.value.length > 0) {
-				whereSQL = whereSQL + "SITE_API.NZMG_SHEET = '" + Map.value.toUpperCase() + "' AND ";
-				siteApiString = siteApiString + "SITE_API.NZMG_SHEET = '" + Map.value.toUpperCase() + "' AND ";
+                                whereSQL = whereSQL + "s.feature.frNumber.mapSheet = '" + Map.value.toUpperCase() + "' AND ";
 				queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
 			}
 			if (QMap.value != "-") {
 				whereSQL = whereSQL + "SITE_API.QMAP_SHEET = '" + QMap.value + "' AND ";
-                                siteApiString = siteApiString + "SITE_API.QMAP_SHEET = '" + QMap.value + "' AND ";
+                                siteApiString = siteApiString + "SITE_API.QMAP_SHEET = '" + QMap.value + "'";
 				queryString = queryString + "QMAP Sheet LIKE '" + QMap.value + "' AND ";
 			}
 			if (FieldNum.value.length > 0) {

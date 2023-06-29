@@ -308,8 +308,10 @@ public class ResultList_jsp extends FREDHibernateServlet {
                                 .collect(Collectors.joining(","));
                         
                         StringBuilder queryToGetSamplesFromSiteids = new StringBuilder();
-                        queryToGetSamplesFromSiteids.append("SELECT DISTINCT s.sampleId FROM Sample AS s WHERE s.audit.status = 'approved' AND s.feature.audit.status = 'approved' ");
-                        queryToGetSamplesFromSiteids.append(" AND s.feature.siteId IN (%s)");
+                        if(sampHqlStr.toString().contains(siteApiString)){
+                            String queryStr = sampHqlStr.toString().replace(siteApiString, " s.feature.siteId IN (%s)");
+                            queryToGetSamplesFromSiteids.append(queryStr);
+                        }
                         
                         String hq = String.format(queryToGetSamplesFromSiteids.toString(), batchIdList);
 
