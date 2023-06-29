@@ -60,11 +60,13 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
             // start by checking the three fields that are allowed for anyone.
             param(request, "Map").ifPresent(map -> {
                 queryStrings.add("NZMG Sheet = " + map);
-                constraints.add(String.format("SITE_API.NZMG_SHEET = '%s'", map.toUpperCase()));
+                constraints.add(String.format("s.feature.frNumber.mapSheet = '%s'", map.toUpperCase()));
             });
             param(request, "QMap").ifPresent(qmap -> {
                 queryStrings.add(String.format("QMAP Sheet LIKE '%s'", qmap));
-                constraints.add(String.format("SITE_API.QMAP_SHEET = '%s'", qmap));
+                String siteQuery = String.format("SITE_API.QMAP_SHEET = '%s'", qmap);
+                constraints.add(siteQuery);
+                request.setAttribute("SiteApiString", siteQuery);
             });
             param(request, "FieldNum").ifPresent(fieldNum -> {
                 constraints.add("UPPER(s.feature.featureName) LIKE '%" + fieldNum.toUpperCase() + "%'");
