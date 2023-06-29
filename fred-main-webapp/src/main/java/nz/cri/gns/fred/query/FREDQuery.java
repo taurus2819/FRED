@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import nz.cri.gns.core.NameableAndIdentifiable;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.KeyValueObject;
@@ -98,6 +97,14 @@ public class FREDQuery extends HqlQuery implements NumberSource {
             log.log(Level.SEVERE, "Failed to load FRED writers", e);
         }
         addFields();
+    }
+
+    /**
+     * For test use only
+     */
+    FREDQuery(Function<String, List<Integer>> sitesBySpatialFilter, int maxQueryListSize) {
+        this.sitesBySpatialFilter = sitesBySpatialFilter;
+        this.maxQueryListSize = maxQueryListSize;
     }
 
     protected void addFields() {
@@ -252,105 +259,89 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         return null;
     }
 
-    public String getHQLQuery(String type, String query) throws InvalidOperatorException, InvalidValueException {
-        String hqlQuery;      
-                
-        hqlQuery = super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", null, null, null);        
-        
-        if("Adv".equals(type)){
-            hqlQuery = super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
-        }else{
-            hqlQuery = query;
+    public static class RewrittenQuery {
+        public final String query;
+        public final Optional<Set<Integer>> allowedSites;
+
+        public RewrittenQuery(String query, Optional<Set<Integer>> allowedSites) {
+            this.query = query;
+            this.allowedSites = allowedSites;
         }
-        String debugQuery = hqlQuery;
-        
-        //fetch SITE ID list from API here and embed into HQL query
-        if (hqlQuery.contains("SITE_API")) {
-            String patternString = "SITE_API.([A-Z0-9_]+) = '([A-Za-z0-9\\s]+)'";
-            String patternTemplateString = "SITE_API.%s = '%s'";
-            Pattern pattern = Pattern.compile(patternString);
-            Matcher m = pattern.matcher(hqlQuery); 
-            boolean match = false;
-            while(m.find())    {   //TODO concatenate multiple spatial queries
-                match = true;
-                List<Integer> siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
-                // there is an Oracle limit on how many items can be in an IN clause.
-                // so we need to split these up into many IN clauses that are or'ed
-                // together - this code kindly provided by Glenn Walbran
-                List<String> siteIdLists = new ArrayList<>();
-                for (int i = 0; i < siteIds.size(); i = i + maxQueryListSize) {
-                    List<Integer> sublist = siteIds.subList(i, Math.min(i + maxQueryListSize, siteIds.size())); 
-                    String idList = sublist.stream()
-                            .map(String::valueOf)
-                            .collect(Collectors.joining(","));
-                    siteIdLists.add(idList);
-                }
-                String siteIdClause = siteIdLists.stream()
-                        .map(s -> String.format("s.feature.siteId IN (%s)", s))
-                        .collect(Collectors.joining(" or ", "(", ")"));
-                
-                hqlQuery = hqlQuery.replaceFirst(String.format(patternTemplateString, m.group(1), m.group(2)), siteIdClause);              
-            }
-            if(!match)    {
-                hqlQuery = hqlQuery.replaceAll(patternString, "1=1");
-            }
-        }        
-        return hqlQuery;
     }
-    
-    public List<Integer> getSimpleQuery(String type, String query) throws InvalidOperatorException, InvalidValueException {
-        //return super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
-        String hqlQuery;
-        
-        //debugging
-        hqlQuery = super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", null, null, null);        
-        
-        if("Adv".equals(type)){
-            hqlQuery = super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
-        }else{
-            hqlQuery = query;
-        }
-        
+
+    public String rewriteSiteApiQuery(String hqlQuery) throws InvalidOperatorException, InvalidValueException {
+        return rewriteSiteApiQuery(hqlQuery, false).query;
+    }
+
+    /**
+     * Rewrites a HQL query that contains SITE_API constraints.
+     *
+     * This method will replace SITE_API constraints and call the SITE_API to harvest the allowed
+     * sites (for that constraint).
+     *
+     * If andConstraints is true the SITE_API constraints are rewritten to `1=1` and the sites
+     * for that constraint are AND'ed with any from previous constraints. In this case the caller
+     * will have to alter the returned query and call it for the sites in the allowedSites set.
+     *
+     * Otherwise the SITE_API constraints are rewritten to be `s.feature.siteId IN (allowedSites)`.
+     * If the SITE_API returns more than 1000 sites then the rewritten query will be
+     * `(s.feature.siteId IN (1st 1000) OR s.feature.siteId IN (2nd 1000)...)`
+     */
+    public RewrittenQuery rewriteSiteApiQuery(String hqlQuery, boolean andConstraints) throws InvalidOperatorException, InvalidValueException {
+        Optional<Set<Integer>> allowedSiteIds = Optional.empty();
         //fetch SITE ID list from API here and embed into HQL query
-        List<Integer> siteIds = new ArrayList<>();
         if (hqlQuery.contains("SITE_API")) {
             String patternString = "SITE_API.([A-Z0-9_]+) = '([A-Za-z0-9\\s]+)'";
             String patternTemplateString = "SITE_API.%s = '%s'";
             Pattern pattern = Pattern.compile(patternString);
             Matcher m = pattern.matcher(hqlQuery); 
             boolean match = false;
-            
-            int count = 0;
-            List<Integer> nzms260siteIds = new ArrayList<>();
-            List<Integer> qmapsiteIds = new ArrayList<>();
             while(m.find())    {   //TODO concatenate multiple spatial queries
                 match = true;
-                count++;
-                System.err.println("Attribute: " + m.group(1));
-                System.err.println("Value: " + m.group(2));
-                if (m.group(1).equals("NZMG_SHEET"))
-                {
-                    nzms260siteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
-                }else if(m.group(1).equals("QMAP_SHEET")){
-                    qmapsiteIds = SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) ));
-                }
-                if(count >1){
-                    siteIds.clear();
-                    Set<Integer> qmapSets = new HashSet<>(qmapsiteIds);
-                    for(Integer id : nzms260siteIds){
-                        if(qmapSets.contains(id)){
-                            siteIds.add(id);
-                        }
+                List<Integer> siteIds = sitesBySpatialFilter.apply(String.format("%s=%s", m.group(1), m.group(2) ));
+                if (andConstraints) {
+                    Set<Integer> newSites = new HashSet<>(siteIds);
+                    if (allowedSiteIds.isEmpty()) {
+                        allowedSiteIds = Optional.of(newSites);
+                    } else {
+                        allowedSiteIds = allowedSiteIds.map(existing -> andSiteLists(existing, newSites));
                     }
-                }else{
-                    siteIds.addAll(SiteModelUtil.requestSitesBySpatialFilter(String.format("%s=%s", m.group(1), m.group(2) )));
+                    hqlQuery = hqlQuery.replaceFirst(String.format(patternTemplateString, m.group(1), m.group(2)), "1=1");
+                } else {
+                    // there is an Oracle limit on how many items can be in an IN clause.
+                    // so we need to split these up into many IN clauses that are or'ed
+                    // together - this code kindly provided by Glenn Walbran
+                    List<String> siteIdLists = new ArrayList<>();
+                    for (int i = 0; i < siteIds.size(); i = i + maxQueryListSize) {
+                        List<Integer> sublist = siteIds.subList(i, Math.min(i + maxQueryListSize, siteIds.size()));
+                        String idList = sublist.stream()
+                                .map(String::valueOf)
+                                .collect(Collectors.joining(","));
+                        siteIdLists.add(idList);
+                    }
+                    String siteIdClause = siteIdLists.stream()
+                            .map(s -> String.format("s.feature.siteId IN (%s)", s))
+                            .collect(Collectors.joining(" or ", "(", ")"));
+
+                    hqlQuery = hqlQuery.replaceFirst(String.format(patternTemplateString, m.group(1), m.group(2)), siteIdClause);
                 }
             }
             if(!match)    {
                 hqlQuery = hqlQuery.replaceAll(patternString, "1=1");
             }
         }        
-        return siteIds;
+        return new RewrittenQuery(hqlQuery, allowedSiteIds);
+    }
+
+    /**
+     * Combine two sets of allowed siteIds as if they are from two separate query constraints
+     * that are and'ed together.
+     */
+    public Set<Integer> andSiteLists(Set<Integer> sites1, Set<Integer> sites2) {
+        return sites1.stream()
+                .distinct()
+                .filter(sites2::contains)
+                .collect(Collectors.toSet());
     }
 
     protected final <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz, Object... parameters) {

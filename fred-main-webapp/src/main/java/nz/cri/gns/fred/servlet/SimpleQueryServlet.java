@@ -64,9 +64,7 @@ public class SimpleQueryServlet extends FREDHibernateServlet {
             });
             param(request, "QMap").ifPresent(qmap -> {
                 queryStrings.add(String.format("QMAP Sheet LIKE '%s'", qmap));
-                String siteQuery = String.format("SITE_API.QMAP_SHEET = '%s'", qmap);
-                constraints.add(siteQuery);
-                request.setAttribute("SiteApiString", siteQuery);
+                constraints.add(String.format("SITE_API.QMAP_SHEET = '%s'", qmap));
             });
             param(request, "FieldNum").ifPresent(fieldNum -> {
                 constraints.add("UPPER(s.feature.featureName) LIKE '%" + fieldNum.toUpperCase() + "%'");

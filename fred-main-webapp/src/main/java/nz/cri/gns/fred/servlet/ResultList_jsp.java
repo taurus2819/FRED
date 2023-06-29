@@ -30,7 +30,10 @@ import nz.cri.gns.jsp.Link;
 import nz.cri.gns.jsp.CustomHTMLLink;
 import java.util.Set;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -56,7 +59,6 @@ public class ResultList_jsp extends FREDHibernateServlet {
         
 
         String whereSQL = (String)request.getAttribute("WhereSQL");
-        String siteApiString = (String)request.getAttribute("SiteApiString");
         String tableName = (String)request.getAttribute("TableName");
         String queryStringParam = (String)request.getAttribute("QueryString");
         String page = request.getParameter("Page");
@@ -168,8 +170,6 @@ public class ResultList_jsp extends FREDHibernateServlet {
             session.setAttribute("dataEntryRedirect", "result_list.jsp?Page=" + pageNum);
 
             List<Sample> samples = null;
-            List<Sample> validSamples = new ArrayList<>();
-            List<Sample> querySamples = new ArrayList<>();
             
             List<Feature> features = null;
             List<Object> resultsList = new Vector<Object>();
@@ -186,8 +186,9 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 FREDQuery query = FREDUtil.getFREDQuery(state);
                 queryString = query.getQueryAsString();
  
-                String hq = query.getHQLQuery("Adv", "");
-                samples = sampleUtil.getLightweightSamples(hq);;
+                String hq = query.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
+                hq = query.rewriteSiteApiQuery(hq);
+                samples = sampleUtil.getLightweightSamples(hq);
                 features = featureUtil.getFeaturesBySampleSubquery(hq);
                 //auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
                 log.log(Level.INFO, "Adv elapsed time = " + ((new Date()).getTime() - startTime));
@@ -195,8 +196,21 @@ public class ResultList_jsp extends FREDHibernateServlet {
             } else {
                 long startTime =  System.currentTimeMillis();
                 queryString = queryStringParam;
-                //Account for large number of SAMPLE_IDs provided by polygon filter
+                //the spatial filter sends the idList of allowed feature ids
                 String idString = request.getParameter("idList");
+                Optional<Set<Integer>> spatialFilterAllowedFeatureIds = Optional.empty();
+                if (idString != null && ! idString.trim().isEmpty()) {
+                    Set<Integer> allowed = new HashSet<>();
+                    spatialFilterAllowedFeatureIds = Optional.of(allowed);
+                    for (String site: idString.trim().split(",")) {
+                        try {
+                            allowed.add(Integer.valueOf(site));
+                        } catch (NumberFormatException e) {
+                            throw new NumberFormatException("Malformed parameter idList. Value: " + idString);
+                        }
+                    }
+
+                }
 
                 StringBuilder sampHqlStr = new StringBuilder();
                 sampHqlStr.append("SELECT DISTINCT s.sampleId FROM ");
@@ -206,72 +220,24 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 sampHqlStr.append(whereSQL);
                 
                 FREDQuery query = FREDUtil.getFREDQuery(state);
-                if(!(sampHqlStr.toString()).contains("SITE_API")){
-                    String hq = query.getHQLQuery("simple", sampHqlStr.toString());
-
-                    //if polygon vertices are set, apply spatial filter
-                    if (idString != null && idString.length() > 0) {
-                        samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
-                    } else {
-                        samples = sampleUtil.getLightweightSamples(hq);
-                    }
-                    features = featureUtil.getFeaturesBySampleSubquery(samples);
-                }else{
-                    List<Integer> siteIdList = query.getSimpleQuery("simple", sampHqlStr.toString());
-
-                    List<Integer[]> batches = batchedQueryItems(siteIdList);
-                    int sampleSize = 0;
-                    for(int i = 0; i < batches.size(); i++){
-                        List<Integer> batch = Arrays.asList(batches.get(i));
-                        String batchIdList = batch
-                                .stream()
-                                .map(String::valueOf)
-                                .collect(Collectors.joining(","));
-                        
-                        StringBuilder queryToGetSamplesFromSiteids = new StringBuilder();
-                        if(sampHqlStr.toString().contains(siteApiString)){
-                            String queryStr = sampHqlStr.toString().replace(siteApiString, " s.feature.siteId IN (%s)");
-                            queryToGetSamplesFromSiteids.append(queryStr);
-                        }
-                        
-                        String hq = String.format(queryToGetSamplesFromSiteids.toString(), batchIdList);
-
-                        //if polygon vertices are set, apply spatial filter
-                        if (idString != null && idString.length() > 0) {
-                            samples = getSpatiallyFilteredSamples(sampleUtil, idString.split(","), hq);
-                            if(samples.size() > 0 || samples != null){
-                                validSamples.addAll(samples);
-                                sampleSize = sampleSize + validSamples.size();
-                            }
-                        } else {    
-                            samples = sampleUtil.getLightweightSamples(hq);   //this gets a list of R27 samples - this is an example
-                            List<Integer> sampleIdList = new ArrayList<>();
-                            if(samples.size() > 0){                                
-                                if(sampHqlStr.toString().contains("JOIN")){   
-                                    sampleIdList.clear();
-                                    sampleIdList = samples.stream()
-                                                   .map(Sample::getSampleId)
-                                                   .collect(Collectors.toList());
-                                    String criteriaSampleList = sampleIdList
-                                                                .stream()
-                                                                .map(String::valueOf)
-                                                                .collect(Collectors.joining(",")); 
-                                    String hqlQuery = sampHqlStr.toString();                   
-                                    hqlQuery = hqlQuery.replace(siteApiString, "");       
-                                    String subQuery = " AND s.sampleId IN  (%s)";
-                                    String criteriaQuery = String.format(subQuery, criteriaSampleList);  
-                                    hqlQuery = hqlQuery + criteriaQuery; 
-                                    validSamples.addAll(sampleUtil.getLightweightSamples(hqlQuery));                                
-//                                    Sample[] samplesAsArray = validSamples.toArray(Sample[]::new);
-                                } else{                               
-                                    validSamples.addAll(samples); //this has only mapsheets if you are searching only the NZMS260 or Qmap sheet
-                                }
-                            }                          
-                        }
-                    }                 
-                    features = featureUtil.getFeaturesBySampleSubquery(validSamples); 
-                    log.log(Level.INFO, "Simple elapsed time = " + ((new Date()).getTime() - startTime));
+                FREDQuery.RewrittenQuery rewritten = query.rewriteSiteApiQuery(sampHqlStr.toString(), true);
+                if (rewritten.allowedSites.isPresent()) {
+                    samples = querySamplesInSites(sampleUtil, rewritten.allowedSites.get(), rewritten.query);
+                } else if (spatialFilterAllowedFeatureIds.isPresent()) {
+                    samples = querySamplesInFeatures(sampleUtil, spatialFilterAllowedFeatureIds.get(), rewritten.query);
+                } else {
+                    samples = sampleUtil.getLightweightSamples(rewritten.query);
                 }
+                features = featureUtil.getFeaturesBySampleSubquery(samples);
+                if (rewritten.allowedSites.isPresent() && spatialFilterAllowedFeatureIds.isPresent()) {
+                    // it is difficult to do both of these contains at the same time in one query. So we split it out
+                    // and simply post filter the resuls to apply the spatial constraint after running the initial query
+                    Set<Integer> allowedFeatureIds = spatialFilterAllowedFeatureIds.get();
+                    features = features.stream()
+                            .filter(f -> allowedFeatureIds.contains(f.getFeatureId()))
+                            .collect(Collectors.toList());
+                }
+                log.log(Level.INFO, "Simple elapsed time = " + ((new Date()).getTime() - startTime));
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
             }
             int numRecords = features.size();
@@ -566,39 +532,46 @@ public class ResultList_jsp extends FREDHibernateServlet {
         return "FRED :: Search Results";
     }
 
-    private List<Sample> getSpatiallyFilteredSamples(SampleUtil sampleUtil, String[] locIdList, String querySQL) throws StorageAccessException {
+    private List<Sample> querySamplesInSites(SampleUtil sampleUtil, Set<Integer> allowedSites, String querySQL) throws StorageAccessException {
+        return querySamplesIn(sampleUtil, allowedSites, querySQL, "siteId");
+    }
+
+    private List<Sample> querySamplesInFeatures(SampleUtil sampleUtil, Set<Integer> allowedSites, String querySQL) throws StorageAccessException {
+        return querySamplesIn(sampleUtil, allowedSites, querySQL, "featureId");
+    }
+
+    /**
+     * Query for samples that match the given querySQL and have a field containing an allowedId.
+     *
+     * This method will perform the given query in batches if allowedIds is more than Oracles limit
+     * of 1000 per `site in (list)` limit.
+     */
+    private List<Sample> querySamplesIn(SampleUtil sampleUtil, Set<Integer> allowedIds, String querySQL, String field) throws StorageAccessException {
+        if (allowedIds.isEmpty()) {
+            // if there are no allowed sites then there can't be any matches. no need to
+            // run a query for this.
+            return Collections.emptyList();
+        }
+        List<Sample> samples = new ArrayList<>();
+
         // Maximum list elements handled by Oracle for an "in" statement
         int MAX_NUM_FEATURES = 1000;
-        String subQuery;
-        int offset = 0;
-        int i = 0;
-        List<Sample> subSamples = null;
-        List<Sample> samples = new ArrayList<Sample>();
+        List<List<Integer>> batches = batchedQueryItems(allowedIds, MAX_NUM_FEATURES);
+        for (List<Integer> batch : batches) {
+            String batchIdList = batch
+                    .stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+            String subQuery = String.format(" and s.feature.%s IN (%s)", field, batchIdList);
 
-        if (locIdList.length > 0) {
-            while (offset * MAX_NUM_FEATURES < locIdList.length) {
-                subQuery = " and s.feature.featureId IN (";
-                for (i = 0; i < MAX_NUM_FEATURES && offset * MAX_NUM_FEATURES + i < locIdList.length; i++) {
-                    subQuery += locIdList[offset * MAX_NUM_FEATURES + i];
-                    subQuery += ",";
-                }
-
-                subQuery = subQuery.substring(0, subQuery.length() - 1);
-                subQuery += ") ";
-                offset++;
-                subSamples = sampleUtil.getLightweightSamples(querySQL + subQuery);
-                samples.addAll(subSamples);
-            }
-        } else {
-            samples = sampleUtil.getLightweightSamples(querySQL);
+            List<Sample> subSamples = sampleUtil.getLightweightSamples(querySQL + subQuery);
+            samples.addAll(subSamples);
         }
         return samples;
     }
 
-    private List<Integer[]> batchedQueryItems(List<Integer> siteIdList) {
-        
-        int batchSize = 100; // Specify the desired batch size
-        List<Integer[]> batches = new ArrayList<>();
+    private List<List<Integer>> batchedQueryItems(Collection<Integer> siteIdList, int batchSize) {
+        List<List<Integer>> batches = new ArrayList<>();
         int currentIndex = 0;
 
         while (currentIndex < siteIdList.size()) {
@@ -608,7 +581,8 @@ public class ResultList_jsp extends FREDHibernateServlet {
             Integer[] batch = new Integer[currentBatchSize];
             System.arraycopy(siteIdList.toArray(), currentIndex, batch, 0, currentBatchSize);
 
-            batches.add(batch);
+            //TODO use sublist
+            batches.add(Arrays.asList(batch));
             currentIndex += currentBatchSize;
         }
         return batches;
