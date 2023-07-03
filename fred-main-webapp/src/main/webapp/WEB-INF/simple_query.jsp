@@ -36,55 +36,19 @@
 	%><script language="JavaScript">
 	function submitForm() {
                         var form = document.getElementsByName("QueryForm")[0];
-                        if (generateSQL(form)) {
+                        if (validateForm(form)) {
                             form.submit();
                         }
 	}
 	
-	function trim(str)
-	{
-		return( (""+str).replace(/^\s*([\s\S]*\S+)\s*$|^\s*$/,'$1') );
-	}
-	
-	function replaceSingleQuote(str1) {
-		while(str1.indexOf("'") != -1) {
-			str1 = str1.replace("'", "&quot");
-		}
-		while(str1.indexOf("&quot") != -1) {
-			str1 = str1.replace("&quot", "''");
-		}
-		return str1;
-	}
-	
-	function generateSQL(form) {
-		var queryString = "";
-		var whereSQL = "s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND ";
-		var tableName = "Sample AS s";
-		var frNum;
-		var aStart = "";
-		var aStop = "";
-		var aQuery = "";
-		var palListFlag = false;
+
+	function validateForm(form) {
 		with (form) {
-			if (Map.value.length > 0) {
-				whereSQL = whereSQL + "SITE_API.NZMG_SHEET = '" + Map.value.toUpperCase() + "' AND ";
-				queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
-			}
-			if (QMap.value != "-") {
-				whereSQL = whereSQL + "SITE_API.QMAP_SHEET = '" + QMap.value + "' AND ";
-				queryString = queryString + "QMAP Sheet LIKE '" + QMap.value + "' AND ";
-			}
-			if (FieldNum.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.feature.featureName) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Field Number = " + FieldNum.value + " AND ";
-			}<%
+			<%
 			
 		if (user != null) {
-			%>if (Coll.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(person.name) LIKE '%" + replaceSingleQuote(Coll.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Collector = " + Coll.value + " AND ";
-				tableName = tableName + " JOIN s.collectors AS person";
-			}
+			%>
+
 			if (YearFrom.value.length > 0) {
 				if (isNaN(YearFrom.value) || YearFrom.value.length != 4) {
 					alert("Year must be numeric and 4 digits");
@@ -95,42 +59,9 @@
 						alert("Year must be numeric and 4 digits");
 						return false;
 					}
-					whereSQL = whereSQL + "s.collectionDate BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearTo.value + "' AND ";
-					queryString = queryString + "Collection Date BETWEEN " + YearFrom.value + " AND " + YearTo.value + " AND ";
-				} else {
-					whereSQL = whereSQL + "s.collectionDate BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearFrom.value + "' AND ";
-					queryString = queryString + "Collection Date = " + YearFrom.value + " AND ";
 				}
 			}
-			if (StratName.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.stratUnit) LIKE '%" + replaceSingleQuote(StratName.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Stratigraphic Name = " + StratName.value + " AND ";
-			}
-			if (StratAtt.checked) {
-				whereSQL = whereSQL + "(s.dip IS NOT NULL OR s.dipDirection IS NOT NULL OR s.strike IS NOT NULL) AND ";
-				queryString = queryString + "Stratal Attitude present AND ";
-			}
-			if (RockNat.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.rockNature) LIKE '%" + replaceSingleQuote(RockNat.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Nature of Rock Unit = " + RockNat.value + " AND ";
-			}
-			if (DepEnv.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.depositionEnv) LIKE '%" + replaceSingleQuote(DepEnv.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Deposition Environment = " + DepEnv.value + " AND ";
-			}
 
-			if (TaxonomicGroup.value != "-") {
-				whereSQL = whereSQL + "pal.taxonomicGroup.name = '" + TaxonomicGroup.value + "' AND ";
-				queryString = queryString + "Taxonomic Group = " + TaxonomicGroup.value + " AND ";
-				palListFlag = true;
-			}
-			if (Taxon.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(pal.taxon.taxonomicName) LIKE '%" + replaceSingleQuote(Taxon.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Taxonomic Name = " + Taxon.value + " AND ";
-				palListFlag = true;
-			}
-
-			
 			//check only stage name or numeric values entered
 			if (StageFrom.value != "-" && AgeFrom.value.length > 0) {
 				alert("Please select only a stage name or a numeric age");
@@ -138,21 +69,7 @@
 				return false;
 			}
 
-			if (StageFrom.value != "-") {
-				if (StageTo.value != "-") {
-					if (ageStart[StageTo.value] > ageStart[StageFrom.value] || ageStop[StageFrom.value] < ageStop[StageTo.value]) {
-					  alert ("Stage Names are the wrong way around"); StageFrom.select();
-					  return false;
-					}
-					aStart = ageStart[StageFrom.value];
-					aStop = ageStop[StageTo.value];
-					aQuery = StageFrom.options[StageFrom.options.selectedIndex].text + " to " + StageTo.options[StageTo.options.selectedIndex].text;
-				} else {
-					aStart = ageStart[StageFrom.value];
-					aStop = ageStop[StageFrom.value];
-					aQuery = StageFrom.options[StageFrom.options.selectedIndex].text;
-				}
-			} else if (StageTo.value != "-") {
+			if (StageFrom.value === "-" && StageTo.value !== "-") {
 				alert ("From stage not selected");
 				StageFrom.focus();
 				return false;
@@ -164,43 +81,15 @@
 					  AgeFrom.select();
 					  return false;
 					}
-					if (parseFloat(AgeFrom.value, 10) < parseFloat(AgeTo.value, 10)) {
-					  alert ("Numeric ages wrong way around");
-					  AgeFrom.select();
-					  return false;
-					}
-					aStart = AgeFrom.value;
-					aStop = AgeTo.value;
-					aQuery = AgeFrom.value + " to " + AgeTo.value;
-				} else {
-					aStart = AgeFrom.value;
-					aStop = AgeFrom.value;
-					aQuery = AgeFrom.value;
 				}
 			} else if (AgeTo.value.length > 0) {
 				alert ("From Age not entered");
 				AgeFrom.select();
 				return false;
-			}
-			if (aStart != "") {
-				whereSQL = whereSQL + "(sampleStageView.baseAge > " + aStop + " AND sampleStageView.topAge < " + aStart + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology') AND ";
-				tableName = tableName + " JOIN s.sampleStageViews AS sampleStageView";
-				queryString = queryString + "Age= " + aQuery + " AND ";
-			}
-              
-			if (palListFlag) {
-				whereSQL = whereSQL + "record.audit.status = 'approved' AND ";
-				tableName = tableName + " JOIN s.records AS record JOIN record.paleontology.listEntries AS pal";
 			}<%
 		}
-			%>if (whereSQL.length > 0)
-			whereSQL = whereSQL.substring(0, whereSQL.length - 5);
-			WhereSQL.value = whereSQL;
-			if (queryString.length > 0)	{
-				queryString = queryString.substring(0, queryString.length - 5);
-			}
-			QueryString.value = queryString;
-			TableName.value = tableName;
+
+			%>
 		}
 		return true;
 	}
@@ -209,22 +98,8 @@
         window.open('map_popup_frame.jsp','popuppage','width=960,toolbar=1,resizable=1,scrollbars=yes,height=700,top=100,left=100');
     }
 	
-	</script><%
-
-	if (user != null) {
-		//build array of stage ages
-		int maxAgeId = new StageUtil(factory).getMaxAgeId();
-		%><script language="JavaScript">
-		var ageStart = new Array(<%=(maxAgeId + 1)%>);
-		var ageStop = new Array(<%=(maxAgeId + 1)%>);<%
-		for (Age age : new StageUtil(factory).getAges()) {
-			%>ageStart[<%=age.getAgeId()%>] = <%=age.getBaseAge()%>;
-			ageStop[<%=age.getAgeId()%>] = <%=age.getTopAge()%>;<%
-		}
-		%></script><%
-	}
-	
-	%><form name="QueryForm" action="result_list.jsp" method="post" >
+	</script>
+        <form name="QueryForm" action="simple_query.jsp" method="post" >
 	<p><table border="0" cellpadding="3" cellspacing="2" width="600">
             <div><input type="hidden" id="token" name="token" /></div>
 	<tr class="lightColour"><td class="heading">NZMS260 Sheet&nbsp;&nbsp;</td><td><input type="text" name="Map" size="10" />&nbsp;&nbsp;</td><td><i>Enter a <a href="http://www.linz.govt.nz/topography/topo-maps/nz-med-scale-maps/index.aspx" target="_blank">NZ 1:50,000 map</a> sheet</i></td></tr>
@@ -253,7 +128,7 @@
 		<option value="Murihiku">Murihiku</option>
 		<option value="Dunedin">Dunedin</option>
 	</select>
-	&nbsp;&nbsp;</td><td><i>Select a <a href="http://www.gns.cri.nz/research/qmap/aboutqmap.html" target="_blank">QMap</a> sheet</i></td></tr>
+	&nbsp;&nbsp;</td><td><i>Select a <a href="https://www.gns.cri.nz/data-and-resources/digital-qmap-geological-maps-at-1250000/" target="_blank">QMap</a> sheet</i></td></tr>
 	<tr class="lightColour"><td class="heading">Field Number/Drillhole Name&nbsp;&nbsp;</td><td><input type="text" name="FieldNum" size="30" />&nbsp;&nbsp;<td><i>Enter part of a field number or drillhole name</i></td></tr><%
 	
 	if (user != null) {
@@ -313,9 +188,6 @@
 		%><tr class="lightColour"><td colspan="3">More query fields are available to logged in users</td></tr><%
 	}
 	%></table></p>
-	<input type="hidden" name="WhereSQL" value="" />
-	<input type="hidden" name="QueryString" value="" />
-	<input type="hidden" name="TableName" value="" />
 	<input type="hidden" id="idList" name="idList" value="" />
 	<input type="hidden" id="polygon" name="polygon" value="" />
         <p><input type="button" value="Submit Query" onclick="submitForm()" /></p>

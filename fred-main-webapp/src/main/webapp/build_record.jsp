@@ -10,7 +10,6 @@
 	}
 %><%
 	ExtranetTemplate et = getExtranetTemplate(request.getSession());
-	et.setDisplayLoadingMessage(true);
 	
 	drawTop(out, et, request, response, true);
 
@@ -34,7 +33,7 @@
 
 	PageState state = new PageState(request, response, getServletContext());
 	FREDRecordQuery query = FREDUtil.getFREDRecordQuery(state);
-	%><p><%
+
 	startDETable(pageContext);
 	%><table style="margin-left:20px; width:550px;" border="0">
 	<tr><td class="deHeading">Query Builder</td></tr>
@@ -49,7 +48,8 @@
 	<tr><td><input name="button" type="button" value="Add Line" onClick="doTransfer(this.form);" /></td></tr>
 	</table><%
 	endDETable(pageContext);
-	%></p>
+	%>
+        <iframe name="querydisp" id="querydisp" src="adv_query_record.jsp"/>
 	<script><!--
 		function onsub() {
 			return false;

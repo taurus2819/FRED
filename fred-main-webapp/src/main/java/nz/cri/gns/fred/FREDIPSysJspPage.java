@@ -90,7 +90,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
                     new IconnedLink("http://data.gns.cri.nz/npc/index.jsp", "images/home.gif", "NPC Database"), 
                     ControllableLink.disableable(new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry"), disableWhenNotLoggedIn),
                     new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query"), 
-                    ControllableLink.disableable(new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query"), disableWhenNotLoggedIn),
+                    ControllableLink.disableable(new IconnedLink("adv_query_builder.jsp", "images/search.gif", "Advanced Query"), disableWhenNotLoggedIn),
                     new IconnedLink("map_frame.jsp", "images/map.gif", "Interactive Map"), 
                     new IconnedLink("quick_start.jsp", "images/book.gif", "Quick Start"),
                     new IconnedLink("contacts.jsp", "images/register.gif", "Contacts"),
