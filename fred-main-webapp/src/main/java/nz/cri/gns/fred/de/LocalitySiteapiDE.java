@@ -48,6 +48,7 @@ import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.SiteModelUtil;
 import nz.cri.gns.fred.website.ContentProvider;
+import nz.cri.gns.fred.website.WebsiteConstants;
 import nz.cri.gns.html.Attributes;
 import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
@@ -528,12 +529,13 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         if(site == null ){
             try {
                 smi = createNewSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
-                System.out.println("EPSG, Format, Easting, Northing =  " + smi.getEpsg() + ", Format = " + smi.getFormat() + ", easting = " + smi.getEasting()
+                Logger.getLogger("EPSG, Format, Easting, Northing =  " + smi.getEpsg() + ", Format = " + smi.getFormat() + ", easting = " + smi.getEasting()
                                     + ", northing = " + smi.getNorthing() + ", Latitude = " + smi.getLatitude() + ", Longitude = " + smi.getLongitude());
                 ObjectMapper objMapper = new ObjectMapper();
                 JSONObject validationJson = null;                
                 try {
                     validationJson = new JSONObject(SiteModelUtil.validateSite(smi));
+                    System.out.println("Validation = " + validationJson.toString());
                 } catch (ParseException ex) {
                     Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -541,9 +543,11 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 if(validationJson.getString("message").length() > 0){
                     request.setAttribute("errorMessage", validationJson.getString("message"));
 //                    request.getSession()..getRequestDispatcher("general_operations_error.jsp");
+                    error.add(new String[]{"Data Input", validationJson.getString("message")});
                     try {
-                        throw new ServletException(validationJson.getString("message"));
-                    } catch (ServletException ex) {
+                        throw new DataInputException("Outcrop Locality", validationJson.getString("message"));
+                    } catch (DataInputException ex) {
+                        System.out.println(ex.getMessage());
                         Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }else{

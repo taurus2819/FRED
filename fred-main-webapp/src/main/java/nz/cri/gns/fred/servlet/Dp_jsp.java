@@ -134,7 +134,14 @@ public class Dp_jsp extends FREDHibernateServlet {
                     out.write("</td></tr>");
 
                 }
-            } else {
+            } else if(request.getAttribute("errorMessage").toString().length()>0 ){
+                out.write("<tr><td class=\"heading\">Data Input&nbsp;&nbsp;</td><td>");
+                out.write("</td></tr>\n");
+                out.write("\t\t\t\t<tr><td class=\"heading\">Error</td><td>");
+                out.print(request.getAttribute("errorMessage").toString());
+                out.write("</td></tr>");
+            }
+            else {
                 out.write("<tr><td class=\"heading\">Problem Field&nbsp;&nbsp;</td><td>");
                 out.write("</td></tr>\n");
                 out.write("\t\t\t\t<tr><td class=\"heading\">Error</td><td>");
