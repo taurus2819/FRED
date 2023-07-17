@@ -310,6 +310,8 @@ public class SiteModelUtil extends ModelUtil {
     /**
      * Validates if the lat/long coordinates are valid 
      *
+     * @param smi
+     * @return 
      * @throws IOException
      * 
      * return a SiteModel
@@ -375,15 +377,10 @@ public class SiteModelUtil extends ModelUtil {
         try {            
             JsonNode node = objectMapper.readTree(inputSiteUsr);
             SiteRevampServiceClient.insertSiteUser(node);
-//            if(siteUser != null){
-//                sm = objectMapper.readValue(siteUser, SiteModel.class);
-//            }
-////        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
         } catch (JsonProcessingException e) {
                 System.out.println(e.getClass().getName() + 
                 " : " + e.getOriginalMessage());
         }
-//        return sm;
     }
     
     

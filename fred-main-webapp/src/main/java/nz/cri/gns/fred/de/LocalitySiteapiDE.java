@@ -532,24 +532,26 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 Logger.getLogger("EPSG, Format, Easting, Northing =  " + smi.getEpsg() + ", Format = " + smi.getFormat() + ", easting = " + smi.getEasting()
                                     + ", northing = " + smi.getNorthing() + ", Latitude = " + smi.getLatitude() + ", Longitude = " + smi.getLongitude());
                 ObjectMapper objMapper = new ObjectMapper();
-                JSONObject validationJson = null;                
-                try {
-                    validationJson = new JSONObject(SiteModelUtil.validateSite(smi));
-                    System.out.println("Validation = " + validationJson.toString());
-                } catch (ParseException ex) {
-                    Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                System.out.println("Validation JSON = " + validationJson);
-                if(validationJson.getString("message").length() > 0){
-                    request.setAttribute("errorMessage", validationJson.getString("message"));
-//                    request.getSession()..getRequestDispatcher("general_operations_error.jsp");
-                    error.add(new String[]{"Data Input", validationJson.getString("message")});
+                if(smi.getEpsg() == 4272 || smi.getEpsg() == 4673 || smi.getEpsg() == 4167 || smi.getEpsg() == 4326){
+                    JSONObject validationJson = null;                
                     try {
-                        throw new DataInputException("Outcrop Locality", validationJson.getString("message"));
-                    } catch (DataInputException ex) {
-                        System.out.println(ex.getMessage());
+                        validationJson = new JSONObject(SiteModelUtil.validateSite(smi));
+                        Logger.getLogger(validationJson.toString());
+                    } catch (ParseException ex) {
                         Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    if(validationJson.getString("message").length() > 0){
+                            request.setAttribute("errorMessage", validationJson.getString("message"));
+                            error.add(new String[]{"Data Input", validationJson.getString("message")});
+                            try {
+                                throw new DataInputException("Outcrop Locality", validationJson.getString("message"));
+                            } catch (DataInputException ex) {
+                                System.out.println(ex.getMessage());
+                                Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                    }else{
+                        site = SiteModelUtil.insertSite(smi);
+                    }    
                 }else{
                     site = SiteModelUtil.insertSite(smi);
                 }
