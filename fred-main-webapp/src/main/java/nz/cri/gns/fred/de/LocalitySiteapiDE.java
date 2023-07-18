@@ -546,7 +546,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                             try {
                                 throw new DataInputException("Outcrop Locality", validationJson.getString("message"));
                             } catch (DataInputException ex) {
-                                System.out.println(ex.getMessage());
                                 Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
                             }
                     }else{

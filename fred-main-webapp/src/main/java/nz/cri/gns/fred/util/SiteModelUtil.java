@@ -336,9 +336,9 @@ public class SiteModelUtil extends ModelUtil {
             JsonNode node = objectMapper.readTree(inputSiteModel);
             SiteRevampServiceClient.updateSite(node, siteId);
 //        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
-        } catch (JsonProcessingException e) {
-                System.out.println(e.getClass().getName() + 
-                " : " + e.getOriginalMessage());
+        } catch (JsonProcessingException e) {                
+                Logger.getLogger(e.getClass().getName() + 
+                " : " + e.getOriginalMessage()).log(Level.SEVERE, null, e);
         }
     }
     
@@ -378,8 +378,8 @@ public class SiteModelUtil extends ModelUtil {
             JsonNode node = objectMapper.readTree(inputSiteUsr);
             SiteRevampServiceClient.insertSiteUser(node);
         } catch (JsonProcessingException e) {
-                System.out.println(e.getClass().getName() + 
-                " : " + e.getOriginalMessage());
+                Logger.getLogger(e.getClass().getName() + 
+                " : " + e.getOriginalMessage()).log(Level.SEVERE, null, e);
         }
     }
     
