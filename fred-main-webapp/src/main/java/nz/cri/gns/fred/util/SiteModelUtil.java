@@ -280,7 +280,7 @@ public class SiteModelUtil extends ModelUtil {
         }
         return sm;
     }
-
+    
     /**
      * inserts an appropriate record from the Site API for the given site , inserting if
      * necessary
@@ -306,6 +306,28 @@ public class SiteModelUtil extends ModelUtil {
         }
         return sm;
     }
+
+    /**
+     * Validates if the lat/long coordinates are valid 
+     *
+     * @param smi
+     * @return 
+     * @throws IOException
+     * 
+     * return a SiteModel
+     */
+    public static String validateSite(SiteModelInput smi) throws IOException, ParseException {
+        String validationMessage = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        String inputSiteModel = objectMapper.writeValueAsString(smi);
+        JSONObject jsonObj = new JSONObject(inputSiteModel);
+        String easting = !jsonObj.get("easting").equals(null) ? jsonObj.getString("easting") : jsonObj.getString("longitude");
+        String northing = !jsonObj.get("northing").equals(null) ? jsonObj.getString("northing") : jsonObj.getString("latitude");
+        int epsg = jsonObj.getInt("epsg");
+        String format = jsonObj.getString("format");
+        validationMessage = SiteRevampServiceClient.validateSite(epsg, format, easting, northing);
+        return validationMessage;
+    }
     
     public static void updateSite(Integer siteId, SiteModelInput smi) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -314,9 +336,9 @@ public class SiteModelUtil extends ModelUtil {
             JsonNode node = objectMapper.readTree(inputSiteModel);
             SiteRevampServiceClient.updateSite(node, siteId);
 //        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
-        } catch (JsonProcessingException e) {
-                System.out.println(e.getClass().getName() + 
-                " : " + e.getOriginalMessage());
+        } catch (JsonProcessingException e) {                
+                Logger.getLogger(e.getClass().getName() + 
+                " : " + e.getOriginalMessage()).log(Level.SEVERE, null, e);
         }
     }
     
@@ -355,15 +377,10 @@ public class SiteModelUtil extends ModelUtil {
         try {            
             JsonNode node = objectMapper.readTree(inputSiteUsr);
             SiteRevampServiceClient.insertSiteUser(node);
-//            if(siteUser != null){
-//                sm = objectMapper.readValue(siteUser, SiteModel.class);
-//            }
-////        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
         } catch (JsonProcessingException e) {
-                System.out.println(e.getClass().getName() + 
-                " : " + e.getOriginalMessage());
+                Logger.getLogger(e.getClass().getName() + 
+                " : " + e.getOriginalMessage()).log(Level.SEVERE, null, e);
         }
-//        return sm;
     }
     
     

@@ -10,12 +10,14 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
+import javax.servlet.ServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.FactoryConfigurationError;
@@ -46,6 +48,7 @@ import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.SiteModelUtil;
 import nz.cri.gns.fred.website.ContentProvider;
+import nz.cri.gns.fred.website.WebsiteConstants;
 import nz.cri.gns.html.Attributes;
 import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
@@ -58,6 +61,7 @@ import nz.cri.gns.util.map.WGS84;
 import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
 import org.xml.sax.SAXException;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
+import org.json.JSONObject;
 
 
 public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryForm {
@@ -525,7 +529,31 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         if(site == null ){
             try {
                 smi = createNewSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
-                site = SiteModelUtil.insertSite(smi);
+                Logger.getLogger("EPSG, Format, Easting, Northing =  " + smi.getEpsg() + ", Format = " + smi.getFormat() + ", easting = " + smi.getEasting()
+                                    + ", northing = " + smi.getNorthing() + ", Latitude = " + smi.getLatitude() + ", Longitude = " + smi.getLongitude());
+                ObjectMapper objMapper = new ObjectMapper();
+                if(smi.getEpsg() == 4272 || smi.getEpsg() == 4673 || smi.getEpsg() == 4167 || smi.getEpsg() == 4326){
+                    JSONObject validationJson = null;                
+                    try {
+                        validationJson = new JSONObject(SiteModelUtil.validateSite(smi));
+                        Logger.getLogger(validationJson.toString());
+                    } catch (ParseException ex) {
+                        Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    if(validationJson.getString("message").length() > 0){
+                            request.setAttribute("errorMessage", validationJson.getString("message"));
+                            error.add(new String[]{"Data Input", validationJson.getString("message")});
+                            try {
+                                throw new DataInputException("Outcrop Locality", validationJson.getString("message"));
+                            } catch (DataInputException ex) {
+                                Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                    }else{
+                        site = SiteModelUtil.insertSite(smi);
+                    }    
+                }else{
+                    site = SiteModelUtil.insertSite(smi);
+                }
             } catch (IOException  e) {
                     log.log(Level.SEVERE, null, e);
                 try {
