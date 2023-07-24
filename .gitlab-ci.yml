@@ -59,14 +59,7 @@ release:
     #- mvn $MAVEN_CLI_OPTS -DpreReleaseGoals=sonar:sonar -Dsonar.projectKey=applications_FRED_AYTgDtwRQ_8RozZJZ79X gitflow:release-finish
     - mvn $MAVEN_CLI_OPTS gitflow:release-finish
 
-deploy-dev:
-  tags:
-    - docker
-  stage: deploy
-  script:
-    - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=http://dev-app.gns.cri.nz:8005/manager/text tomcat7:redeploy
-    - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
-  when: manual
+
 
 # Staging environment accessed via https://data-dev.gns.cri.nz/fred
 deploy-staging-dev:
