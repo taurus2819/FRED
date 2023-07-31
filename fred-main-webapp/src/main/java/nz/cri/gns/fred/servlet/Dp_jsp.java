@@ -34,6 +34,7 @@ public class Dp_jsp extends FREDHibernateServlet {
         JspWriterImpl out = new JspWriterImpl(response.getOutputStream());
         HttpSession session = request.getSession();
         FredHelper h = new FredHelper();
+        response.setContentType("text/html;charset=utf-8");
 
         if (null == request.getParameter("SaveType")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter SaveType is missing");
