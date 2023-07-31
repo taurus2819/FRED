@@ -676,7 +676,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
 
         SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
-                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg, "FRED");
+                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg, "FR.FEATURE.SITE_ID");
         return smi;
     }
     
@@ -703,7 +703,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;  
 
         SiteModelInput smi = new SiteModelInput(siteName, methodID, accuracy, directions, height, heightMethodId, heightAccuracy, countryCode, comment, ownerId,
-                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg, "FRED");
+                epsg, gridref, easting, northing, latitude, longitude, format, auditMsg, "Updated:FR.FEATURE.SITE_ID");
         return smi;
     }
 
@@ -716,10 +716,12 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         //if the flow has come then there is always a SiteId associated with a feature. if for some unknown reason a SiteId is not associated
         //then its better to check for null
         //call the site usage api
-        Integer siteId = feature.getSiteId();
-        if(siteId != null){
-            SiteModelUtil.insertSiteUsage(siteId, "FR.FEATURE.SITE_ID");  //using the same format as in SC.SITEUSEAGE table in Oracle DB
-        }
+        //a site record is already created when a fred record is imported or created. So, a siteusage is added at at the same time. A separate api call
+        //to the SiteUsage is not required. Will keep this code if the requirements change at a later stage.
+//        Integer siteId = feature.getSiteId();
+//        if(siteId != null){
+//            SiteModelUtil.insertSiteUsage(siteId, "FR.FEATURE.SITE_ID");  //using the same format as in SC.SITEUSEAGE table in Oracle DB
+//        }
 
         return feature.getFeatureId().intValue();
     }
