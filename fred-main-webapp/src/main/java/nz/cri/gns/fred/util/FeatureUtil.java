@@ -44,6 +44,7 @@ import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.UserFolder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.cri.gns.fred.model.MetaCat;
 
 public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
@@ -80,7 +81,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         newFeature.setFolders(null);
 
         //Copy feature images
-        newFeature.setMetaCats(feature.getMetaCats());
+//        newFeature.setMetaCats(new HashSet<>()); //feature.getMetaCats());
 
         //Clear out relationships pointing _to_ it
         newFeature.setRelationships(null);
@@ -119,7 +120,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public Sample cloneSample(Feature newFeature, Sample sample) throws StorageAccessException, IntrospectionException {
         Sample newSample = fredDAO.createNewSample();
-        sample.setFeature(newFeature);
+        newSample.setFeature(newFeature);
         FREDUtil.beanCopy(sample, newSample,
                 new FREDUtil.ExcludeByType(Set.class,
                         new FREDUtil.ExcludeByName(FREDUtil.toVector("audit", "sampleId", "feature", "frNumber")))
@@ -171,7 +172,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         }
 
         //Copy sample images
-        newSample.setMetaCats(sample.getMetaCats());
+        newSample.setMetaCats(new HashSet<>(sample.getMetaCats()));
         return newSample;
     }
 
@@ -732,8 +733,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
             throw new IllegalArgumentException("Feature is not an outcrop");
         }
-
-        return new Vector<>(feature.getSamples()).get(0);
+        Sample sample;
+        if(!feature.getSamples().isEmpty()){
+            sample =  new Vector<>(feature.getSamples()).get(0);
+        }else {
+            sample = fredDAO.createNewSample();
+        }
+        return sample;
     }
 
     public void approveFeature(Feature feature, String mapSheet, Integer serialNumber, String recollectionNumber, String comments, User user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
