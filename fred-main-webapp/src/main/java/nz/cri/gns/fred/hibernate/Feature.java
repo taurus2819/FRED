@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.Audit;
@@ -296,12 +297,14 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.relationships = relationships;
     }
 
+    @Override
     public Set<MetaCat> getMetaCats() {
         return this.metaCats;
     }
 
+    @Override
     public void setMetaCats(Set<MetaCat> metaCats) {
-        this.metaCats = metaCats;
+        this.metaCats = new HashSet<>(metaCats);
     }
 
     @Override

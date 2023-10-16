@@ -457,10 +457,14 @@ public class FREDUtil {
         BeanInfo fromInfo = Introspector.getBeanInfo(from.getClass());
 
         for (PropertyDescriptor prop : fromInfo.getPropertyDescriptors()) {
-            if (instruction.include(prop)) {
-                try {
-                    prop.getWriteMethod().invoke(to, new Object[]{prop.getReadMethod().invoke(from, (Object[]) null)});
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            //jira AS-829: copy function; you can use prop.getName(), prop.getPropertyType() to get the property descriptions.
+            //one of the prop.getWriteMethod() had a null value
+            if(prop.getWriteMethod() != null){
+                if (instruction.include(prop)) {
+                    try {
+                        prop.getWriteMethod().invoke(to, new Object[]{prop.getReadMethod().invoke(from, (Object[]) null)});
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    }
                 }
             }
         }
