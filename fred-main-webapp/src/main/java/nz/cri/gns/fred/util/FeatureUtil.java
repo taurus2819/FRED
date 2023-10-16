@@ -734,7 +734,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             throw new IllegalArgumentException("Feature is not an outcrop");
         }  
         Sample sample = null;
-        try{        
+        try{        //jira AS-829 : copy function; catching an exception in the backend preventing it getting displayed on the frontend
             if(!feature.getSamples().isEmpty()){
                 sample =  new Vector<>(feature.getSamples()).get(0);
             }else {
