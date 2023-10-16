@@ -732,12 +732,16 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     public Sample getOutcropSample(Feature feature) {
         if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
             throw new IllegalArgumentException("Feature is not an outcrop");
-        }
-        Sample sample;
-        if(!feature.getSamples().isEmpty()){
-            sample =  new Vector<>(feature.getSamples()).get(0);
-        }else {
-            sample = fredDAO.createNewSample();
+        }  
+        Sample sample = null;
+        try{        //jira AS-829 : copy function; catching an exception in the backend preventing it getting displayed on the frontend
+            if(!feature.getSamples().isEmpty()){
+                sample =  new Vector<>(feature.getSamples()).get(0);
+            }else {
+                sample = fredDAO.createNewSample();
+            }
+        }catch(NullPointerException ne){
+            ne.printStackTrace();
         }
         return sample;
     }
