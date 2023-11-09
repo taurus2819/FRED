@@ -15,6 +15,7 @@
     name="nz.cri.gns.fred.hibernate.FrNumber" 
     table="FR_NUMBER"
     schema="FR"
+    batch-size="100"
 >
 
     <id

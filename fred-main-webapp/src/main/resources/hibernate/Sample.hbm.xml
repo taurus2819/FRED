@@ -187,6 +187,7 @@
             lazy="true"
             inverse="false"
             cascade="all"
+            batch-size="100"
         >   
             <key>
                 <column name="SAMPLE_ID" />
@@ -231,6 +232,7 @@
             lazy="true"
             inverse="true"
             cascade="all"
+            batch-size="100"
         >
             <key>
                 <column not-null="true" name="SAMPLE_ID" />
@@ -246,6 +248,7 @@
             table="ORDERED_COLLECTOR_VW"
             schema="FR"
             lazy="true"
+            batch-size="100"
             inverse="false"
             cascade="none"
             order-by="order_col asc"
