@@ -3,6 +3,7 @@ package nz.cri.gns.fred.servlet;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -11,12 +12,14 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sf.hibernate.HibernateException;
+import net.sf.hibernate.Query;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
@@ -157,55 +160,7 @@ public class ExportServlet extends FREDHibernateServlet {
                 c.printRecord(
                     "**************************************************************************************************************");
                 c.println();
-
                 c.flush();
-
-                // now that we've written the file header we'll start the possibly
-                // expensive task of fetching the data. We write the header first so
-                // the user can see that some file is being created straight away.
-                // rather than leave them wondering if anything is going to happen
-                if (request.getParameter("featId") != null) {
-                    Integer featureId;
-                    try {
-                        featureId = Integer.parseInt(request.getParameter("featId"));
-                    } catch (NumberFormatException e) {
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                                "Invalid featId. Not a number");
-                        return;
-                    }
-                    Feature feature = featureUtil.getFeature(featureId);
-                    for (Sample sample : feature.getSamples()) {
-                        samples.add(sample);
-                    }
-                } else if (request.getParameter("sampId") != null) {
-                    samples.add(sampleUtil.getSample(Integer.parseInt(
-                            request.getParameter("sampId"))));
-                } else if (session.getAttribute("FRED.samples") != null && ((List<Sample>) session.getAttribute(
-                        "FRED.samples")).size() > 0) {
-                    List<Sample> samps = (List<Sample>) session.getAttribute(
-                            "FRED.samples");
-                    //use samples (if comes from simple and adv searches)
-                    for (Sample samp : samps) {
-                        FredHibernate.get().currentSession().refresh(samp);
-                        samples.add(samp);
-                    }
-                } else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute(
-                        "FRED.features")).size() > 0) {
-                    List<Feature> features = (List<Feature>) session.getAttribute(
-                            "FRED.features");
-                    //use features for localityServlet
-                    for (Feature feature : features) {
-                        FredHibernate.get().currentSession().refresh(feature);
-                        Set<Sample> featSamples = feature.getSamples();
-                        if (featSamples != null && featSamples.size() > 0) {
-                            for (Sample sample : featSamples) {
-                                samples.add(sample);
-                            }
-                        }
-                    }
-                }
-
-                log.log(Level.INFO, "START TIME " + new Date());
 
                 if (type == Type.LOCATION) {
                     c.printRecord("********");
@@ -266,49 +221,19 @@ public class ExportServlet extends FREDHibernateServlet {
                     c.println();
                     c.flush();
 
-                    // now that we've written the file header we'll start the possibly
-                    // expensive task of fetching the data. We write the header first so
-                    // the user can see that some file is being created straight away.
-                    // rather than leave them wondering if anything is going to happen
-                    if (request.getParameter("featId") != null) {
-                        Integer featureId;
-                        try {
-                            featureId = Integer.parseInt(request.getParameter("featId"));
-                        } catch (NumberFormatException e) {
-                            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                                    "Invalid featId. Not a number");
-                            return;
-                        }
-                        Feature feature = featureUtil.getFeature(featureId);
-                        for (Sample sample : feature.getSamples()) {
-                            samples.add(sample);
-                        }
-                    } else if (request.getParameter("sampId") != null) {
-                        samples.add(sampleUtil.getSample(Integer.parseInt(
-                                request.getParameter("sampId"))));
-                    } else if (session.getAttribute("FRED.samples") != null && ((List<Sample>) session.getAttribute(
-                            "FRED.samples")).size() > 0) {
-                        List<Sample> samps = (List<Sample>) session.getAttribute(
-                                "FRED.samples");
-                        //use samples (if comes from simple and adv searches)
-                        for (Sample samp : samps) {
-                            FredHibernate.get().currentSession().refresh(samp);
-                            samples.add(samp);
-                        }
-                    } else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute(
-                            "FRED.features")).size() > 0) {
-                        List<Feature> features = (List<Feature>) session.getAttribute(
-                                "FRED.features");
-                        //use features for localityServlet
-                        for (Feature feature : features) {
-                            FredHibernate.get().currentSession().refresh(feature);
-                            Set<Sample> featSamples = feature.getSamples();
-                            if (featSamples != null && featSamples.size() > 0) {
-                                for (Sample sample : featSamples) {
-                                    samples.add(sample);
-                                }
-                            }
-                        }
+                    log.log(Level.INFO, "GETTING SAMPLE DATA " + new Date());
+                    final String from
+                        = "FROM Sample S "
+                        + "LEFT OUTER JOIN FETCH S.feature "
+                        + "LEFT OUTER JOIN FETCH S.audit "
+                        + "LEFT OUTER JOIN FETCH S.records R "
+                        + "LEFT OUTER JOIN FETCH R.audit "
+                        + "LEFT OUTER JOIN FETCH R.adoption "
+                        + "LEFT OUTER JOIN FETCH R.paleontology "
+                        + "LEFT OUTER JOIN FETCH S.relationships ";
+                    samples = getSamples(request, response, from);
+                    if (response.getStatus() == HttpServletResponse.SC_BAD_REQUEST) {
+                        return;
                     }
                     log.log(Level.INFO, "START TIME " + new Date());
 
@@ -537,7 +462,7 @@ public class ExportServlet extends FREDHibernateServlet {
                     c.println();
                 }//end locality flag
 
-                if (type == Type.ADOPTION) {
+                else if (type == Type.ADOPTION) {
                     c.printRecord("********");
                     c.printRecord("Adoption");
                     c.printRecord("********");
@@ -553,7 +478,23 @@ public class ExportServlet extends FREDHibernateServlet {
                         c.print(each);
                     }
                     c.println();
+                    c.flush();
 
+                    log.log(Level.INFO, "GETTING SAMPLE DATA " + new Date());
+                    String from = "FROM Sample S "
+                                + "LEFT OUTER JOIN FETCH S.feature "
+                                + "LEFT OUTER JOIN FETCH S.audit "
+                                + "LEFT OUTER JOIN FETCH S.records R "
+                                + "LEFT OUTER JOIN FETCH R.adoption "
+                                + "LEFT OUTER JOIN FETCH R.audit "
+                                + "LEFT OUTER JOIN FETCH R.paleontology "
+                                + "";
+                    samples = getSamples(request, response, from);
+                    if (response.getStatus() == HttpServletResponse.SC_BAD_REQUEST) {
+                        return;
+                    }
+
+                    log.log(Level.INFO, "START TIME " + new Date());
                     for (Sample sample : samples) {
                         Set<Record> records = sample.getRecords();
                         for (Record r : records) {
@@ -597,7 +538,7 @@ public class ExportServlet extends FREDHibernateServlet {
                     c.println();
                 }
 
-                if (type == Type.PALEONTOLOGY) {
+                else if (type == Type.PALEONTOLOGY) {
                     c.printRecord("********");
                     c.printRecord("Paleontology");
                     c.printRecord("********");
@@ -610,9 +551,26 @@ public class ExportServlet extends FREDHibernateServlet {
                         "Lab Number", "Collection Comments"};
                     c.printRecord((Object[]) paleontologyHeader);
 
-                   for (Sample sample : samples) {
-                       Set<Record> records = sample.getRecords();
-                       for (Record r : records) {
+                    c.flush();
+
+                    log.log(Level.INFO, "GETTING SAMPLE DATA " + new Date());
+                    String from = "FROM Sample S "
+                                + "LEFT OUTER JOIN FETCH S.feature "
+                                + "LEFT OUTER JOIN FETCH S.audit "
+                                + "LEFT OUTER JOIN FETCH S.records R "
+                                + "LEFT OUTER JOIN FETCH R.adoption "
+                                + "LEFT OUTER JOIN FETCH R.audit "
+                                + "LEFT OUTER JOIN FETCH R.paleontology "
+                                + "";
+                    samples = getSamples(request, response, from);
+                    if (response.getStatus() == HttpServletResponse.SC_BAD_REQUEST) {
+                        return;
+                    }
+
+                    log.log(Level.INFO, "START TIME " + new Date());
+                    for (Sample sample : samples) {
+                        Set<Record> records = sample.getRecords();
+                        for (Record r : records) {
                             if (recordUtil.isAllowedReadRecord(user, r)) {
                                 writeLocality(sample, c);
                                 Paleontology paleontology = r.getPaleontology();
@@ -661,13 +619,30 @@ public class ExportServlet extends FREDHibernateServlet {
                     c.println();
                 }
 
-                if (type == Type.PALEONTOLOGY_TAXONOMIC) {
+                else if (type == Type.PALEONTOLOGY_TAXONOMIC) {
                     c.printRecord("********");
                     c.printRecord("Paleontology List");
                     c.printRecord("********");
+                    c.flush();
 
                     List<List<Paleontology>> paleontologyMasterList = new Vector<List<Paleontology>>();
                     List<Paleontology> paleontologies = new Vector<Paleontology>();
+
+                    log.log(Level.INFO, "GETTING SAMPLE DATA " + new Date());
+                    String from = "FROM Sample S "
+                                + "LEFT OUTER JOIN FETCH S.feature "
+                                + "LEFT OUTER JOIN FETCH S.audit "
+                                + "LEFT OUTER JOIN FETCH S.records R "
+                                + "LEFT OUTER JOIN FETCH R.adoption "
+                                + "LEFT OUTER JOIN FETCH R.audit "
+                                + "LEFT OUTER JOIN FETCH R.paleontology "
+                                + "";
+                    samples = getSamples(request, response, from);
+                    if (response.getStatus() == HttpServletResponse.SC_BAD_REQUEST) {
+                        return;
+                    }
+
+                    log.log(Level.INFO, "START TIME " + new Date());
                     int i = 0;
                     for (Sample sample : samples) {
                         for (Record r : sample.getRecords()) {
@@ -810,12 +785,109 @@ public class ExportServlet extends FREDHibernateServlet {
 
                 new AuditUtil(FredHibernate.get().getDAOFactory()).addLogEntry(
                     AuditUtil.DOWNLOAD_LOG_TYPE, user, samples.size());
+                log.log(Level.INFO, "END TIME " + new Date());
 
             }
         } catch (StorageAccessException | SQLException | NamingException | HibernateException e) {
             throw new ServletException(e);
         }
-        log.log(Level.INFO, "END TIME " + new Date());
+    }
+
+    /** Maximum number of samples to request from the database at a time
+        Oracle imposes a limit of 1000 id in an IN clause
+    */
+    private static final int SAMPLE_BATCH_SIZE = 999;
+    /**
+     * Load the sample details from the database
+     *
+     * Note: The error handling needs to be re-thought as it currently
+     *       signals an error by calling HttpServletResponse.sendError()
+     *
+     * @param request The HttpServletRequest
+     * @param response The HttpServletResponse
+     * @param from The from and join portion of the HQL query
+     * @return An ordered set of the samples to process
+     *
+     * @throws IOException
+     * @throws StorageAccessException
+     * @throws HibernateException
+     */
+    private TreeSet<Sample> getSamples(HttpServletRequest request, HttpServletResponse response, String from) throws IOException, StorageAccessException, HibernateException {
+        HttpSession session = request.getSession();
+        DAOFactory factory = FredHibernate.get().getDAOFactory();
+        FeatureUtil featureUtil = new FeatureUtil(factory);
+        SampleUtil sampleUtil = new SampleUtil(factory);
+        TreeSet<Sample> samples = new TreeSet<Sample>();
+
+        if (request.getParameter("featId") != null) {
+            Integer featureId;
+            try {
+                featureId = Integer.parseInt(request.getParameter("featId"));
+            } catch (NumberFormatException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                    "Invalid featId. Not a number");
+                return samples;
+            }
+            Feature feature = featureUtil.getFeature(featureId);
+            for (Sample sample : feature.getSamples()) {
+                samples.add(sample);
+}
+        } else if (request.getParameter("sampId") != null) {
+            samples.add(sampleUtil.getSample(Integer.parseInt(
+                request.getParameter("sampId"))));
+        } else if (session.getAttribute("FRED.samples") != null && ((List<Sample>) session.getAttribute(
+            "FRED.samples")).size() > 0) {
+            List<Sample> samps = (List<Sample>) session.getAttribute(
+                "FRED.samples");
+            //use samples (if comes from simple and adv searches)
+            List<String> ids = new ArrayList(SAMPLE_BATCH_SIZE);
+            for (Sample samp : samps) {
+                ids.add(samp.getSampleId().toString());
+                // Oracle has a limit of 1000 values in an IN clause
+                // So we batch. An in clause is used to reduce the number of
+                // round trips over the network.
+                if (ids.size() == SAMPLE_BATCH_SIZE) {
+                    samples.addAll(getBatch(from, ids));
+                    ids.clear();
+                }
+            }
+            if (!ids.isEmpty()) {
+                samples.addAll(getBatch(from, ids));
+            }
+        } else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute(
+            "FRED.features")).size() > 0) {
+            List<Feature> features = (List<Feature>) session.getAttribute(
+                "FRED.features");
+            //use features for localityServlet
+            for (Feature feature : features) {
+                FredHibernate.get().currentSession().refresh(feature);
+                Set<Sample> featSamples = feature.getSamples();
+                if (featSamples != null && featSamples.size() > 0) {
+                    for (Sample sample : featSamples) {
+                        samples.add(sample);
+                    }
+                }
+            }
+        }
+        return samples;
+    }
+    /**
+     * Retrieve a batch of Samples from the database.
+     * The from clause allows the callers to specify join clauses to eagerly
+     * load any required child objects.
+     * Batching the requests reduces the round trips to the database, and
+     * improves performance.
+     *
+     * @param from The from and join portion of the HQL query
+     * @param ids list of sample ID's
+     * @return the retrieved samples
+     * @throws HibernateException
+     */
+    private List<Sample> getBatch(String from, List<String> ids) throws HibernateException {
+        String idList = ids.stream().collect(Collectors.joining(", "));
+        String qstr = from  + " WHERE S.id IN (" + idList + ")";
+        Query query = FredHibernate.get().currentSession().createQuery(qstr);
+        return query.list();
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
