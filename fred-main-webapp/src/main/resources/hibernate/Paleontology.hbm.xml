@@ -98,6 +98,7 @@
             lazy="true"
             inverse="false"
             cascade="none"
+            batch-size="100"
         >
             <key>
                 <column name="RECORD_ID" />
