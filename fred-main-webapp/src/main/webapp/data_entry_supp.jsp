@@ -93,8 +93,13 @@
 					window.close();
 				}
 			}
-			else if (type == "SentTo")
+			else if (type == "SentTo") {
 				window.opener.document.form1.SentTo.value = window.opener.document.form1.SentTo.value + parseDropDown(Group.value) + "*" + parseDropDown(Person.value) + "*" + parseDropDown(Lab.value) + "*" + Comm.value + "\n";
+                const target = window.opener;
+                const origin = window.location.origin;
+                const message = "SentTo";
+                target.postMessage(message, origin);
+            }
 			else if (type == "PrevSamp") {
 				if (SubFeat.value == "-" && WorkFeat.value == "-")
 					alert("Please select a sample");

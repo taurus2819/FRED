@@ -7,6 +7,7 @@
 {@@noFrNumber:<tr><td class="heading">FR Number</td><td></td><td><input type="text" name="FRNumber" value="" /></td></tr>@}
 {@@hasFrNumber:<tr><td class="heading">FR Number</td><td></td><td class="heading">@}{@frNumber}{@@hasFrNumber:</td></tr>@}
 {@@needYardFrNumber:<tr><td class="heading">Yard FR Number</td><td></td><td><input type="text" name="YardFRNumber" value="@}{@yardFrNumber}{@@needYardFrNumber:" /></td></tr>@}
+{@@hasFeatureId:<script language="JavaScript">window.addEventListener("load", checkOnLoad);</script>@}
 <tr><td width="250" class="heading" colspan="2">{@@isOutcrop:Field Number@}{@@isDrillhole:Drillhole Name@}{@@isVertSect:Section Name@}</td><td width="300"><input type="text" size="30" name="FeatName" value="{@featureName}"></td></tr>
 <tr><td class="heading" style="color: #FF0000">Registration Area</td><td></td><td>{@regCombo}</td></tr>
 <tr><td class="heading">{@@isOutcrop:Recollection of@}{@@isDrillhole:Sidetrack of@}{@@isVertSect:Recollection of@}</td><td></td><td><input type="text" name="Recoll" value="{@Recoll}" /></td></tr>
@@ -37,21 +38,47 @@
 <option value="NZGD2000"{@@isNZGD2000: selected@}>Lat/Long NZGD2000</option>
 <option value="WGS84"{@@isWGS84: selected@}>Lat/Long WGS84</option>
 </select></td></tr>
-<tr id="mapSheetTr"{@@mapSheetInvisible: style="display: none"@}><td></td><td class="smallheading" style="color: #FF0000">Map Sheet</td><td><input type="text" name="MapSheet" value="{@mapSheet}" required/></td></tr>
+<tr id="mapSheetTr"{@@mapSheetInvisible: style="display: none"@}><td></td><td class="smallheading" style="color: #FF0000">Map Sheet</td><td><input type="text" name="MapSheet" id="MapSheetInput" value="{@mapSheet}" /></td></tr>
+<script language="JavaScript"><!--
+    requiredInput(
+        "MapSheetInput", "MapSheetErrorRow", "MapSheetErrorText",
+        "A Map Sheet is required, for the selected Coordinate Type");
+    const el = document.getElementById("mapSheetTr");
+    const inp = document.getElementById("MapSheetInput");
+    if (el.style.display === 'none') {
+        inp.removeAttribute("required");
+    } else {
+        inp.setAttribute("required", '');
+    }
+    inp.setCustomValidity("");
+//--></script>
+<tr id="MapSheetErrorRow" hidden="hidden"><td></td><td></td><td id="MapSheetErrorText" style="color: #FF0000"></td></tr>
 <tr><td></td><td class="smallheading" style="color: #FF0000"><script><!--
 	if (document.getElementById) {
 		document.write('<span id="easting">{@eastingLabel}</span>');
 	} else {
 		document.write('Easting/Longitude');
 	}
-//--></script></td><td><input type="text" name="East" value="{@easting}" /></td></tr>
+//--></script></td><td><input type="text" name="East" id="eastInput" value="{@easting}" required/></td></tr>
+<script language="JavaScript"><!--
+    requiredInput(
+        "eastInput", "eastErrorRow", "eastErrorText",
+        "The Easting/Longitude is required");
+//--></script>
+<tr id="eastErrorRow" hidden="hidden"><td></td><td></td><td id="eastErrorText" style="color: #FF0000"></td></tr>
 <tr><td></td><td class="smallheading" style="color: #FF0000"><script><!--
 	if (document.getElementById) {
 		document.write('<span id="northing">{@northingLabel}</span>');
 	} else {
 		document.write('Northing/Latitude');
 	}
-//--></script></td><td><input type="text" name="North" value="{@northing}" /></td></tr>
+//--></script></td><td><input type="text" name="North" id="northInput" value="{@northing}" required/></td></tr>
+<script language="JavaScript"><!--
+    requiredInput(
+        "northInput", "northErrorRow", "northErrorText",
+        "The Northing/Lattitude is required");
+//--></script>
+<tr id="northErrorRow" hidden="hidden"><td></td><td></td><td id="northErrorText" style="color: #FF0000"></td></tr>
 <script language="JavaScript"><!--
 function updateCoordTypes(box) {
 
@@ -67,6 +94,7 @@ function updateCoordTypes(box) {
 			var trWhat = "table-row";
 			if (navigator.appName.indexOf("Microsoft Internet Explorer") > -1)
 				trWhat = "block";
+            document.getElementById("MapSheetInput").setAttribute("required", '');
 			break;
 		case 12:
 		case 13:
@@ -74,11 +102,12 @@ function updateCoordTypes(box) {
                 case 15:
 			eWhat = "Longitude";
 			nWhat = "Latitude";
+            document.getElementById("MapSheetInput").removeAttribute("required");
 			break;
 	}
 
 	document.getElementById("mapSheetTr").style.display = trWhat;
-        document.getElementById("easting").innerHTML = eWhat;
+    document.getElementById("easting").innerHTML = eWhat;
 	document.getElementById("northing").innerHTML = nWhat;
 }
 var datumMethod = new Array();
@@ -92,7 +121,13 @@ function setAccuracy(datID, form) {
 <tr><td></td><td class="smallheading">Map Year</td><td><input type="text" name="MapYear" value="{@mapYear}"></td></tr>
 <tr><td></td><td class="smallheading">Method</td><td>{@methodCombo}</td></tr>
 <tr><td></td><td class="smallheading">Accuracy</td><td><input type="text" name="Accuracy" value="{@accuracy}">&nbsp;m</td></tr>
-<tr><td></td><td class="smallheading" style="color: #FF0000">Locality<br />Description</td><td><textarea name="Loc" cols="40" rows="5" required>{@localityDesc}</textarea></td></tr>
+<tr><td></td><td class="smallheading" style="color: #FF0000">Locality<br />Description</td><td><textarea id="localityDescInput" name="Loc" cols="40" rows="5" required>{@localityDesc}</textarea></td></tr>
+<script language="JavaScript"><!--
+    requiredInput(
+        "localityDescInput", "localityDescErrorRow", "localityDescErrorText",
+        "A locality description is required");
+//--></script>
+<tr id="localityDescErrorRow" hidden="hidden"><td></td><td></td><td id="localityDescErrorText" style="color: #FF0000"></td></tr>
 <tr><td></td><td class="smallheading">Country</td><td>{@countryCombo}</td></tr>
 <tr><td></td><td class="smallheading">Coordinate<br />Comments</td><td><textarea name="CoordComm" cols="40" rows="5">{@coordComm}</textarea></td></tr>
 <tr><td colspan="2" class="heading">Locality Comments</td><td><textarea name="LocComm" cols="40" rows="5">{@locComm}</textarea></td></tr>
