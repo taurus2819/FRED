@@ -397,6 +397,17 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 //                System.out.println("Get Parameters = " + value);
 //            }
 //        }
+        // Check for the mimimum required location information before
+        // proceeding.
+        String east = request.getParameter("East");
+        String north = request.getParameter("North");
+        if ( east == null || east.isBlank() || north == null || north.isBlank()) {
+            error.add(
+                new String[]{
+                    "Cordinates",
+                    "Location co-ordinates must be provided"});
+            throw new DataInputException(error);
+        }
 
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
