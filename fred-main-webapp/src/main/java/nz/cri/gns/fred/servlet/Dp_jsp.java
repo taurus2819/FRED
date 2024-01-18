@@ -122,7 +122,7 @@ public class Dp_jsp extends FREDHibernateServlet {
             h.include(request, out, "/content/detablestart.html");
 
             out.write("<table style=\"margin-left:20px; width:550px;\" border=\"0\">\n");
-            out.write("\t\t\t<tr><td colspan=\"2\" class=\"deHeading\">Syntax Error: ");
+            out.write("\t\t\t<tr><td colspan=\"2\" class=\"deHeading\">Remaining Data Errors: ");
             out.write("</td></tr>");
             if (null != e.getError()) {
                 for (String[] error : e.getError()) {
@@ -155,6 +155,7 @@ public class Dp_jsp extends FREDHibernateServlet {
             h.include(request, out, "/content/detableend.html");
 
             out.write("</p>");
+            addOkButton(request, out);
 
         } catch (InsufficientPrivelegesException e) {
             h.drawTop(out, et, request, response);
@@ -169,6 +170,7 @@ public class Dp_jsp extends FREDHibernateServlet {
             h.include(request, out, "/content/detableend.html");
 
             out.write("</p>");
+            addOkButton(request, out);
 
         } catch (SQLException | StorageAccessException | IOException e) {
             log.log(Level.SEVERE, null, e);
@@ -187,11 +189,27 @@ public class Dp_jsp extends FREDHibernateServlet {
             h.include(request, out, "/content/detableend.html");
 
             out.write("</p>");
+            addOkButton(request, out);
 
         } finally {
             out.flush();
         }
 
+    }
+
+    private void addOkButton( HttpServletRequest request, JspWriterImpl out) throws IOException {
+        var session = request.getSession();
+        var dest = (String) session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT);
+        if (dest == null) {
+            dest = "folder_list.jsp";
+        } else {
+            dest += "&q=" + Math.random();
+        }
+        out.write("<button onclick=\"window.location.href='");
+        out.write(dest);
+        out.write("';\">");
+        out.write("Ok");
+        out.write("</button>");
     }
 
     @Override
