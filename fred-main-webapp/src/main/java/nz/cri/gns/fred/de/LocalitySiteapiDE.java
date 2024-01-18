@@ -109,13 +109,10 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         ownerId = user.getId();
     }
 
-    private String getLocalityFromRequest(HttpServletRequest request, ArrayList<String[]> error) {
+    private String getLocalityFromRequest(HttpServletRequest request) {
         //Also set the FRED locality - but first reject & and "
         String loc = request.getParameter("Loc");
         loc = sanitizeHttpRequest.stripAllScripts(loc);
-        if (FREDUtil.isEmpty(loc)) {
-            error.add(new String[]{"Locality Description", "Empty locality description"});
-        }
         return loc;
     }
 
@@ -494,7 +491,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         feature.getAudit().setWorkingComments(FeatureUtil.combineWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("Recoll")), sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm"))));
 
         //locality
-        String locality = getLocalityFromRequest(request, error);
+        String locality = getLocalityFromRequest(request);
         // always use FRED user contributed locality and site details
         feature.setLocality(locality);
 
@@ -717,8 +714,14 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
     }
 
     public int submit(int dataOriginId) throws InsufficientPrivelegesException, SQLException, IOException, StorageAccessException, DataInputException {
+
         save(dataOriginId);
 
+        // Ensure that the feature is valid before we submit
+        // Note that validating after the save is deliberate
+        // as an unsubmitted record can contain invalid data and we want
+        // always record the current state, even if invalid
+        preSubmitValidation();
         //change status and set Masterfile
         featureUtil.submitFeature(feature, workingFolder, user);
         
@@ -733,6 +736,22 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 //        }
 
         return feature.getFeatureId().intValue();
+    }
+
+    /**
+     * Validate the feature record to ensure that it can be submitted,
+     * until a feature is submitted it can contain invalid data.
+     *
+     * @throws DataInputException if the feature
+     */
+    private void preSubmitValidation() throws DataInputException {
+        ArrayList<String[]> error = new ArrayList<>();
+        if (FREDUtil.isEmpty(feature.getLocality())) {
+            error.add(new String[]{"Locality Description", "Empty locality description"});
+        }
+        if (!error.isEmpty()) {
+            throw new DataInputException(error);
+        }
     }
 
     /*
