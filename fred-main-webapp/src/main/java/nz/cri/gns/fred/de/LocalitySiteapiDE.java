@@ -226,8 +226,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             if (feature.getFeatureId() != null) {
                 template.addSub("featureId", feature.getFeatureId().toString());
                 template.addSub("hasFeatureId", "yes");
-            } else {
-                template.addSub("hasFeatureId", "no");
             }
             String featureType = feature.getFeatureType();
             template.addSub("featureType", URLEncoder.encode(featureType, "ISO-8859-1"));
