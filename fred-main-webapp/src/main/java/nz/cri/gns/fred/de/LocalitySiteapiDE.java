@@ -356,6 +356,9 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         if (isAllowedSubmit) {
             template.addSub("isAllowedSubmit", "yes");
         }
+        if (workingFolder != null) {
+            template.addSub("folderId", workingFolder.getFolderId().toString());
+        }
         template.loadAll(out);
     }
 
