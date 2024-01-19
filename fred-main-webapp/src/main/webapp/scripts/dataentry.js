@@ -41,9 +41,7 @@ function updateSubmit() {
 
 function checkOnLoad() {
     const required = document.querySelectorAll("[Required]");
-    console.log("Event triggered.");
     for (let i=0; i < required.length; i++) {
         required[i].checkValidity();
-        console.log(required[i]);
     }
 }
