@@ -20,7 +20,8 @@
 <tr><td colspan="3" class="deHeading">Location information</td></tr><tr><td style="text-align: left">
 <tr><td class="heading" width="150">Location</td>
 <td class="smallheading" style="color: #FF0000" width="100">Coord Type</td>
-<td width="300"><select name="CoordType" onchange="updateCoordTypes(this)">
+<td width="300"><select name="CoordType" id="coordTypeInput" onchange="updateCoordTypes(this)" required>
+<option value=""> -- Choose -- </option>
 <option value="NZMG"{@@isNZMG: selected@}>New Zealand Map Grid</option>
 <option value="NZMS260"{@@isNZMS260: selected@}>NZMS260</option>
 <option value="NZTM"{@@isNZTM: selected@}>NZTM</option>
@@ -38,6 +39,12 @@
 <option value="NZGD2000"{@@isNZGD2000: selected@}>Lat/Long NZGD2000</option>
 <option value="WGS84"{@@isWGS84: selected@}>Lat/Long WGS84</option>
 </select></td></tr>
+<script language="JavaScript"><!--
+    requiredInput(
+        "coordTypeInput", "coordTypeErrorRow", "coordType1ErrorText",
+        "The Northing/Lattitude is required");
+//--></script>
+<tr id="coordTypeErrorRow" hidden="hidden"><td></td><td></td><td id="coordTypeErrorText" style="color: #FF0000"></td></tr>
 <tr id="mapSheetTr"{@@mapSheetInvisible: style="display: none"@}><td></td><td class="smallheading" style="color: #FF0000">Map Sheet</td><td><input type="text" name="MapSheet" id="MapSheetInput" value="{@mapSheet}" /></td></tr>
 <script language="JavaScript"><!--
     requiredInput(

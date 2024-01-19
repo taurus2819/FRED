@@ -289,7 +289,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             String northingLabel = "Northing";
 
             if (site == null || coord == null || datum == null) {
-                template.addSub("isNZMG", "yes");
                 template.addSub("mapSheetInvisible", "yes");
             } else {
 
@@ -399,6 +398,13 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 //        }
         // Check for the mimimum required location information before
         // proceeding.
+        String coordType = request.getParameter("CoordType");
+        if (coordType == null || coordType.isBlank()) {
+            error.add(
+                new String[]{
+                    "Cordinate Type",
+                    "A Coordinate Type must be selected"});
+        }
         String east = request.getParameter("East");
         String north = request.getParameter("North");
         if ( east == null || east.isBlank() || north == null || north.isBlank()) {
@@ -406,6 +412,8 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 new String[]{
                     "Cordinates",
                     "Location co-ordinates must be provided"});
+        }
+        if (!error.isEmpty()) {
             throw new DataInputException(error);
         }
 
