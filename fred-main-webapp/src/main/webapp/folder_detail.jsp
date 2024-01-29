@@ -26,6 +26,7 @@
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.logging.Logger"
 %><%@page import="java.util.logging.Level"
+%><%@page import="nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException"%>
 %><%!
     private static final Logger log = Logger.getLogger("folder_detail.jsp");
 
@@ -127,7 +128,11 @@
 					%><script><!--
 					alert("<%=e.getMessage()%>");
 					//--></script><%
-				} catch (Exception e) {
+				} catch (InsufficientPrivelegesException e) {
+					%><script><!--
+					alert("<%=e.getMessage()%>");
+					//--></script><%
+				}catch (Exception e) {
                                                                             log.log(Level.WARNING, null, e);
                                                                             errorMessage = "An Error has occurred: " + e.toString();
 				}

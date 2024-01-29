@@ -240,8 +240,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public void submitFeature(Feature feature, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
-        if (!isAllowedSubmitFeature(user, feature, folder)) {
-            throw new InsufficientPrivelegesException();
+        if (!isAllowedSubmitFeature(user, feature, folder)) {           
+            throw new InsufficientPrivelegesException("Outcrop/Drillhole selected : Please select relevant paleontological/sample");
         }
         if (feature.getFeatureType() == null || feature.getRegistrationArea() == null
                 || feature.getSiteId() == null || (!isBacklogFeature(feature) && feature.getLocality() == null)) {
@@ -659,11 +659,21 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         return hasMasterfileRights(user, feature, UserFolder.FOLDER_EDIT_RIGHT);
     }
 
-    public boolean isAllowedSubmitFeature(User user, Feature feature, UserFolder folder) {
+    public boolean isAllowedSubmitFeature(User user, Feature feature, UserFolder folder){
         String status = feature.getAudit().getStatus();
-        if (status.equals(FREDConstants.WAITING) || status.equals(FREDConstants.APPROVED)) {
-            return false;
-        }
+//        if(!feature.getSamples().isEmpty()){
+//            if (feature.getFeatureType().equals(FREDConstants.DRILLHOLE)) {
+//                for (Sample sample : feature.getSamples()) {
+//                    if(sample.getAudit().getStatus().equals(FREDConstants.WORKING)){
+//                        return true;
+//                    }
+//                }
+//            }
+//        }else{
+            if (status.equals(FREDConstants.WAITING) || status.equals(FREDConstants.APPROVED)) {
+                return false;
+            }
+//        }
         return folder.isAllowedSubmitLocalities();
     }
 
