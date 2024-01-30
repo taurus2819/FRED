@@ -661,19 +661,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public boolean isAllowedSubmitFeature(User user, Feature feature, UserFolder folder){
         String status = feature.getAudit().getStatus();
-//        if(!feature.getSamples().isEmpty()){
-//            if (feature.getFeatureType().equals(FREDConstants.DRILLHOLE)) {
-//                for (Sample sample : feature.getSamples()) {
-//                    if(sample.getAudit().getStatus().equals(FREDConstants.WORKING)){
-//                        return true;
-//                    }
-//                }
-//            }
-//        }else{
             if (status.equals(FREDConstants.WAITING) || status.equals(FREDConstants.APPROVED)) {
                 return false;
             }
-//        }
         return folder.isAllowedSubmitLocalities();
     }
 
