@@ -147,7 +147,13 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.2.22</version>
+            <version>3.2.27</version>
+            <exclusions>
+            <exclusion>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
