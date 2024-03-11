@@ -173,6 +173,7 @@ for (var i=0; i<collArray.length; i++) {
             document.getElementById("SentToErrorRow").setAttribute("hidden", "hidden");
         }
         updateSubmit();
+        updateSave();
     });
     sentTo = document.getElementById("SentToInput");
     value = document.getElementById("NotCollectedInput").value;
@@ -189,6 +190,7 @@ for (var i=0; i<collArray.length; i++) {
             el.dispatchEvent(event);
         }
         updateSubmit();
+        updateSave();
     });
 //--></script>
 <tr>

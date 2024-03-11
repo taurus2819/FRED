@@ -8,6 +8,7 @@
 {@@hasFrNumber:<tr><td class="heading">FR Number</td><td></td><td class="heading">@}{@frNumber}{@@hasFrNumber:</td></tr>@}
 {@@needYardFrNumber:<tr><td class="heading">Yard FR Number</td><td></td><td><input type="text" name="YardFRNumber" value="@}{@yardFrNumber}{@@needYardFrNumber:" /></td></tr>@}
 {@@hasFeatureId:<script language="JavaScript">window.addEventListener("load", checkOnLoad);</script>@}
+<script language="JavaScript">window.addEventListener("load", updateSave);</script>
 <tr><td width="250" class="heading" colspan="2">{@@isOutcrop:Field Number@}{@@isDrillhole:Drillhole Name@}{@@isVertSect:Section Name@}</td><td width="300"><input type="text" size="30" name="FeatName" value="{@featureName}"></td></tr>
 <tr><td class="heading" style="color: #FF0000">Registration Area</td><td></td><td>{@regCombo}</td></tr>
 <tr><td class="heading">{@@isOutcrop:Recollection of@}{@@isDrillhole:Sidetrack of@}{@@isVertSect:Recollection of@}</td><td></td><td><input type="text" name="Recoll" value="{@Recoll}" /></td></tr>
@@ -18,6 +19,9 @@
 {@startDETable}
 <table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
 <tr><td colspan="3" class="deHeading">Location information</td></tr><tr><td style="text-align: left">
+<tr><td colspan="3" id="coordRequiredMessage" style="color: #FF0000" hidden="hidden">
+        Valid Coordinates must be supplied, before the Location details can be saved
+</td></tr><tr><td></td></tr>
 <tr><td class="heading" width="150">Location</td>
 <td class="smallheading" style="color: #FF0000" width="100">Coord Type</td>
 <td width="300"><select name="CoordType" id="coordTypeInput" onchange="updateCoordTypes(this)" required>
@@ -30,10 +34,6 @@
 <option value="NZ Yard NthIsl"{@@isNZ Yard NthIsl: selected@}>NZ Yard Grid (Nth Isl)</option>
 <option value="NZMS1 SthIsl"{@@isNZMS1 SthIsl: selected@}>NZMS1 (Sth Isl)</option>
 <option value="NZMS1 NthIsl"{@@isNZMS1 NthIsl: selected@}>NZMS1 (Nth Isl)</option>
-<option value="Chatham Island Grid"{@@isChatham Island Grid: selected@}>Chatham Island Grid</option>
-<option value="Auckland Island Transverse Mercator"{@@isAuckland Island Transverse Mercator: selected@}>Auckland Island Grid</option>
-<option value="Campbell Island Transverse Mercator"{@@isCampbell Island Transverse Mercator: selected@}>Campbell Island Grid</option>
-<option value="New Caledonia Transverse Mercator"{@@isNew Caledonia Transverse Mercator: selected@}>New Caledonia Grid</option>
 <option value="NZGD49"{@@isNZGD49: selected@}>Lat/Long NZGD49</option>
 <option value="Chatham Island Datum"{@@isChatham Island Datum: selected@}>Lat/Long Chatham Isl</option>
 <option value="NZGD2000"{@@isNZGD2000: selected@}>Lat/Long NZGD2000</option>
@@ -71,6 +71,7 @@
     requiredInput(
         "eastInput", "eastErrorRow", "eastErrorText",
         "The Easting/Longitude is required");
+    validateEasting( "eastInput", "eastErrorRow", "eastErrorText");
 //--></script>
 <tr id="eastErrorRow" hidden="hidden"><td></td><td></td><td id="eastErrorText" style="color: #FF0000"></td></tr>
 <tr><td></td><td class="smallheading" style="color: #FF0000"><script><!--
@@ -84,6 +85,7 @@
     requiredInput(
         "northInput", "northErrorRow", "northErrorText",
         "The Northing/Lattitude is required");
+    validateNorthing( "northInput", "northErrorRow", "northErrorText");
 //--></script>
 <tr id="northErrorRow" hidden="hidden"><td></td><td></td><td id="northErrorText" style="color: #FF0000"></td></tr>
 <script language="JavaScript"><!--
@@ -94,28 +96,42 @@ function updateCoordTypes(box) {
 	var nWhat = "Northing";
 	
 	switch (box.selectedIndex) {
-		case 1:
-		case 3:
+		case 2:
+		case 4:
+		case 5:
 		case 6:
-		case 7:
 			var trWhat = "table-row";
 			if (navigator.appName.indexOf("Microsoft Internet Explorer") > -1)
 				trWhat = "block";
             document.getElementById("MapSheetInput").setAttribute("required", '');
 			break;
-		case 12:
-		case 13:
-		case 14:
-                case 15:
+		case 7:
+		case 8:
+		case 9:
+        case 10:
 			eWhat = "Longitude";
 			nWhat = "Latitude";
             document.getElementById("MapSheetInput").removeAttribute("required");
+            document.getElementById("MapSheetInput").setCustomValidity("");
+            document.getElementById("MapSheetErrorRow").setAttribute("hidden", "hidden");
+			break;
+        default:
+            document.getElementById("MapSheetInput").removeAttribute("required");
+            document.getElementById("MapSheetInput").setCustomValidity("");
+            document.getElementById("MapSheetErrorRow").setAttribute("hidden", "hidden");
 			break;
 	}
 
 	document.getElementById("mapSheetTr").style.display = trWhat;
     document.getElementById("easting").innerHTML = eWhat;
 	document.getElementById("northing").innerHTML = nWhat;
+
+    const event = document.createEvent("Event");
+    event.initEvent("change", true, true);
+
+    document.getElementById("eastInput").dispatchEvent(event);
+    document.getElementById("northInput").dispatchEvent(event);
+    document.getElementById("MapSheetInput").dispatchEvent(event);
 }
 var datumMethod = new Array();
 {@datumMethodArray}
