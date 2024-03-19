@@ -206,8 +206,49 @@ function getCordinateValidationFunction(
         } else {
             el.setCustomValidity("");
             document.getElementById(errorRow).setAttribute("hidden", "hidden");
+            crossValidateCoordinates();
         }
         updateSubmit();
         updateSave();
     };
+}
+
+function crossValidateCoordinates() {
+    const type  = document.getElementById("coordTypeInput").value;
+    if (type === "NZMS260") {
+        const message = "For NZMS260 the Northing and Easting co-ordinates must be the same length";
+        // For NZMS260 the northing and easting are:
+        // EITHER both 4 digits long or both 3 digits long.
+        const ids = ["eastInput", "northInput"];
+        for (let i = 0; i < ids.length; i++) {
+            let id = ids[i];
+            const m = document.getElementById(id).validationMessage;
+            // Only perform the cross validation if both fields are valid
+            if (m && !m.trim() && el.validationMessage !== message) {
+                return;
+            }
+        }
+        const northingEl = document.getElementById("northInput");
+        const northingValue = northingEl.value;
+        const eastingEl = document.getElementById("eastInput");
+        const eastingValue = eastingEl.value;
+        if (eastingValue && eastingValue.trim && northingValue && northingValue.trim() &&
+                eastingValue.length !== northingValue.length) {
+            // set error message for northing
+            northingEl.setCustomValidity(message);
+            document.getElementById("northErrorText").innerHTML = message;
+            document.getElementById("northErrorRow").removeAttribute("hidden");
+            // set error message for easting
+            eastingEl.setCustomValidity(message);
+            document.getElementById("eastErrorText").innerHTML = message;
+            document.getElementById("eastErrorRow").removeAttribute("hidden");
+        } else {
+            northingEl.setCustomValidity("");
+            document.getElementById("northErrorRow").setAttribute("hidden", "hidden");
+            document.getElementById("northErrorText").innerHTML = "";
+            eastingEl.setCustomValidity("");
+            document.getElementById("eastErrorRow").setAttribute("hidden", "hidden");
+            document.getElementById("eastErrorText").innerHTML = "";
+        }
+    }
 }
