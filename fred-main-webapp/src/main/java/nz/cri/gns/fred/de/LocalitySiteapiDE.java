@@ -103,7 +103,9 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
     public LocalitySiteapiDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException, IOException {
         featureUtil = new FeatureUtil(factory);
         initialise(feature, folderID, user, factory, content);
-        site = SiteModelUtil.getSite(feature);
+        if (feature.getSiteId() != null) {
+            site = SiteModelUtil.getSite(feature);
+        }
         coord = SiteModelUtil.getFREDCoordinate(feature);
         datum = SiteModelUtil.getFREDDatum(feature);
         ownerId = user.getId();
