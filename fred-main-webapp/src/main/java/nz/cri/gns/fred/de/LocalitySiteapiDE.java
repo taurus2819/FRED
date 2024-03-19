@@ -63,6 +63,8 @@ import org.xml.sax.SAXException;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
 import org.json.JSONObject;
 
+import org.springframework.web.client.RestClientException;
+
 
 public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryForm {
 
@@ -563,15 +565,35 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                             request.setAttribute("errorMessage", validationJson.getString("message"));
                             error.add(new String[]{"Data Input", validationJson.getString("message")});
                             try {
-                                throw new DataInputException("Outcrop Locality", validationJson.getString("message"));
+                                throw new DataInputException("Locality", validationJson.getString("message"));
                             } catch (DataInputException ex) {
                                 Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
                             }
                     }else{
                         site = SiteModelUtil.insertSite(smi);
+                        if (null == site) {
+                            // Unable to insert the site, this is usually due to invalid co-ordinates being provided
+                            error.add(
+                                new String[]{
+                                    "Locality",
+                                    "Unable to add Locality, check the provided coordinates"});
+                            throw new DataInputException(
+                                "Locality",
+                                "Unable to add Outcrop Locality, check the provided coordinates");
+                        }
                     }    
                 }else{
                     site = SiteModelUtil.insertSite(smi);
+                    if (null == site) {
+                        // Unable to update the site, maybe due to invalid coordinates
+                        error.add(
+                            new String[]{
+                                "Locality",
+                                "Unable to add Locality, check the provided coordinates"});
+                        throw new DataInputException(
+                            "Locality",
+                            "Unable to add Locality, check the provided coordinates");
+                    }
                 }
             } catch (IOException  e) {
                     log.log(Level.SEVERE, null, e);
@@ -605,6 +627,16 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 SiteModelUtil.updateSite(site.getSiteId(),smi);
             } catch (IOException ex) {
                 Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (RestClientException re) {
+                Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, "Rest client error updating site", re);
+                // Unable to update the site, maybe due to invalid coordinates
+                error.add(
+                    new String[]{
+                        "Locality",
+                        "Unable to update Locality, check the provided coordinates"});
+                throw new DataInputException(
+                    "Locality",
+                    "Unable to update Locality, check the provided coordinates");
             }
             feature.setOrigSystemId(this.originSystemId);
             feature.setOrigCoord(this.origCoord); 
