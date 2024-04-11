@@ -45,9 +45,9 @@ public class FredHibernate implements HibernateProvider {
         if (!skipJNDI) {
             props.put("hibernate.connection.datasource", "java:comp/env/jdbc/fr");
         } else {
-            props.put("hibernate.default_schema", "FR");
+            props.put("hibernate.default_schema", "fr");
         }
-        props.put("hibernate.dialect", "net.sf.hibernate.dialect.Oracle9Dialect");
+        props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         props.put("query.substitutions", "true=1, false=0");
 
         try {

@@ -187,10 +187,15 @@
             <artifactId>cglib</artifactId>
             <version>2.2</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-cglib-repack</artifactId>
             <version>2.1_3</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.4.2.Final</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
@@ -237,6 +242,12 @@
             <version>42.5.0</version>
             <type>jar</type>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-cglib-repack</artifactId>
+            <version>2.1_3</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <profiles>
