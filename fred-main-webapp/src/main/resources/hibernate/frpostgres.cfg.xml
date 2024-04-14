@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN" "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <!-- mysql Database Configuration -->
+    <session-factory>
+        <property name="dialect">net.sf.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://appsdb.gns.cri.nz:5433/gns_dev?currentSchema=fr</property>
+        <property name="connection.username">postgres</property>
+        <property name="connection.password">Hs58W0C*&amp;9</property>
+        <property name="show_sql">true</property>
+        <mapping resource="hibernate/FeatureTest1.hbm.xml"/>
+    </session-factory>
+
+    
+<!--    </session-factory>-->
+</hibernate-configuration>
