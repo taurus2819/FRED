@@ -8,6 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.SessionFactory;
+import nz.cri.gns.fred.hibernate.SiteView;
+import nz.cri.gns.fred.site.util.SiteRevampServiceClient;
 //import org.hibernate.SessionFactory;
 import nz.cri.gns.fred.test.hibernatmappings.dao.Dao;
 import nz.cri.gns.fred.util.SiteModelUtil;
@@ -30,7 +32,8 @@ public class FeatureTest {
             
             nz.cri.gns.fred.hibernate.FeatureTest1 feature = Dao.getObject(124648, nz.cri.gns.fred.hibernate.FeatureTest1.class, sessionFactory);
             System.out.println("Feature site id = " + feature.getSiteId());
-            System.out.println("Siteview = " + SiteModelUtil.getSiteView(feature.getSiteId()).toString());
+            String sd = SiteRevampServiceClient.getSiteDetails(feature.getSiteId());
+            System.out.println("Siteview = " + sd);
             
             sessionFactory.close();
         } catch (HibernateException ex) {
