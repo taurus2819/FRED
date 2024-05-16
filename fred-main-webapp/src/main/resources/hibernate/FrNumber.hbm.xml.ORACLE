@@ -13,57 +13,57 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.FrNumber" 
-    table="fr_number"
-    schema="fr"
+    table="FR_NUMBER"
+    schema="FR"
     batch-size="100"
 >
 
     <id
         name="frId"
         type="int"
-        column="fr_id"
+        column="FR_ID"
     >
         <generator class="sequence">
-                <param name="sequence">fr.fr_seq</param>
+                <param name="sequence">FR.FR_SEQ</param>
         </generator>
     </id>
 
     <property
         name="mapSheet"
         type="java.lang.String"
-        column="map_sheet"
+        column="MAP_SHEET"
         not-null="true"
         length="7"
     />
     <property
         name="serialNumber"
         type="int"
-        column="serial_number"
+        column="SERIAL_NUMBER"
         not-null="true"
         length="5"
     />
     <property
         name="recollectionNumber"
         type="java.lang.String"
-        column="recollection_number"
+        column="RECOLLECTION_NUMBER"
         length="2"
     />
     <property
         name="frnumComments"
         type="java.lang.String"
-        column="frnum_comments"
+        column="FRNUM_COMMENTS"
         length="255"
     />
     <property
         name="frNumber"
         type="java.lang.String"
-        column="fr_number"
+        column="FR_NUMBER"
         length="15"
     />
     <property
         name="obsolete"
         type="java.lang.String"
-        column="obsolete"
+        column="OBSOLETE"
         length="1"
     />
 
@@ -77,7 +77,7 @@
 		cascade="none"
     >
         <key>
-            <column name="fr_id" />
+            <column name="FR_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Sample"
@@ -91,7 +91,7 @@
 		cascade="none"
     >
         <key>
-            <column name="yard_fr_id" />
+            <column name="YARD_FR_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Sample"
@@ -105,7 +105,7 @@
 		cascade="none"
     >
         <key>
-            <column name="fr_id" />
+            <column name="FR_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Feature"
@@ -119,7 +119,7 @@
 		cascade="none"
     >
         <key>
-            <column name="yard_fr_id" />
+            <column name="YARD_FR_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Feature"

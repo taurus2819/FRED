@@ -13,31 +13,31 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.Person" 
-    table="person"
-    schema="fr"
+    table="PERSON"
+    schema="FR"
 >
 
     <id
         name="personId"
         type="int"
-        column="person_id"
+        column="PERSON_ID"
     >
         <generator class="sequence">
-                <param name="sequence">fr.person_seq</param>
+                <param name="sequence">FR.PERSON_SEQ</param>
         </generator>
     </id>
 
     <property
         name="name"
         type="java.lang.String"
-        column="name"
+        column="NAME"
         not-null="true"
         length="64"
     />
     <property
         name="stCode"
         type="int"
-        column="st_code"
+        column="ST_CODE"
         length="5"
     />
 
@@ -46,34 +46,34 @@
     <!-- bi-directional many-to-many association to Adoption via Adoptor -->
     <set
         name="adoptions"
-        table="adoptor"
-		schema="fr"
+        table="ADOPTOR"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"
     >
         <key>
-            <column name="person_id" />
+            <column name="PERSON_ID" />
         </key>
         <many-to-many 
-			column="record_id"
+			column="RECORD_ID"
             class="nz.cri.gns.fred.hibernate.Adoption"
         />
     </set>
     <!-- bi-directional many-to-many association to Paleontology via Identifier -->
     <set
         name="identifiedPaleontologies"
-        table="identifier"
-		schema="fr"
+        table="IDENTIFIER"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"
     >
         <key>
-            <column name="person_id" />
+            <column name="PERSON_ID" />
         </key>
         <many-to-many 
-			column="record_id"
+			column="RECORD_ID"
             class="nz.cri.gns.fred.hibernate.Paleontology"
         />
     </set>
@@ -85,7 +85,7 @@
 		cascade="none"
     >
         <key>
-            <column name="person_id" />
+            <column name="PERSON_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Feature"
@@ -100,7 +100,7 @@
 		cascade="none"
     >
         <key>
-            <column name="person_id" />
+            <column name="PERSON_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.SentTo"
@@ -110,14 +110,14 @@
     <!-- bi-directional many-to-many association to Sample via Collector -->
     <set
         name="collectedSamples"
-        table="collector"
-		schema="fr"
+        table="COLLECTOR"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"
     >
         <key>
-            <column name="person_id" />
+            <column name="PERSON_ID" />
         </key>
         <many-to-many 
             class="nz.cri.gns.fred.hibernate.Sample"

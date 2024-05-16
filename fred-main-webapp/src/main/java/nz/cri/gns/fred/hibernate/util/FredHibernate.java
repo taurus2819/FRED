@@ -47,7 +47,7 @@ public class FredHibernate implements HibernateProvider {
         } else {
             props.put("hibernate.default_schema", "fr");
         }
-        props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        props.put("hibernate.dialect", "net.sf.hibernate.dialect.PostgreSQLDialect");
         props.put("query.substitutions", "true=1, false=0");
 
         try {
