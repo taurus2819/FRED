@@ -13,144 +13,144 @@
 
     <class 
         name="nz.cri.gns.fred.hibernate.Sample" 
-        table="SAMPLE"
-        schema="FR"
+        table="sample"
+        schema="fr"
     >
 
         <id
             name="sampleId"
             type="int"
-            column="SAMPLE_ID"
+            column="sample_id"
         >
             <generator class="sequence">
-                <param name="sequence">FR.SAMPLE_SEQ</param>
+                <param name="sequence">fr.sample_seq</param>
             </generator>
         </id>
 
         <property
             name="topDepth"
             type="double"
-            column="TOP_DEPTH"
+            column="top_depth"
             length="7"
         />
         <property
             name="bottomDepth"
             type="double"
-            column="BOTTOM_DEPTH"
+            column="bottom_depth"
             length="7"
         />
         <property
             name="depthUnit"
             type="java.lang.String"
-            column="DEPTH_UNIT"
+            column="depth_unit"
             length="2"
         />
         <property
             name="comments"
             type="java.lang.String"
-            column="COMMENTS"
+            column="comments"
             length="255"
         />
         <property
             name="collectionDate"
             type="java.sql.Date"
-            column="COLLECTION_DATE"
+            column="collection_date"
             length="7"
         />
         <property
             name="dateRounding"
             type="java.lang.String"
-            column="DATE_ROUNDING"
+            column="date_rounding"
             length="5"
         />
         <property
             name="stratUnit"
             type="java.lang.String"
-            column="STRAT_UNIT"
+            column="strat_unit"
             length="255"
         />
         <property
             name="inPlace"
             type="java.lang.String"
-            column="IN_PLACE"
+            column="in_place"
             length="7"
         />
         <property
             name="notCollected"
             type="java.lang.String"
-            column="NOT_COLLECTED"
+            column="not_collected"
             length="128"
         />
         <property
             name="significance"
             type="java.lang.String"
-            column="SIGNIFICANCE"
+            column="significance"
             length="1024"
         />
         <property
             name="columnMap"
             type="java.lang.String"
-            column="COLUMN_MAP"
+            column="column_map"
             length="255"
         />
         <property
             name="dip"
             type="int"
-            column="DIP"
+            column="dip"
             length="2"
         />
         <property
             name="dipDirection"
             type="java.lang.String"
-            column="DIP_DIRECTION"
+            column="dip_direction"
             length="2"
         />
         <property
             name="strike"
             type="int"
-            column="STRIKE"
+            column="strike"
             length="3"
         />
         <property
             name="facing"
             type="java.lang.String"
-            column="FACING"
+            column="facing"
             length="10"
         />
         <property
             name="stratComments"
             type="java.lang.String"
-            column="STRAT_COMMENTS"
+            column="strat_comments"
             length="512"
         />
         <property
             name="comparatorUsed"
             type="java.lang.String"
-            column="COMPARATOR_USED"
+            column="comparator_used"
             length="1"
         />
         <property
             name="wet"
             type="java.lang.String"
-            column="WET"
+            column="wet"
             length="3"
         />
         <property
             name="rockNature"
             type="java.lang.String"
-            column="ROCK_NATURE"
+            column="rock_nature"
             length="512"
         />
         <property
             name="depositionEnv"
             type="java.lang.String"
-            column="DEPOSITION_ENV"
+            column="deposition_env"
             length="128"
         />
         <property
             name="correspondence"
             type="java.lang.String"
-            column="CORRESPONDENCE"
+            column="correspondence"
             length="512"
         />
 
@@ -162,7 +162,7 @@
             class="nz.cri.gns.fred.hibernate.ColourModifier"
             not-null="true"
         >
-            <column name="COLOUR_MODIFIER_ID" />
+            <column name="modifier_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to Hardness -->
         <many-to-one
@@ -170,7 +170,7 @@
             class="nz.cri.gns.fred.hibernate.Hardness"
             not-null="true"
         >
-            <column name="HARDNESS_ID" />
+            <column name="hardness_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to Weathering -->
         <many-to-one
@@ -178,26 +178,26 @@
             class="nz.cri.gns.fred.hibernate.Weathering"
             not-null="true"
         >
-            <column name="WEATHERING_ID" />
+            <column name="weathering_id" />
         </many-to-one>
         <!-- bi-directional one-to-many association to SedimentaryFeature -->
         <set
             name="sedimentaryFeatures"
-            table="SEDIMENTARY_FEATURE"
+            table="sedimentary_feature"
             lazy="true"
             inverse="false"
             cascade="all"
             batch-size="100"
         >   
             <key>
-                <column name="SAMPLE_ID" />
+                <column name="sample_id" />
             </key>
             <composite-element class="nz.cri.gns.fred.hibernate.SedimentaryFeature">
 
                 <property
                     name="abundant"
                     type="java.lang.String"
-                    column="ABUNDANT"
+                    column="abundant"
                     length="1"
                 />
 	
@@ -207,7 +207,7 @@
                     class="nz.cri.gns.fred.hibernate.SedimentaryFeatureType"
                     not-null="true"
                 >
-                    <column name="SED_FEATURE_ID" />
+                    <column name="sed_feature_id" />
                 </many-to-one>   
             </composite-element>
         </set>
@@ -220,7 +220,7 @@
             cascade="all-delete-orphan"
         >
             <key>
-                <column name="SAMPLE_ID" />
+                <column name="sample_id" />
             </key>
             <one-to-many 
                 class="nz.cri.gns.fred.hibernate.Record"

@@ -13,14 +13,14 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.SedimentaryFeatureType" 
-    table="SEDIMENTARY_FEATURE_TYPE"
+    table="sedimentary_feature_type"
     schema="FR"
 >
 
     <id
         name="sedfeatureTypeId"
         type="int"
-        column="SEDFEATURE_TYPE_ID"
+        column="sedfeature_type_id"
     >
         <generator class="assigned" />
     </id>
@@ -28,14 +28,14 @@
     <property
         name="name"
         type="java.lang.String"
-        column="NAME"
+        column="name"
         not-null="true"
         length="32"
     />
     <property
         name="code"
         type="java.lang.String"
-        column="CODE"
+        column="code"
         not-null="true"
         unique="true"
         length="8"

@@ -13,14 +13,14 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.Weathering" 
-    table="WEATHERING"
-    schema="FR"
+    table="weathering"
+    schema="fr"
 >
 
     <id
         name="weatheringId"
         type="int"
-        column="WEATHERING_ID"
+        column="weathering_id"
     >
         <generator class="assigned" />
     </id>
@@ -28,14 +28,14 @@
     <property
         name="name"
         type="java.lang.String"
-        column="NAME"
+        column="name"
         not-null="true"
         length="32"
     />
     <property
         name="code"
         type="java.lang.String"
-        column="CODE"
+        column="code"
         not-null="true"
         unique="true"
         length="8"
