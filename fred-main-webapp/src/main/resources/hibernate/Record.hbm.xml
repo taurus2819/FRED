@@ -13,17 +13,17 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.Record" 
-    table="RECORD"
-    schema="FR"
+    table="record"
+    schema="fr"
 >
 
     <id
         name="recordId"
         type="int"
-        column="RECORD_ID"
+        column="record_id"
     >
         <generator class="sequence">
-                <param name="sequence">FR.RECORD_SEQ</param>
+                <param name="sequence">fr.record_seq</param>
         </generator>
     </id>
 
@@ -50,7 +50,7 @@
         class="nz.cri.gns.fred.hibernate.Sample"
         not-null="true"
     >
-        <column name="SAMPLE_ID" />
+        <column name="sample_id" />
     </many-to-one>
     <!-- bi-directional many-to-one association to AuditTable -->
     <many-to-one
@@ -59,7 +59,7 @@
         not-null="true"
         cascade="all"
     >
-        <column name="AUDIT_ID" />
+        <column name="audit_id" />
     </many-to-one>
     <!-- bi-directional many-to-one association to AuditTable -->
     <many-to-one
@@ -68,7 +68,7 @@
         not-null="true"
         cascade="all"
     >
-        <column name="PAL_LIST_AUDIT_ID" />
+        <column name="pal_list_audit_id" />
     </many-to-one>
 
     <!-- bi-directional many-to-many association to MetaCat -->
@@ -76,15 +76,15 @@
         name="metaCats"
         lazy="true"
 		cascade="none"
-        table="RECORD_META"
+        table="record_meta"
     >
         <key>
-            <column name="RECORD_ID" />
+            <column name="record_id" />
         </key>
         <many-to-many
             class="nz.cri.gns.fred.hibernate.MetaCat"
         >
-            <column name="META_ID" />
+            <column name="meta_id" />
         </many-to-many>
     </set>
 
@@ -96,7 +96,7 @@
 		cascade="none"
     >
         <key>
-            <column not-null="true" name="RECORD_ID" />
+            <column not-null="true" name="record_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.RecordStageView"

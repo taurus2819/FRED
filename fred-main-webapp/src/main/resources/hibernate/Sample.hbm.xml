@@ -235,7 +235,7 @@
             batch-size="100"
         >
             <key>
-                <column not-null="true" name="SAMPLE_ID" />
+                <column not-null="true" name="sample_id" />
             </key>
             <one-to-many 
                 class="nz.cri.gns.fred.hibernate.SentTo"
@@ -245,8 +245,8 @@
         <!-- bi-directional many-to-many association to Person via Collector -->
         <set
             name="collectors"
-            table="ORDERED_COLLECTOR_VW"
-            schema="FR"
+            table="ordered_collector_vw"
+            schema="fr"
             lazy="true"
             batch-size="100"
             inverse="false"
@@ -254,10 +254,10 @@
             order-by="order_col asc"
         >
             <key>
-                <column name="SAMPLE_ID" />
+                <column name="sample_id" />
             </key>
             <many-to-many 
-                column="PERSON_ID"
+                column="person_id"
                 class="nz.cri.gns.fred.hibernate.Person"
             />
         </set>
@@ -269,7 +269,7 @@
             cascade="all"
         >
             <key>
-                <column not-null="true" name="SAMPLE_ID" />
+                <column not-null="true" name="sample_id" />
             </key>
             <one-to-many 
                 class="nz.cri.gns.fred.hibernate.Relationship"
@@ -281,7 +281,7 @@
             class="nz.cri.gns.fred.hibernate.Carbonate"
             not-null="true"
         >
-            <column name="CARBONATE_ID" />
+            <column name="carbonate_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to RockColour -->
         <many-to-one
