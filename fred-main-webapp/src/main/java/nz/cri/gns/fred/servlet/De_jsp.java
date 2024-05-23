@@ -68,6 +68,7 @@ public class De_jsp extends FREDHibernateServlet {
                     et.addScript("scripts/calendar-setup-stripped.js");
                     et.addStyleSheet("skins/aqua/theme.css");
                 }
+                et.addScript("scripts/dataentry.js");
                 List list = dataEntryForm.getNavigation();
                 IconnedLink[] links = (IconnedLink[]) list.toArray(new IconnedLink[list.size() + 1]);
                 links[links.length - 1] = new IconnedLink((String) request.getSession().getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT), "images/cancel.gif", "Quit");
@@ -101,7 +102,7 @@ public class De_jsp extends FREDHibernateServlet {
                     session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID);
                 }
 
-                out.write("<form name=\"form1\" method=\"post\" action=\"dp.jsp\" />\n");
+                out.write("<form name=\"form1\" method=\"post\" action=\"dp.jsp\"> \n");
                 out.write("\t\t\t<input type=\"hidden\" name=\"SaveType\" value=\"\" />\n");
                 out.write("\t\t\t<p><div id=\"showInst\"><table border=\"0\" width=\"550\" style=\"border: none; width: 550px\"><tr><td style=\"text-align: left\"><a href=\"javascript:showHide('inst', 'showInst');\">Instructions...</a></td></tr></table></div><div id=\"inst\" style=\"visibilty: hidden; display: none\">");
 
@@ -164,7 +165,6 @@ public class De_jsp extends FREDHibernateServlet {
 
                 dataEntryForm.makePostFormHTML(new PrintWriter(out));
 
-                out.write("</td></tr></table>");
             }
 
             out.write("<script><!--\n");

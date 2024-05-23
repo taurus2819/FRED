@@ -7,7 +7,16 @@ Calendar.setup(
 		eventName:		"follow",
 		weekNumbers:	false,
 		showsTime:		false,
-		onClose:		function(cal) {cal.hide(); }
+		onClose:		function(cal) {
+            cal.hide();
+            const event = document.createEvent("Event");
+            event.initEvent("change", true, true);
+            es = document.getElementsByName("{@inputField}");
+            for (let i=0; i < es.length; i++) {
+                let el = es[i];
+                el.dispatchEvent(event);
+            }
+        }
 	}
 );
 </script>

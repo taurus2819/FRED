@@ -131,3 +131,28 @@ iframe#querydisp {
     width: 100%;
 }
 
+
+:invalid {
+  border: 2px dashed red;
+}
+
+input#save-button{
+    background: #ccc url('images/save.gif') no-repeat top left;
+    padding-left: 28px;
+    height: 28px;
+    width: 84px;
+}
+
+input#submit-button{
+    background: #ccc url('images/submit.gif') no-repeat top left;
+    padding-left: 28px;
+    height: 28px;
+    width: 84px;
+}
+
+input#cancel-button{
+    background: #ccc url('images/cancel.gif') no-repeat top left;
+    padding-left: 28px;
+    height: 28px;
+    width: 84px;
+}

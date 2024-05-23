@@ -1,7 +1,6 @@
 <table border="0" cellpadding="0" cellspacing="2">
 <tr><td>&nbsp;</td></tr>
-<tr><td><a href="javascript:submitForm('Save');"><img src="images/save.gif" height="20" width="20" border="0" alt="Save"/></a>&nbsp;&nbsp;</td>
-<td><a href="javascript:submitForm('Save');" class="boldlink">Save</a></td>
-</tr>
-{@@isAllowedSubmit:<tr><td><a href="#" onClick="submitForm('Submit');"><img src="images/submit.gif" height="20" width="20" border="0" alt="Submit to Database"/></a>&nbsp;&nbsp;</td><td><a href="#" class="heading" onClick="submitForm('Submit');" class="boldlink">Submit</a></td></tr>@}
+<tr><td><input type="button" onclick="window.location.href='folder_detail.jsp?ID={@folderId}';" id="cancel-button" value="Cancel"/></td></tr>
+<tr><td><input type="button" onclick="submitForm('Save')" id="save-button" value="Save"/></td></tr>
+{@@isAllowedSubmit:<tr><td><input type="button" onclick="submitForm('Submit')" id="submit-button" value="Submit"/></td></tr>@}
 </table>

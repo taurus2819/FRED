@@ -63,6 +63,8 @@ import org.xml.sax.SAXException;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
 import org.json.JSONObject;
 
+import org.springframework.web.client.RestClientException;
+
 
 public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryForm {
 
@@ -103,19 +105,18 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
     public LocalitySiteapiDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException, IOException {
         featureUtil = new FeatureUtil(factory);
         initialise(feature, folderID, user, factory, content);
-        site = SiteModelUtil.getSite(feature);
+        if (feature.getSiteId() != null) {
+            site = SiteModelUtil.getSite(feature);
+        }
         coord = SiteModelUtil.getFREDCoordinate(feature);
         datum = SiteModelUtil.getFREDDatum(feature);
         ownerId = user.getId();
     }
 
-    private String getLocalityFromRequest(HttpServletRequest request, ArrayList<String[]> error) {
+    private String getLocalityFromRequest(HttpServletRequest request) {
         //Also set the FRED locality - but first reject & and "
         String loc = request.getParameter("Loc");
         loc = sanitizeHttpRequest.stripAllScripts(loc);
-        if (FREDUtil.isEmpty(loc)) {
-            error.add(new String[]{"Locality Description", "Empty locality description"});
-        }
         return loc;
     }
 
@@ -226,8 +227,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             if (feature.getFeatureId() != null) {
                 template.addSub("featureId", feature.getFeatureId().toString());
                 template.addSub("hasFeatureId", "yes");
-            } else {
-                template.addSub("hasFeatureId", "no");
             }
             String featureType = feature.getFeatureType();
             template.addSub("featureType", URLEncoder.encode(featureType, "ISO-8859-1"));
@@ -294,7 +293,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
             String northingLabel = "Northing";
 
             if (site == null || coord == null || datum == null) {
-                template.addSub("isNZMG", "yes");
                 template.addSub("mapSheetInvisible", "yes");
             } else {
 
@@ -361,6 +359,9 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         if (isAllowedSubmit) {
             template.addSub("isAllowedSubmit", "yes");
         }
+        if (workingFolder != null) {
+            template.addSub("folderId", workingFolder.getFolderId().toString());
+        }
         template.loadAll(out);
     }
 
@@ -399,6 +400,26 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 //                System.out.println("Get Parameters = " + value);
 //            }
 //        }
+        // Check for the mimimum required location information before
+        // proceeding.
+        String coordType = request.getParameter("CoordType");
+        if (coordType == null || coordType.isBlank()) {
+            error.add(
+                new String[]{
+                    "Cordinate Type",
+                    "A Coordinate Type must be selected"});
+        }
+        String east = request.getParameter("East");
+        String north = request.getParameter("North");
+        if ( east == null || east.isBlank() || north == null || north.isBlank()) {
+            error.add(
+                new String[]{
+                    "Cordinates",
+                    "Location co-ordinates must be provided"});
+        }
+        if (!error.isEmpty()) {
+            throw new DataInputException(error);
+        }
 
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
@@ -485,7 +506,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         feature.getAudit().setWorkingComments(FeatureUtil.combineWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("Recoll")), sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm"))));
 
         //locality
-        String locality = getLocalityFromRequest(request, error);
+        String locality = getLocalityFromRequest(request);
         // always use FRED user contributed locality and site details
         feature.setLocality(locality);
 
@@ -544,15 +565,35 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                             request.setAttribute("errorMessage", validationJson.getString("message"));
                             error.add(new String[]{"Data Input", validationJson.getString("message")});
                             try {
-                                throw new DataInputException("Outcrop Locality", validationJson.getString("message"));
+                                throw new DataInputException("Locality", validationJson.getString("message"));
                             } catch (DataInputException ex) {
                                 Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
                             }
                     }else{
                         site = SiteModelUtil.insertSite(smi);
+                        if (null == site) {
+                            // Unable to insert the site, this is usually due to invalid co-ordinates being provided
+                            error.add(
+                                new String[]{
+                                    "Locality",
+                                    "Unable to add Locality, check the provided coordinates"});
+                            throw new DataInputException(
+                                "Locality",
+                                "Unable to add Outcrop Locality, check the provided coordinates");
+                        }
                     }    
                 }else{
                     site = SiteModelUtil.insertSite(smi);
+                    if (null == site) {
+                        // Unable to update the site, maybe due to invalid coordinates
+                        error.add(
+                            new String[]{
+                                "Locality",
+                                "Unable to add Locality, check the provided coordinates"});
+                        throw new DataInputException(
+                            "Locality",
+                            "Unable to add Locality, check the provided coordinates");
+                    }
                 }
             } catch (IOException  e) {
                     log.log(Level.SEVERE, null, e);
@@ -586,6 +627,16 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
                 SiteModelUtil.updateSite(site.getSiteId(),smi);
             } catch (IOException ex) {
                 Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (RestClientException re) {
+                Logger.getLogger(LocalitySiteapiDE.class.getName()).log(Level.SEVERE, "Rest client error updating site", re);
+                // Unable to update the site, maybe due to invalid coordinates
+                error.add(
+                    new String[]{
+                        "Locality",
+                        "Unable to update Locality, check the provided coordinates"});
+                throw new DataInputException(
+                    "Locality",
+                    "Unable to update Locality, check the provided coordinates");
             }
             feature.setOrigSystemId(this.originSystemId);
             feature.setOrigCoord(this.origCoord); 
@@ -708,8 +759,14 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
     }
 
     public int submit(int dataOriginId) throws InsufficientPrivelegesException, SQLException, IOException, StorageAccessException, DataInputException {
+
         save(dataOriginId);
 
+        // Ensure that the feature is valid before we submit
+        // Note that validating after the save is deliberate
+        // as an unsubmitted record can contain invalid data and we want
+        // always record the current state, even if invalid
+        preSubmitValidation();
         //change status and set Masterfile
         featureUtil.submitFeature(feature, workingFolder, user);
         
@@ -724,6 +781,22 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
 //        }
 
         return feature.getFeatureId().intValue();
+    }
+
+    /**
+     * Validate the feature record to ensure that it can be submitted,
+     * until a feature is submitted it can contain invalid data.
+     *
+     * @throws DataInputException if the feature
+     */
+    private void preSubmitValidation() throws DataInputException {
+        ArrayList<String[]> error = new ArrayList<>();
+        if (FREDUtil.isEmpty(feature.getLocality())) {
+            error.add(new String[]{"Locality Description", "Empty locality description"});
+        }
+        if (!error.isEmpty()) {
+            throw new DataInputException(error);
+        }
     }
 
     /*
