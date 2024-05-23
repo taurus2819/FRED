@@ -231,7 +231,8 @@ public class TaxonomicUtil extends ModelUtil {
             Taxon taxon = taxa.get(0);
             if (author != null && (taxon.getAuthor() == null || taxon.getAuthor().length() == 0)) {
                 //If no author then fill in the gap.
-                taxon.setAuthor(author);
+//                taxon.setAuthor(author);
+                taxon.setAuthor(author.length() > 0 ? author : "");
             }
             return taxon;
         }

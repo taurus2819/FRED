@@ -219,7 +219,7 @@ public class AJAXServlet extends FREDHibernateServlet {
                             taxon = taxaUtil.createTaxon();
                             taxon.setTaxonomicGroup(group);
                             taxon.setTaxonomicName(cleanName);
-                            taxon.setAuthor(author);
+                            taxon.setAuthor(author.length() > 0 ? author : "");
                             taxaUtil.submitProvisional((User) IPSysJspPage.getUser(request.getSession()), taxon);
                             confirmation = true;
                         } else {
