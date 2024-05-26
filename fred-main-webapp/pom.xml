@@ -224,7 +224,7 @@
         <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>munginator</artifactId>
-            <version>0.2.1-SNAPSHOT</version>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
