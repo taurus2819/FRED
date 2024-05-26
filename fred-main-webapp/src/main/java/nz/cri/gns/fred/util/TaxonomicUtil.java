@@ -203,9 +203,10 @@ public class TaxonomicUtil extends ModelUtil {
         if (entry.getTaxon() == null && author != null && author.length() > 0) {
             return false;
         }
-        if (entry.getTaxon() != null && !equalsEmptyEquivNull(entry.getTaxon().getAuthor(), author)) {
-            return false;
-        }
+        //commented out the unnecessary checking of authors, which is not required. jira AS-1009
+//        if (entry.getTaxon() != null && !equalsEmptyEquivNull(entry.getTaxon().getAuthor(), author)) {
+//            return false;
+//        }
         entry.setSpecimenCount(specimenCount);
         entry.setSpecimenCoords(specimenCoords);
         entry.setComments(comments);

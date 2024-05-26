@@ -168,7 +168,7 @@
         }
 
         function addTaxa(group, taxaName, author, comments) {
-        console.log(taxaName)
+        console.log(taxaName+ "-" + author)
             var xmlDoc = sjaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + trim(taxaName) + "&TaxonomicGroup=" + trim(group));
             var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
             if (undefined===taxaNode) {
@@ -285,6 +285,7 @@
             hiddenData.setAttribute("type", "hidden");
             hiddenData.setAttribute("name", "Taxa2");
             hiddenData.setAttribute("value", trim(group) + "*" + trim(taxaName) + "*" + trim(author) + "*" + trim(comments));
+            console.log(hiddenData);
             lastTd.appendChild(hiddenData);
             tr.appendChild(lastTd);
             body.appendChild(tr);
