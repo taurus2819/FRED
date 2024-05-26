@@ -113,7 +113,7 @@ public class PaleontologyRecordDE extends RecordDE {
         pal.setLabNumber(request.getParameter("LabNum"));
         pal.setCollectionComments(request.getParameter("CollComm"));
 
-        //Taxa
+        //Taxa list is added from here
         badTaxaList = new HashSet<>();
         String taxa = request.getParameter("Taxa");
         if (taxa != null) {
