@@ -289,7 +289,7 @@
             class="nz.cri.gns.fred.hibernate.RockColour"
             not-null="true"
         >
-            <column name="SECONDARY_COLOUR_ID" />
+            <column name="secondary_colour_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to RockColour -->
         <many-to-one
@@ -297,7 +297,7 @@
             class="nz.cri.gns.fred.hibernate.RockColour"
             not-null="true"
         >
-            <column name="PRIMARY_COLOUR_ID" />
+            <column name="primary_colour_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to Feature -->
         <many-to-one
@@ -306,7 +306,7 @@
             not-null="true"
             cascade="none"
         >
-            <column name="FEATURE_ID" />
+            <column name="feature_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to AuditTable -->
         <many-to-one
@@ -315,7 +315,7 @@
             not-null="true"
             cascade="all"
         >
-            <column name="AUDIT_ID" />
+            <column name="audit_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to Bedding -->
         <many-to-one
@@ -323,7 +323,7 @@
             class="nz.cri.gns.fred.hibernate.Bedding"
             not-null="true"
         >
-            <column name="PRIMARY_BEDDING_ID" />
+            <column name="primary_bedding_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to Bedding -->
         <many-to-one
@@ -331,7 +331,7 @@
             class="nz.cri.gns.fred.hibernate.Bedding"
             not-null="true"
         >
-            <column name="SECONDARY_BEDDING_ID" />
+            <column name="secondary_bedding_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to FrNumber -->
         <many-to-one
@@ -340,7 +340,7 @@
             cascade="all"
             not-null="true"
         >
-            <column name="FR_ID" />
+            <column name="fr_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to FrNumber -->
         <many-to-one
@@ -349,7 +349,7 @@
             cascade="all"
             not-null="true"
         >
-            <column name="YARD_FR_ID" />
+            <column name="yard_fr_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to DrillType -->
         <many-to-one
@@ -357,7 +357,7 @@
             class="nz.cri.gns.fred.hibernate.DrillType"
             not-null="true"
         >
-            <column name="DRILL_TYPE_ID" />
+            <column name="drill_type_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to GrainSize -->
         <many-to-one
@@ -365,7 +365,7 @@
             class="nz.cri.gns.fred.hibernate.GrainSize"
             not-null="true"
         >
-            <column name="PRIMARY_GRAINSIZE_ID" />
+            <column name="primary_grainsize_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to GrainSize -->
         <many-to-one
@@ -373,7 +373,7 @@
             class="nz.cri.gns.fred.hibernate.GrainSize"
             not-null="true"
         >
-            <column name="SECONDARY_GRAINSIZE_ID" />
+            <column name="secondary_grainsize_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to BedThickness -->
         <many-to-one
@@ -381,7 +381,7 @@
             class="nz.cri.gns.fred.hibernate.BedThickness"
             not-null="true"
         >
-            <column name="BED_THICK_ID" />
+            <column name="bed_thick_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to Stage -->
         <many-to-one
@@ -389,7 +389,7 @@
             class="nz.cri.gns.fred.hibernate.Stage"
             not-null="true"
         >
-            <column name="KNOWN_STAGE_ID" />
+            <column name="known_stage_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to Stage -->
         <many-to-one
@@ -398,7 +398,7 @@
             not-null="true"
             cascade="none"
         >
-            <column name="INFERRED_STAGE_ID" />
+            <column name="inferred_stage_id" />
         </many-to-one>
 
 
@@ -411,7 +411,7 @@
             cascade="none"
         >
             <key>
-                <column not-null="true" name="SAMPLE_ID" />
+                <column not-null="true" name="sample_id" />
             </key>
             <one-to-many 
                 class="nz.cri.gns.fred.hibernate.SampleStageView"
@@ -425,7 +425,7 @@
             cascade="none"
         >
             <key>
-                <column not-null="true" name="SAMPLE_ID" />
+                <column not-null="true" name="sample_id" />
             </key>
             <one-to-many 
                 class="nz.cri.gns.fred.hibernate.SquirrelAgeView"
@@ -441,7 +441,7 @@
             table="SAMPLE_META"
         >
             <key>
-                <column name="SAMPLE_ID" />
+                <column name="sample_id" />
             </key>
             <many-to-many
                 class="nz.cri.gns.fred.hibernate.MetaCat"
