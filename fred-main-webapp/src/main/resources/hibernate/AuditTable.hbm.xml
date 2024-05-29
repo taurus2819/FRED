@@ -13,103 +13,103 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.AuditTable" 
-    table="AUDIT_TABLE"
-    schema="FR"
+    table="audit_table"
+    schema="fr"
 >
 
     <id
         name="auditId"
         type="int"
-        column="AUDIT_ID"
+        column="audit_id"
     >
         <generator class="sequence">
-                <param name="sequence">FR.AUDIT_SEQ</param>
+                <param name="sequence">fr.audit_seq</param>
         </generator>
     </id>
 
     <property
         name="status"
         type="java.lang.String"
-        column="STATUS"
+        column="status"
         not-null="true"
         length="16"
     />
     <property
         name="createdById"
         type="int"
-        column="CREATED_BY_ID"
+        column="created_by_id"
         length="7"
     />
     <property
         name="createdDate"
         type="java.sql.Date"
-        column="CREATED_DATE"
+        column="created_date"
     />
     <property
         name="submittedById"
         type="int"
-        column="SUBMITTED_BY_ID"
+        column="submitted_by_id"
         length="7"
     />
     <property
         name="submittedDate"
         type="java.sql.Date"
-        column="SUBMITTED_DATE"
+        column="submitted_date"
     />
     <property
         name="approvedById"
         type="int"
-        column="APPROVED_BY_ID"
+        column="approved_by_id"
         length="7"
     />
     <property
         name="approvedDate"
         type="java.sql.Date"
-        column="APPROVED_DATE"
+        column="approved_date"
     />
     <property
         name="workingComments"
         type="java.lang.String"
-        column="WORKING_COMMENTS"
+        column="working_comments"
         length="255"
     />
     <property
         name="curatorComments"
         type="java.lang.String"
-        column="CURATOR_COMMENTS"
+        column="curator_comments"
         length="255"
     />
     <property
         name="sendMessage"
         type="java.lang.String"
-        column="SEND_MESSAGE"
+        column="send_message"
         length="6"
     />
     <property
         name="confidentialFlag"
         type="boolean"
-        column="CONFIDENTIAL_FLAG"
+        column="confidential_flag"
     />
     <property
         name="confidPeriod"
         type="double"
-        column="CONFID_PERIOD"
+        column="confid_period"
     />
     <property
         name="confidLapseDate"
         type="java.sql.Date"
-        column="CONFID_LAPSE_DATE"
+        column="confid_lapse_date"
     />
     <property
         name="confidEmailFlag"
         type="boolean"
-        column="CONFID_EMAIL_FLAG"
+        column="confid_email_flag"
     />
 
     <property
         name="confidLapseEmail"
         type="java.lang.String"
-        column="CONFID_LAPSE_EMAIL"
+        column="confid_lapse_email"
         length="32"
     />
     
@@ -121,7 +121,7 @@
         class="nz.cri.gns.fred.hibernate.Folder"
         not-null="true"
     >
-        <column name="WORKING_FOLDER_ID" />
+        <column name="working_folder_id" />
     </many-to-one>
     <!-- bi-directional many-to-one association to DataOrigin -->
     <many-to-one
@@ -129,7 +129,7 @@
         class="nz.cri.gns.fred.hibernate.DataOrigin"
         not-null="true"
     >
-        <column name="DATA_ORIGIN_ID" />
+        <column name="data_origin_id" />
     </many-to-one>
     <!-- bi-directional many-to-one association to UserView -->
     <many-to-one
@@ -139,7 +139,7 @@
         insert="false"
         update="false"
     >
-        <column name="CREATED_BY_ID" />
+        <column name="created_by_id" />
     </many-to-one>
     <!-- bi-directional many-to-one association to UserView -->
     <many-to-one
@@ -149,7 +149,7 @@
         insert="false"
         update="false"
     >
-        <column name="SUBMITTED_BY_ID" />
+        <column name="submitted_by_id" />
     </many-to-one>
     <!-- bi-directional many-to-one association to UserView -->
     <many-to-one
@@ -159,7 +159,7 @@
         insert="false"
         update="false"
     >
-        <column name="APPROVED_BY_ID" />
+        <column name="approved_by_id" />
     </many-to-one>
     <!-- bi-directional one-to-many association to Sample -->
     <set
@@ -169,7 +169,7 @@
 		cascade="none"
     >
         <key>
-            <column name="AUDIT_ID" />
+            <column name="audit_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Sample"
@@ -183,7 +183,7 @@
 		cascade="none"
     >
         <key>
-            <column name="AUDIT_ID" />
+            <column name="audit_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Record"
@@ -197,7 +197,7 @@
 		cascade="none"
     >
         <key>
-            <column name="PAL_LIST_AUDIT_ID" />
+            <column name="pal_list_audit_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Record"
@@ -211,7 +211,7 @@
 		cascade="none"
     >
         <key>
-            <column name="AUDIT_ID" />
+            <column name="audit_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Feature"
@@ -225,7 +225,7 @@
 		cascade="all-delete-orphan"
     >
         <key>
-            <column name="AUDIT_ID" />
+            <column name="audit_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.AuditEdit"
@@ -235,17 +235,17 @@
     <!-- bi-directional many-to-many association to ConfidentialGroup via AuditConfid -->
     <set
         name="confidGroups"
-        table="AUDIT_CONFID"
-		schema="FR"
+        table="audit_confid"
+		schema="fr"
         lazy="true"
         inverse="false"
 		cascade="none"
     >
         <key>
-            <column name="AUDIT_ID" />
+            <column name="audit_id" />
         </key>
         <many-to-many 
-			column="GROUP_ID"
+			column="group_id"
             class="nz.cri.gns.fred.hibernate.ConfidentialGroup"
         />
     </set>

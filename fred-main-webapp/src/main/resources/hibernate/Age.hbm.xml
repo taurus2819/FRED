@@ -7,63 +7,63 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.Age" 
-    table="AGE"
-    schema="FR"
+    table="age"
+    schema="fr"
 >
 
     <id
         name="ageId"
         type="java.lang.Integer"
-        column="AGE_ID"
+        column="age_id"
     >
         <generator class="sequence">
-                <param name="sequence">FR.AGE_SEQ</param>
+                <param name="sequence">fr.age_seq</param>
         </generator>
     </id>
 
 	    <property
     	    name="name"
         	type="java.lang.String"
-        	column="NAME"
+        	column="name"
         	length="64"
 	    />
 	    <property
     	    name="code"
         	type="java.lang.String"
-        	column="CODE"
+        	column="code"
         	length="16"
 	    />
 	    <property
     	    name="period"
         	type="java.lang.String"
-        	column="PERIOD"
+        	column="period"
         	length="16"
 	    />
 	    <property
     	    name="baseAge"
         	type="java.lang.Double"
-        	column="BASE_AGE"
+        	column="base_age"
 	    />
 	    <property
     	    name="topAge"
         	type="java.lang.Double"
-        	column="TOP_AGE"
+        	column="top_age"
 	    />
 	    <property
     	    name="comments"
         	type="java.lang.String"
-        	column="COMMENTS"
+        	column="comments"
         	length="128"
 	    />
 	    <property
     	    name="obsoleteFlag"
         	type="java.lang.Boolean"
-        	column="OBSOLETE_FLAG"
+        	column="obsolete_flag"
 	    />
 	    <property
     	    name="duplicateFlag"
         	type="java.lang.Boolean"
-        	column="DUPLICATE_FLAG"
+        	column="duplicate_flag"
 	    />
 	       		   		   		
     <!-- Associations -->
@@ -76,7 +76,7 @@
 		cascade="none"
     >
         <key>
-            <column name="AGE_LOWER_ID" />
+            <column name="age_lower_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Stage"
@@ -91,7 +91,7 @@
 		cascade="none"
     >
         <key>
-            <column name="AGE_UPPER_ID" />
+            <column name="age_upper_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Stage"

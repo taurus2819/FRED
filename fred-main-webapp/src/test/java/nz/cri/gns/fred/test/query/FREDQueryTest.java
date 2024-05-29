@@ -1,5 +1,5 @@
 
-package nz.cri.gns.fred.query;
+package nz.cri.gns.fred.test.query;
 
 import com.google.common.collect.Sets;
 import java.util.Arrays;
@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import nz.cri.gns.fred.query.FREDQuery;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -27,9 +28,9 @@ public class FREDQueryTest {
         return Collections.emptyList();
     };
 
-    public FREDQueryTest() {
-        subject = new FREDQuery(sitesBySpatialFilter, 2);
-    }
+//    public FREDQueryTest() {
+//        subject = new FREDQuery(sitesBySpatialFilter, 2);
+//    }
 
 
 

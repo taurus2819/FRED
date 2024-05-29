@@ -13,14 +13,14 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.Adoption" 
-    table="ADOPTION"
-    schema="FR"
+    table="adoption"
+    schema="fr"
 >
 
     <id
         name="recordId"
         type="int"
-        column="RECORD_ID"
+        column="record_id"
     >
          <generator class="foreign">
             <param name="property">record</param>
@@ -30,19 +30,19 @@
     <property
         name="adoptionDate"
         type="java.sql.Date"
-        column="ADOPTION_DATE"
+        column="adoption_date"
         length="7"
     />
     <property
         name="dateRounding"
         type="java.lang.String"
-        column="DATE_ROUNDING"
+        column="date_rounding"
         length="5"
     />
     <property
         name="comments"
         type="java.lang.String"
-        column="COMMENTS"
+        column="comments"
         length="255"
     />
 
@@ -59,17 +59,17 @@
     <!-- bi-directional many-to-many association to Person via Adoptor -->
     <set
         name="adoptors"
-        table="ADOPTOR"
-		schema="FR"
+        table="adoptor"
+		schema="fr"
         lazy="true"
         inverse="false"
 		cascade="none"
     >
         <key>
-            <column name="RECORD_ID" />
+            <column name="record_id" />
         </key>
         <many-to-many 
-			column="PERSON_ID"
+			column="person_id"
             class="nz.cri.gns.fred.hibernate.Person"
         />
     </set>
@@ -79,7 +79,7 @@
         class="nz.cri.gns.fred.hibernate.Stage"
         not-null="true"
     >
-        <column name="ADOPTED_STAGE_ID" />
+        <column name="adopted_stage_id" />
     </many-to-one>
 
 </class>

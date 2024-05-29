@@ -13,36 +13,36 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.AuditEdit" 
-    table="AUDIT_EDIT"
-    schema="FR"
+    table="audit_edit"
+    schema="fr"
 >
 
     <id
         name="auditEditId"
         type="int"
-        column="AUDIT_EDIT_ID"
+        column="audit_edit_id"
     >
         <generator class="sequence">
-                <param name="sequence">FR.AUDIT_EDIT_SEQ</param>
+                <param name="sequence">fr.audit_edit_seq</param>
         </generator>
    </id>
 
     <property
         name="editedById"
         type="java.lang.Integer"
-        column="EDITED_BY_ID"
+        column="edited_by_id"
         length="7"
     />
     <property
         name="editedDate"
         type="java.sql.Date"
-        column="EDITED_DATE"
+        column="edited_date"
         length="7"
     />
     <property
         name="comments"
         type="java.lang.String"
-        column="COMMENTS"
+        column="comments"
         length="255"
     />
 
@@ -54,7 +54,7 @@
         class="nz.cri.gns.fred.hibernate.AuditTable"
         not-null="true"
     >
-        <column name="AUDIT_ID" />
+        <column name="audit_id" />
     </many-to-one>
     <!-- bi-directional many-to-one association to UserView -->
     <many-to-one
@@ -64,7 +64,7 @@
         insert="false"
         update="false"
     >
-        <column name="EDITED_BY_ID" />
+        <column name="edited_by_id" />
     </many-to-one>
 
 </class>
