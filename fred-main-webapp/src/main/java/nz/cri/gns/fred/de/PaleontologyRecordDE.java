@@ -113,7 +113,7 @@ public class PaleontologyRecordDE extends RecordDE {
         pal.setLabNumber(request.getParameter("LabNum"));
         pal.setCollectionComments(request.getParameter("CollComm"));
 
-        //Taxa
+        //Taxa list is added from here
         badTaxaList = new HashSet<>();
         String taxa = request.getParameter("Taxa");
         if (taxa != null) {
@@ -210,7 +210,7 @@ public class PaleontologyRecordDE extends RecordDE {
                             //It's a new taxon - create a record...but don't save it yet!
                             entry = new UnsavedListEntry();
                             taxon = new UnsavedTaxon();
-                            taxon.setAuthor(authorStr);
+                            taxon.setAuthor(authorStr != null ? authorStr : "");
                             taxon.setStatus(FREDConstants.PROVISIONAL);
                             taxon.setTaxonomicGroup(group);
                             taxon.setTaxonomicName(cleanName);
