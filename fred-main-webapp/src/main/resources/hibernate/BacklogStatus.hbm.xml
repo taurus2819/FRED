@@ -7,14 +7,14 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.BacklogStatus" 
-    table="BACKLOG_STATUS"
-    schema="FR"
+    table="backlog_status"
+    schema="fr"
 >
 
     <id
         name="objectId"
         type="int"
-        column="OBJECTID"
+        column="objectid"
     >
         <generator class="assigned" />
     </id>
@@ -22,51 +22,51 @@
     <property
         name="mapNumber"
         type="java.lang.String"
-        column="MAP_NO"
+        column="map_no"
         not-null="true"
         length="3"
     />
     <property
         name="mapName"
         type="java.lang.String"
-        column="MAP_NAME"
+        column="map_name"
         not-null="true"
         length="32"
     />
     <property
         name="status"
         type="java.lang.String"
-        column="STATUS"
+        column="status"
         length="50"
     />
     <property
         name="masterfileId"
         type="int"
-        column="MASTERFILE_ID"
+        column="masterfile_id"
         length="4"
     />
     <property
         name="localityCount"
         type="int"
-        column="LOCALITY_COUNT"
+        column="locality_count"
         length="4"
     />
     <property
         name="processingCount"
         type="int"
-        column="PROCESSING_COUNT"
+        column="processing_count"
         length="4"
     />
     <property
         name="completedCount"
         type="int"
-        column="COMPLETED_COUNT"
+        column="completed_count"
         length="4"
     />
         <property
         name="newCount"
         type="int"
-        column="NEW_COUNT"
+        column="new_count"
         length="4"
     />
 

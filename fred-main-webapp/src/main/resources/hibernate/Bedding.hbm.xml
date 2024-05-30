@@ -13,14 +13,14 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.Bedding" 
-    table="BEDDING"
-    schema="FR"
+    table="bedding"
+    schema="fr"
 >
 
     <id
         name="beddingId"
         type="int"
-        column="BEDDING_ID"
+        column="bedding_id"
     >
         <generator class="assigned" />
     </id>
@@ -28,14 +28,14 @@
     <property
         name="name"
         type="java.lang.String"
-        column="NAME"
+        column="name"
         not-null="true"
         length="32"
     />
     <property
         name="code"
         type="java.lang.String"
-        column="CODE"
+        column="code"
         not-null="true"
         unique="true"
         length="8"
@@ -51,7 +51,7 @@
 		cascade="none"
     >
         <key>
-            <column name="PRIMARY_BEDDING_ID" />
+            <column name="primary_bedding_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Sample"
@@ -65,7 +65,7 @@
 		cascade="none"
     >
         <key>
-            <column name="SECONDARY_BEDDING_ID" />
+            <column name="secondary_bedding_id" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Sample"
