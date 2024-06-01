@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.MetaCat" 
     table="META_CAT"
-    schema="METACAT"
+    schema="metacat"
     mutable="false"
 >
 

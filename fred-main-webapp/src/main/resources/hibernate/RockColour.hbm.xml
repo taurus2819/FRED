@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.RockColour" 
     table="ROCK_COLOUR"
-    schema="FR"
+    schema="fr"
 >
 
     <id

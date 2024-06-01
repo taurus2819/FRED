@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.Relationship" 
     table="RELATIONSHIP"
-    schema="FR"
+    schema="fr"
 >
 
     <id
@@ -23,7 +23,7 @@
         column="RELATIONSHIP_ID"
     >
         <generator class="sequence">
-                <param name="sequence">FR.RELATIONSHIP_SEQ</param>
+                <param name="sequence">fr.relationship_seq</param>
         </generator>
     </id>
 

@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.LogTable" 
     table="LOG_TABLE"
-    schema="FR"
+    schema="fr"
 >
 
     <id
@@ -23,7 +23,7 @@
         column="LOG_ID"
     >
         <generator class="sequence">
-                <param name="sequence">FR.LOG_SEQ</param>
+                <param name="sequence">fr.log_seq</param>
         </generator>
     </id>
     

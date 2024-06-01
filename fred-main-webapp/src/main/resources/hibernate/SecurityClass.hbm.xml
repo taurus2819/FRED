@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.SecurityClass" 
     table="SECURITY_CLASS"
-    schema="FR"
+    schema="fr"
 >
 
     <id

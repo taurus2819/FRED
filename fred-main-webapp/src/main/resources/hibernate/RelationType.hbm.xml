@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.RelationType" 
     table="RELATION_TYPE"
-    schema="FR"
+    schema="fr"
 >
 
    <id

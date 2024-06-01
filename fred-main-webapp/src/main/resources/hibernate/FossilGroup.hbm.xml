@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.FossilGroup" 
     table="FOSSIL_GROUP"
-    schema="FR"
+    schema="fr"
 >
 
     <id

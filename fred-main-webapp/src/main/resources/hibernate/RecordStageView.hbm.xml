@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.RecordStageView" 
     table="RECORD_STAGE_VIEW"
-    schema="FR"
+    schema="fr"
     mutable="false"
 >
 

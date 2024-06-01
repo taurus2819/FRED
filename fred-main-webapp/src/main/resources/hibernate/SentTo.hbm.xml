@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.SentTo" 
     table="SENT_TO"
-    schema="FR"
+    schema="fr"
 >
 
     <id
@@ -23,7 +23,7 @@
         column="SENT_TO_ID"
     >
         <generator class="sequence">
-                <param name="sequence">FR.SENT_TO_SEQ</param>
+                <param name="sequence">fr.sent_to_seq</param>
         </generator>
     </id>
 

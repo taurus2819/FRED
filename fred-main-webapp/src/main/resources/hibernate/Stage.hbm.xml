@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.Stage" 
     table="STAGE"
-    schema="FR"
+    schema="fr"
     batch-size="100"
 >
 
@@ -24,7 +24,7 @@
         column="STAGE_ID"
     >
         <generator class="sequence">
-                <param name="sequence">FR.STAGE_SEQ</param>
+                <param name="sequence">fr.stage_seq</param>
         </generator>
     </id>
 

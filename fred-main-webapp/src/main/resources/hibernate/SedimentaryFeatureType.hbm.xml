@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.SedimentaryFeatureType" 
     table="sedimentary_feature_type"
-    schema="FR"
+    schema="fr"
 >
 
     <id

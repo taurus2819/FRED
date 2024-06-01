@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.TaxonomicGroup" 
     table="TAXONOMIC_GROUP"
-    schema="FR"
+    schema="fr"
 >
 
     <id

@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.DrillType" 
     table="DRILL_TYPE"
-    schema="FR"
+    schema="fr"
 >
 
     <id

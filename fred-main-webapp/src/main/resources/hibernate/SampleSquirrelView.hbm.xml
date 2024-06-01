@@ -14,7 +14,7 @@
     <class 
         name="nz.cri.gns.fred.hibernate.Sample" 
         table="SAMPLE"
-        schema="FR"
+        schema="fr"
     >
 
         <id

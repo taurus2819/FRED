@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.StratigraphicUnit" 
     table="STRAT_UNIT_VIEW"
-	schema="SL"
+	schema="sl"
 	mutable="false"
 >
 

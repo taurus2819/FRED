@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.FrUserView" 
     table="FR_USER_VIEW"
-    schema="FR"
+    schema="fr"
     mutable="false"
 >
 

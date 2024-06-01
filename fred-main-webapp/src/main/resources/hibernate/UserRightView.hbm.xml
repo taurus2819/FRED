@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.UserRightView" 
     table="USER_RIGHT_VIEW2"
-    schema="IP"
+    schema="ip"
     mutable="false"
 >
 
@@ -24,7 +24,7 @@
         column="PERSON_ID"
     >
         <generator class="sequence">
-                <param name="sequence">USER_SEQ</param>
+                <param name="sequence">ip.user_right_seq</param>
         </generator>
     </id>
 

@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.OrgView" 
     table="ORG"
-    schema="MIS"
+    schema="mis"
     mutable="false"
 >
 

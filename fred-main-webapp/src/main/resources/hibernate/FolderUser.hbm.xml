@@ -13,24 +13,24 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.FolderUser" 
-    table="FOLDER_USER"
-    schema="FR"
+    table="folder_user"
+    schema="fr"
 >
 
     <id
         name="fuId"
         type="int"
-        column="FU_ID"
+        column="fu_id"
     >
         <generator class="sequence">
-                <param name="sequence">FR.FU_SEQ</param>
+                <param name="sequence">fr.fu_seq</param>
         </generator>
     </id>
     
     <property
         name="userRights"
         type="int"
-        column="USER_RIGHTS"
+        column="user_rights"
         length="3"
     />
 
@@ -42,7 +42,7 @@
 	    class="nz.cri.gns.fred.hibernate.Folder"
 	    not-null="true"
 	>
-    	<column name="FOLDER_ID" />
+    	<column name="folder_id" />
 	</many-to-one>
 
     <many-to-one
@@ -50,7 +50,7 @@
         class="nz.cri.gns.fred.hibernate.FrUserView"
         not-null="true"
 	>
-    	<column name="USER_ID" />
+    	<column name="user_id" />
 	</many-to-one>
 		
 </class>

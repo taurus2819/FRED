@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.TaxonomicLookup" 
     table="TAXONOMIC_LOOKUP"
-    schema="FR"
+    schema="fr"
 >
 
     <id
@@ -23,7 +23,7 @@
         column="TAXA_ID"
     >
         <generator class="sequence">
-                <param name="sequence">FR.TAXA_SEQ</param>
+                <param name="sequence">fr.taxa_seq</param>
         </generator>
     </id>
 

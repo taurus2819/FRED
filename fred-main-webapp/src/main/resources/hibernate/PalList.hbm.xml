@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.PalList" 
     table="PAL_LIST"
-    schema="FR"
+    schema="fr"
 >
 
     <id
@@ -23,7 +23,7 @@
         column="PAL_LIST_ID"
     >
         <generator class="sequence">
-                <param name="sequence">FR.PAL_LIST_SEQ</param>
+                <param name="sequence">fr.pal_list_seq</param>
         </generator>
     </id>
 

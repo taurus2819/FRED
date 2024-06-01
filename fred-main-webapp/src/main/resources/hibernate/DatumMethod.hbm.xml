@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.DatumMethod" 
     table="METHOD"
-    schema="SC"
+    schema="sc"
 >
 
     <id

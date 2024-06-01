@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.FolderRight" 
     table="FOLDER_RIGHT"
-    schema="FR"
+    schema="fr"
 >
 
     <id

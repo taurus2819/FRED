@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.FrUser" 
     table="FR_USER"
-    schema="FR"
+    schema="fr"
 >
 
     <id

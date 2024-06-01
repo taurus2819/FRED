@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
@@ -47,7 +48,7 @@ public class FolderUtil extends ModelUtil {
      * @throws nz.cri.gns.dataaccess.StorageAccessException
      */
     public List<UserFolder> getPersonalFolders(User user) throws StorageAccessException {
-        Vector<UserFolder> folders = new Vector<>();
+        List<UserFolder> folders = new ArrayList<>();
         int userId = user.getId().intValue();
         folders.addAll(getOwnedFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
         folders.addAll(getAccessibleFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));

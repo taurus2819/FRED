@@ -11,7 +11,7 @@
     <class 
         name="nz.cri.gns.fred.hibernate.SquirrelAgeView" 
         table="SQUIRREL_AGE_VIEW"
-        schema="FR"
+        schema="fr"
         mutable="false"
     > 
         <id

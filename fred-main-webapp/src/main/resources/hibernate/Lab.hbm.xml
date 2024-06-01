@@ -14,7 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.Lab" 
     table="LAB"
-    schema="SC"
+    schema="sc"
 >
 
     <id
@@ -23,7 +23,7 @@
         column="LAB_ID"
     >
         <generator class="sequence">
-                <param name="sequence">SC.LAB_SEQ</param>
+                <param name="sequence">sc.lab_seq</param>
         </generator>
     </id>
 

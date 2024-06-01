@@ -14,7 +14,7 @@
     <class 
         name="nz.cri.gns.fred.hibernate.Paleontology" 
         table="PALEONTOLOGY"
-        schema="FR"
+        schema="fr"
     >
 
         <id
