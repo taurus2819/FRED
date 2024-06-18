@@ -357,8 +357,8 @@ public IpGrantedAuthority getRequiredRights() {
                         query = "SELECT code || ': ' || name || '</td><td>' || carbonate_id  FROM carbonate ORDER BY code";
                     } else if (listName.equals("colour")) {
                         query = "SELECT code || ': ' || name || '</td><td>' || colour_id  FROM rock_colour ORDER BY code";
-                    } else if (listName.equals("colourMod")) {
-                        query = "SELECT code || ': ' || name || '</td><td>' || modifier_id  FROM colour_modifier ORDER BY code";
+//                    } else if (listName.equals("colourMod")) {
+//                        query = "SELECT code || ': ' || name || '</td><td>' || modifier_id  FROM colour_modifier ORDER BY code";
                     } else if (listName.equals("country")) {
                         query = "SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name";
                     } else if (listName.equals("drillType")) {

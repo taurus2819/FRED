@@ -131,8 +131,8 @@ public class TaxaReport extends AbstractReport {
                     + (sample.getHardness() == null ? "" : sample.getHardness().getName())
                     + ","
                     + (sample.getCarbonate() == null ? "" : sample.getCarbonate().getName())
-                    + ","
-                    + (sample.getColourModifier() == null ? "" : sample.getColourModifier().getName())
+//                    + ","
+//                    + (sample.getColourModifier() == null ? "" : sample.getColourModifier().getName())
                     + ","
                     + (sample.getPrimaryColour() == null ? "" : sample.getPrimaryColour().getName())
                     + ","

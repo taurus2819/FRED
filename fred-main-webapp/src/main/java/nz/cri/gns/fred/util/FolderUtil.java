@@ -51,7 +51,7 @@ public class FolderUtil extends ModelUtil {
         List<UserFolder> folders = new ArrayList<>();
         int userId = user.getId().intValue();
         folders.addAll(getOwnedFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
-        folders.addAll(getAccessibleFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
+//        folders.addAll(getAccessibleFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
         Collections.sort(folders);
         return folders;
     }
@@ -120,6 +120,7 @@ public class FolderUtil extends ModelUtil {
     public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException {
         List<UserFolder> userFolders = new Vector<>();
         FrUserView user = userUtil.getFrUserView(userId);
+//        List<FolderUser> fus = fredDAO.getList("FROM FolderUser as f where f.user = ? and f.folder.folderType = ?", FolderUser.class, user, type);
         List<FolderUser> fus = fredDAO.getList("FROM FolderUser as f where f.user = ? and f.folder.folderType = ?", FolderUser.class, user, type);
         for (FolderUser fu : fus) {
             userFolders.add(UserFolder.getAccessibleUserFolder(fu.getFolder(), fu.getUserRights()));

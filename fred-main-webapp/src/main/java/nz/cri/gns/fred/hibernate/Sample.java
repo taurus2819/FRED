@@ -53,7 +53,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private String rockNature;
     private String depositionEnv;
     private String correspondence;
-    private ColourModifier colourModifier;
+//    private ColourModifier colourModifier;
     private Hardness hardness;
     private Weathering weathering;
     private Carbonate carbonate;
@@ -257,13 +257,13 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.correspondence = correspondence;
     }
 
-    public ColourModifier getColourModifier() {
-        return this.colourModifier;
-    }
-
-    public void setColourModifier(ColourModifier colourModifier) {
-        this.colourModifier = colourModifier;
-    }
+//    public ColourModifier getColourModifier() {
+//        return this.colourModifier;
+//    }
+//
+//    public void setColourModifier(ColourModifier colourModifier) {
+//        this.colourModifier = colourModifier;
+//    }
 
     public Hardness getHardness() {
         return this.hardness;

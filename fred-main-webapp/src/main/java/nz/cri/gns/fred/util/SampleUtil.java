@@ -1009,9 +1009,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     public static String getColourDescription(Sample sample) {
         StringBuilder desc = new StringBuilder();
-        if (sample.getColourModifier() != null) {
-            desc.append(sample.getColourModifier().getName()).append(" ");
-        }
+//        if (sample.getColourModifier() != null) {
+//            desc.append(sample.getColourModifier().getName()).append(" ");
+//        }
         if (sample.getPrimaryColour() != null) {
             desc.append(sample.getPrimaryColour().getName());
             if (sample.getSecondaryColour() != null) {
