@@ -62,7 +62,7 @@ release:
 
 
 # shadow environment accessed via https://data-uat.gns.cri.nz/fred
-deploy-staging-dev:
+deploy-staging-pg:
   tags:
     - docker
   stage: deploy
