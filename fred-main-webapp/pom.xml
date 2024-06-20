@@ -6,7 +6,7 @@
         <version>3.4.33-SNAPSHOT</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
-    <artifactId>fred</artifactId>
+    <artifactId>fred-pg</artifactId>
     <packaging>war</packaging>
     <version>3.4.33-SNAPSHOT</version>
     <name>Fossil Record Electronic Database</name>
