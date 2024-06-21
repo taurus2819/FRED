@@ -6,6 +6,7 @@
     <session-factory>
         <!-- properties -->
         <property name="show_sql">true</property>
+        <property name="hibernate.query.substitutions">TRUE=1, FALSE=0</property>
         <!-- Rest done programmatically -->
 
         <!-- mapping files -->
