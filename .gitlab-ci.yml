@@ -62,12 +62,12 @@ release:
 
 
 # shadow environment accessed via https://data-uat.gns.cri.nz/fred
-deploy-staging-pg:
+deploy-shadow:
   tags:
     - docker
   stage: deploy
   script:
     - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$shadow_env_url:8005/manager/text tomcat7:redeploy
-    - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
+    - mvn $MAVEN_CLI_OPTS clean verify -Puat
   when: manual
 
