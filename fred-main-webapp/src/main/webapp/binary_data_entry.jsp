@@ -293,7 +293,7 @@
                     } 
                 }
             } else {
-                out.println("<p><span class=\"subhead\">Access denied</span></p>No Items Provided.  Click <a href=\"index.jsp\" class=\"heading\">here</a> to return to the FRED home page.");
+                out.println("<p><span class=\"subhead\">Access denied</span></p>To attach an image/file, please select at least a feature using the checkboxes provided.<br/><br/> Click <a href=\"index.jsp\" class=\"heading\">here</a> to return to the FRED home page.");
             }
 
             out.println("</td></tr></table>");
