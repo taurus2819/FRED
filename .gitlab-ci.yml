@@ -27,6 +27,11 @@ initial-build:
   script:
     - mvn $MAVEN_CLI_OPTS -Pjenkins-build clean deploy
 
+include:
+  - component: $CI_SERVER_FQDN/devops/components/dependency-scan@1.0.5
+    inputs:
+      stage: test
+
 integration-tests:
   tags:
     - docker
@@ -46,8 +51,10 @@ release:
   tags:
     - docker
   stage: release
-  only:
-    - master
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_REF_NAME == "master"
   script:
     - git config user.name "\"$GITLAB_USER_NAME\""
     - git config user.email "\"$GITLAB_USER_EMAIL\""
