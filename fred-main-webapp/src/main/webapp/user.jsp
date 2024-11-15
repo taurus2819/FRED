@@ -42,9 +42,9 @@
 			<td><%=user.getFullName()%></td>
                         <td><%=user.getUsername()%></td>
 			<td><%=user.getFullName().equals(companyName) ? "" : companyName%></td>
-                        <td><input type="checkbox" id="read-<%=user.getUserId()%>" class="rightCheckbox" value="read" <%=user.getHasWebAccessRight() ? "checked='checked'" : ""%>></td>
-                        <td><input type="checkbox" id="write-<%=user.getUserId()%>" class="rightCheckbox" value="write" <%=user.getHasDataEntryRight() ? "checked='checked'" : ""%>></td>
-                        <td><input type="checkbox" id="admin-<%=user.getUserId()%>" class="rightCheckbox" value="admin" <%=user.getHasAdminRight() ? "checked='checked'" : ""%>></td>
+                        <td><input type="checkbox" id="read-<%=user.getUserId()%>" class="rightCheckbox" value="read" <%=user.getHasWebAccessRight() > 0 ? "checked='checked'" : ""%>></td>
+                        <td><input type="checkbox" id="write-<%=user.getUserId()%>" class="rightCheckbox" value="write" <%=user.getHasDataEntryRight() > 0 ? "checked='checked'" : ""%>></td>
+                        <td><input type="checkbox" id="admin-<%=user.getUserId()%>" class="rightCheckbox" value="admin" <%=user.getHasAdminRight()  > 0 ? "checked='checked'" : ""%>></td>
                         <%
 			if (lastLogin != null) {
 				%><td<%=(lastLogin.before(twoYearsAgo)) ? " style=\"color: #ff0000\"" : "" %>><%=FREDUtil.formatDateForOutput(lastLogin)%><%

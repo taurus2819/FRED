@@ -24,7 +24,7 @@
 			<td><%=age.getName()%> (<%=age.getCode()%>)&nbsp;&nbsp;</td>
 			<td><%=age.getBaseAge()%>&nbsp;&nbsp;</td>
 			<td><%=age.getTopAge()%>&nbsp;&nbsp;</td>
-			<td><%=(age.getObsoleteFlag()) ? "Obsolete" : ((age.getDuplicateFlag()) ? "Duplicate" : "")%>&nbsp;&nbsp;</td>
+			<td><%=(age.getObsoleteFlag() == 1) ? "Obsolete" : ((age.getDuplicateFlag() == 1) ? "Duplicate" : "")%>&nbsp;&nbsp;</td>
 			<td><%=DBUtils.nvl(age.getComments())%></td>
 			</tr><%
 	}

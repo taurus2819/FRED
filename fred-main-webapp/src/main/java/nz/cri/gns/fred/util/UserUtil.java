@@ -45,11 +45,11 @@ public class UserUtil extends ModelUtil {
 	}
 	
 	public List<FrUserView> getActiveFrWriters() throws StorageAccessException {
-		return fredDAO.getList("FROM FrUserView AS f WHERE f.hasDataEntryRight > 0 AND f.deleted = 0", FrUserView.class);
+		return fredDAO.getList("FROM FrUserView AS f WHERE f.hasDataEntryRight = 1 AND f.deleted = 0", FrUserView.class);
 	}
 	
 	public List<FrUserView> getFrWriters() throws StorageAccessException {
-		return fredDAO.getList("FROM FrUserView AS f WHERE f.hasDataEntryRight > 0", FrUserView.class);
+		return fredDAO.getList("FROM FrUserView AS f WHERE f.hasDataEntryRight = 1", FrUserView.class);
         }
         
 	public List<FrUserView> getAllUsers() throws StorageAccessException {

@@ -47,25 +47,25 @@
 	    />          
 	    <property
     	    name="deleted"
-        	type="java.lang.Boolean"
+        	type="java.lang.Integer"
         	column="DELETED"
 	    />
             
 	    <property
     	    name="hasWebAccessRight"
-        	type="java.lang.Boolean"
+        	type="java.lang.Integer"
         	column="FR_WEBSITE_ACCESS"
 	    />
             
 	    <property
     	    name="hasDataEntryRight"
-        	type="java.lang.Boolean"
+        	type="java.lang.Integer"
         	column="FR_DATA_ENTRY"
 	    />
             
 	    <property
     	    name="hasAdminRight"
-        	type="java.lang.Boolean"
+        	type="java.lang.Integer"
         	column="FR_ADMIN"
 	    />   
             

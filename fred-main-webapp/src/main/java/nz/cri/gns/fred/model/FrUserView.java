@@ -14,8 +14,8 @@ public interface FrUserView extends Comparable<FrUserView>, NameableAndIdentifia
 	public String getFamilyName();
 	public void setFullName(String fullName);
 	public String getFullName();    
-	public void setDeleted(Boolean deleted);
-	public Boolean getDeleted();
+	public void setDeleted(Integer deleted);
+	public Integer getDeleted();
 	public void setOrgView(OrgView orgView);
 	public OrgView getOrgView();
         public void setLastLogin(Date lastLogin);
@@ -31,11 +31,11 @@ public interface FrUserView extends Comparable<FrUserView>, NameableAndIdentifia
 	public Set<Folder> getFolders();
 	public void setFolders(Set<Folder> folders);
         
-        public void setHasWebAccessRight(Boolean hasWebAccessRight);
-        public Boolean getHasWebAccessRight();
-        public void setHasDataEntryRight(Boolean hasDataEntryRight);
-        public Boolean getHasDataEntryRight();     
-        public void setHasAdminRight(Boolean hasAdminRight);
-        public Boolean getHasAdminRight();         
+        public void setHasWebAccessRight(Integer hasWebAccessRight);
+        public Integer getHasWebAccessRight();
+        public void setHasDataEntryRight(Integer hasDataEntryRight);
+        public Integer getHasDataEntryRight();
+        public void setHasAdminRight(Integer hasAdminRight);
+        public Integer getHasAdminRight();
         
 }

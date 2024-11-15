@@ -88,7 +88,7 @@ public class StageUtil extends ModelUtil {
     }
 
     public Age getCurrentAgeByName(String ageName) throws StorageAccessException {
-        List<Age> ages = fredDAO.getList("FROM Age AS a WHERE a.name = ? AND a.obsoleteFlag = ? AND a.duplicateFlag = ?", Age.class, ageName, false, false);
+        List<Age> ages = fredDAO.getList("FROM Age AS a WHERE a.name = ? AND a.obsoleteFlag = ? AND a.duplicateFlag = ?", Age.class, ageName, 0, 0);
         if (ages != null && ages.size() > 0) {
             return ages.get(0);
         }
@@ -100,15 +100,15 @@ public class StageUtil extends ModelUtil {
     }
 
     public List<Age> getCurrentAges() throws StorageAccessException {
-        return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ? AND a.duplicateFlag = ? order by a.baseAge, a.topAge", Age.class, false, false);
+        return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ? AND a.duplicateFlag = ? order by a.baseAge, a.topAge", Age.class, 0, 0);
     }
 
     public List<Age> getActiveAges() throws StorageAccessException {
-        return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ? AND a.code NOT IN (?, ?)", Age.class, false, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
+        return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ? AND a.code NOT IN (?, ?)", Age.class, 0, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
     }
 
     public List<Age> getNonDuplicateAges() throws StorageAccessException {
-        return fredDAO.getList("FROM Age AS a WHERE a.duplicateFlag = ? AND a.code NOT IN (?, ?)", Age.class, false, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
+        return fredDAO.getList("FROM Age AS a WHERE a.duplicateFlag = ? AND a.code NOT IN (?, ?)", Age.class, 0, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
     }
 
     public int getMaxAgeId() throws StorageAccessException {

@@ -90,7 +90,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 
     public FREDQuery() {
         //this.people = getValues("FROM Person AS p", Person.class);
-        this.ages = getValues("FROM Age AS a WHERE a.code NOT IN (?, ?) AND a.obsoleteFlag = ?", Age.class, "nd", "nf", false);
+        this.ages = getValues("FROM Age AS a WHERE a.code NOT IN (?, ?) AND a.obsoleteFlag = ?", Age.class, "nd", "nf", 0);
         try {
             this.frUsers = new UserUtil(FredHibernate.get().getDAOFactory()).getFrWriters();
         } catch (StorageAccessException e) {

@@ -57,12 +57,12 @@
 	    />
 	    <property
     	    name="obsoleteFlag"
-        	type="java.lang.Boolean"
+        	type="java.lang.Integer"
         	column="obsolete_flag"
 	    />
 	    <property
     	    name="duplicateFlag"
-        	type="java.lang.Boolean"
+        	type="java.lang.Integer"
         	column="duplicate_flag"
 	    />
 	       		   		   		

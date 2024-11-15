@@ -13,7 +13,7 @@ public class OrgView implements Serializable, nz.cri.gns.fred.model.OrgView {
 
     private Integer clientCode;
     private String companyName;
-    private Boolean deleted;
+    private Integer deleted;
     private Set<ConfidentialGroup> confidGroups;
     private Set<UserView> userViews;
     private Set<FrUserView> frUserViews;
@@ -34,11 +34,11 @@ public class OrgView implements Serializable, nz.cri.gns.fred.model.OrgView {
 		return companyName;
 	}
 	
-	public void setDeleted(Boolean deleted) {
+	public void setDeleted(Integer deleted) {
 		this.deleted = deleted;
 	}
 
-	public Boolean getDeleted() {
+	public Integer getDeleted() {
 		return deleted;
 	}
 

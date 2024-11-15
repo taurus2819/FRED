@@ -18,10 +18,10 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     private String familyName;
     private String fullName;
     private String username;
-    private Boolean deleted;
-    private Boolean hasWebAccessRight;
-    private Boolean hasDataEntryRight;
-    private Boolean hasAdminRight;
+    private Integer deleted;
+    private Integer hasWebAccessRight;
+    private Integer hasDataEntryRight;
+    private Integer hasAdminRight;
     private Date lastLogin;
     private OrgView orgView;
     private Set<TaxonomicGroup> taxonomicGroups;
@@ -61,11 +61,11 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 		return fullName;
 	}
         
-	public void setDeleted(Boolean deleted) {
+	public void setDeleted(Integer deleted) {
 		this.deleted = deleted;
 	}
 
-	public Boolean getDeleted() {
+	public Integer getDeleted() {
 		return deleted;
 	}
 
@@ -73,7 +73,7 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
      * @return the hasWebAccessRight
      */
     @Override
-    public Boolean getHasWebAccessRight() {
+    public Integer getHasWebAccessRight() {
         return hasWebAccessRight;
     }
 
@@ -81,14 +81,14 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
      * @param hasWebAccessRight the hasWebAccessRight to set
      */
     @Override
-    public void setHasWebAccessRight(Boolean hasWebAccessRight) {
+    public void setHasWebAccessRight(Integer hasWebAccessRight) {
         this.hasWebAccessRight = hasWebAccessRight;
     }
 
     /**
      * @return the hasDataEntryRight
      */
-    public Boolean getHasDataEntryRight() {
+    public Integer getHasDataEntryRight() {
         return hasDataEntryRight;
     }
 
@@ -96,7 +96,7 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
      * @param hasDataEntryRight the hasDataEntryRight to set
      */
     @Override
-    public void setHasDataEntryRight(Boolean hasDataEntryRight) {
+    public void setHasDataEntryRight(Integer hasDataEntryRight) {
         this.hasDataEntryRight = hasDataEntryRight;
     }
 
@@ -104,7 +104,7 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
      * @return the hasAdminRight
      */
     @Override
-    public Boolean getHasAdminRight() {
+    public Integer getHasAdminRight() {
         return hasAdminRight;
     }
 
@@ -112,7 +112,7 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
      * @param hasAdminRight the hasAdminRight to set
      */
     @Override
-    public void setHasAdminRight(Boolean hasAdminRight) {
+    public void setHasAdminRight(Integer hasAdminRight) {
         this.hasAdminRight = hasAdminRight;
     }
 

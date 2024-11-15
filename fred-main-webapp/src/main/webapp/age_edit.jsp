@@ -22,8 +22,8 @@
 				age.setCode(request.getParameter("cd" + ageId));
 				age.setBaseAge(new Double(request.getParameter("ba" + ageId)));
 				age.setTopAge(new Double(request.getParameter("ta" + ageId)));
-				age.setObsoleteFlag((request.getParameter("ob" + ageId) != null) ? true : false);
-				age.setDuplicateFlag((request.getParameter("dp" + ageId) != null) ? true : false);
+				age.setObsoleteFlag((request.getParameter("ob" + ageId) != null) ? 1 : 0);
+				age.setDuplicateFlag((request.getParameter("dp" + ageId) != null) ? 1 : 0);
 				age.setComments(request.getParameter("cm" + ageId));
 				stageUtil.saveOrUpdate(age);
 			} catch (Exception e) {}
@@ -52,8 +52,8 @@
                 age.setCode(request.getParameter("cdnew"));
                 age.setBaseAge(new Double(request.getParameter("banew")));
                 age.setTopAge(new Double(request.getParameter("tanew")));
-                age.setObsoleteFlag((request.getParameter("obnew") != null) ? true : false);
-                age.setDuplicateFlag((request.getParameter("dpnew") != null) ? true : false);
+                age.setObsoleteFlag((request.getParameter("obnew") != null) ? 1 : 0);
+                age.setDuplicateFlag((request.getParameter("dpnew") != null) ? 1 : 0);
                 age.setComments(request.getParameter("cmnew"));
                 stageUtil.saveOrUpdate(age);
             } catch (Exception e) {}
@@ -73,8 +73,8 @@
 			<td><input type="text" name="cd<%=age.getAgeId()%>" value="<%=age.getCode()%>" size="8" />&nbsp;&nbsp;</td>
 			<td><input type="text" name="ba<%=age.getAgeId()%>" value="<%=age.getBaseAge()%>" size="6" />&nbsp;&nbsp;</td>
 			<td><input type="text" name="ta<%=age.getAgeId()%>" value="<%=age.getTopAge()%>" size="6" />&nbsp;&nbsp;</td>
-			<td><input type="checkbox" name="ob<%=age.getAgeId()%>" <%=(age.getObsoleteFlag()) ? "checked " : ""%>/>&nbsp;&nbsp;</td>
-			<td><input type="checkbox" name="dp<%=age.getAgeId()%>" <%=(age.getDuplicateFlag()) ? "checked " : ""%>/>&nbsp;&nbsp;</td>
+			<td><input type="checkbox" name="ob<%=age.getAgeId()%>" <%=(age.getObsoleteFlag() == 1) ? "checked " : ""%>/>&nbsp;&nbsp;</td>
+			<td><input type="checkbox" name="dp<%=age.getAgeId()%>" <%=(age.getDuplicateFlag() == 1) ? "checked " : ""%>/>&nbsp;&nbsp;</td>
 			<td><textarea type="text" name="cm<%=age.getAgeId()%>"><%=DBUtils.nvl(age.getComments())%></textarea>&nbsp;&nbsp;</td>
 		</tr><%
 	}

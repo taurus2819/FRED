@@ -4,7 +4,8 @@
  */
 function getFQHostName() {
     if(window.location.hostname === 'localhost'){
-        return "https://dev-app.gns.cri.nz";
+        // return "https://dev-app.gns.cri.nz";
+        return "https://data-dev.gns.cri.nz";
     } else {
         var protocol = location.protocol;
         var slashes = protocol.concat("//");

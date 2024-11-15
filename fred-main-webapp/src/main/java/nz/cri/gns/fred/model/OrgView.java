@@ -9,8 +9,8 @@ public interface OrgView extends Comparable<OrgView>, NameableAndIdentifiable {
 	public Integer getClientCode();
 	public void setCompanyName(String companyName);
 	public String getCompanyName();
-	public void setDeleted(Boolean deleted);
-	public Boolean getDeleted();
+	public void setDeleted(Integer deleted);
+	public Integer getDeleted();
 	public void setConfidGroups(Set<ConfidentialGroup> confidGroups);
 	public Set<ConfidentialGroup> getConfidGroups();
 	public void setUserViews(Set<UserView> userViews);

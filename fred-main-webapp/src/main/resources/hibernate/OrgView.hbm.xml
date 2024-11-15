@@ -33,7 +33,7 @@
 	    />
 	    <property
     	    name="deleted"
-        	type="java.lang.Boolean"
+        	type="java.lang.Integer"
         	column="CL_DELETED"
 	    />
 	       		   		   		
