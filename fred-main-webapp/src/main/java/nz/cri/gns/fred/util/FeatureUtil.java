@@ -920,11 +920,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public List<FrNumber> getFrNumbersByString(String frNumStr) throws DataInputException, StorageAccessException {
         try {
-            //range
+            //range: e.g. A44/f0001-0003
             if (frNumStr.indexOf("-") > 0) {
                 String[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
                 Integer endSerialNum = Integer.valueOf(frNumStr.substring(frNumStr.indexOf("-") + 1));
-                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], frNumBits[1], endSerialNum);
+                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], Integer.parseInt(frNumBits[1]), endSerialNum);
             }
 
             //single
@@ -942,19 +942,22 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
             // now add recollections
             if (!frNumbers.isEmpty()) {
-                String num = frNumbers.get(0).toString();
+                String num = frNumbers.get(0).toString(); //"A44/f0001"
                 if (num.indexOf("/") > 0) {
-                    String mapSheet = num.substring(0, frNumStr.indexOf("/f")).toUpperCase();
+                    String mapSheet = num.substring(0, frNumStr.indexOf("/f")).toUpperCase(); //e.g. A44
                     String serial = null;
+                    Integer serialNum;
                     String recoll = frNumbers.get(0).getRecollectionNumber();
                     if (recoll == null) {
-                        serial = num.substring(frNumStr.indexOf("/f") + 2);
+                        serial = num.substring(frNumStr.indexOf("/f") + 2); //serial: "0001"
+                        serialNum = Integer.valueOf(serial);
                         return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ?",
-                                FrNumber.class, mapSheet, serial);
+                                FrNumber.class, mapSheet, serialNum);
                     } else {
                         serial = num.substring(0, num.indexOf(recoll)).substring(frNumStr.indexOf("/f") + 2);
+                        serialNum = Integer.valueOf(serial);
                         return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ? AND f.recollectionNumber=?",
-                                FrNumber.class, mapSheet, serial, recoll);
+                                FrNumber.class, mapSheet, serialNum, recoll);
                     }
                 }
             }
@@ -991,6 +994,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                 frNumber.setObsolete("Y");
             }
         }
+        System.out.print(frNumber);
         return frNumber;
     }
 
