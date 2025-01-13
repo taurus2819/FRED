@@ -11,7 +11,7 @@
         <script type="text/javascript" language="javascript" src="./scripts/ext-base.js"></script>
         <script type="text/javascript" language="javascript" src="./scripts/ext-all.js"></script>
         <script type="text/javascript" language="javascript" src="./scripts/util.js"></script>
-        <script type="text/javascript" language="javascript" src="./plugin/OpenLayers-2.11/OpenLayers.js"></script>
+        <script type="text/javascript" language="javascript" src="./plugin/OpenLayers-2.13.1/OpenLayers.js"></script>
         <script type="text/javascript" language="javascript" src="./plugin/GeoExt-1.0/script/GeoExt.js"></script>
         <script type="text/javascript" language="javascript" src="./plugin/proj4js/proj4js-compressed.js"></script>
         <script type="text/javascript" language="javascript" src="./plugin/proj4js/defs/EPSG4272.js"></script>
@@ -262,7 +262,7 @@
                 feature.data.overflow = (overflow) ? "auto" : "hidden";
 
                 var marker = feature.createMarker();
-                marker.icon = new OpenLayers.Icon('./plugin/OpenLayers-2.11/img/reddot.png',size,offset);
+                marker.icon = new OpenLayers.Icon('./plugin/OpenLayers-2.13.1/img/marker.png',size,offset);
 
                 markers.addMarker(marker);
             }    

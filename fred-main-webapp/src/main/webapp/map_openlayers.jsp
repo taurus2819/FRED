@@ -9,12 +9,12 @@
 <script type="text/javascript" language="javascript" src="./scripts/ext-base.js"></script>
 <script type="text/javascript" language="javascript" src="./scripts/ext-all.js"></script>
 <script type="text/javascript" language="javascript" src="./scripts/util.js"></script>
-<script type="text/javascript" language="javascript" src="./plugin/OpenLayers-2.11/OpenLayers.js"></script>
+<script type="text/javascript" language="javascript" src="./plugin/OpenLayers-2.13.1/OpenLayers.js"></script>
 <script type="text/javascript" language="javascript" src="./plugin/GeoExt-1.0/script/GeoExt.js"></script>
 <script type="text/javascript" language="javascript" src="./plugin/proj4js/proj4js-compressed.js"></script>
 <script type="text/javascript" language="javascript" src="./plugin/proj4js/defs/EPSG4272.js"></script>
 <script type="text/javascript" language="javascript" src="./plugin/proj4js/defs/EPSG3857.js"></script>
-<script type="text/javascript" language="javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0"></script> 
+<script type="text/javascript" language="javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0&loading=async"></script>
 
 
 <style type="text/css">
@@ -109,12 +109,29 @@
                 {type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
                 {displayInLayerSwitcher: false, visibility: false}
             );
-            
+
             var scale_topo_googleP = new OpenLayers.Layer.Google(
                     "NZ Topographic Maps",
                     {type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
-                    {displayInLayerSwitcher: false, visibility: false, minScale: 100000000, maxScale: 1000000}
+                    {displayInLayerSwitcher: false, visibility: false, minScale: 100000000, maxScale: 1000000, resolutions: googleH.resolutions }
                 );
+
+            // var googleH = new OpenLayers.Layer.XYZ(
+            //     "Google Hybrid",
+            //     "http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}",
+            //     {sphericalMercator: true, displayInLayerSwitcher: false, visibility: true}
+            // );
+            // var googleP = new OpenLayers.Layer.XYZ(
+            //     "Google Physical",
+            //     "http://mt0.google.com/vt/lyrs=t&hl=en&x={x}&y={y}&z={z}",
+            //     {sphericalMercator: true, displayInLayerSwitcher: false, visibility: false}
+            // );
+            // var scale_topo_googleP = new OpenLayers.Layer.XYZ(
+            //     "NZ Topographic Maps",
+            //     "http://mt0.google.com/vt/lyrs=p&hl=en&x={x}&y={y}&z={z}",
+            //     {sphericalMercator: true, displayInLayerSwitcher: false, visibility: false,
+            //         minScale: 100000000, maxScale: 1000000}
+            // );
             
             linzTopo250 = new OpenLayers.Layer.WMS(
                     "LINZ Topo 250",
@@ -178,7 +195,7 @@
             map.addControl(pointSelectControl);                
             pointSelectControl.activate();    
                 
-            map.addLayers([googleH, googleP, linzTopo50, linzTopo250, dtm, oneGeolNZ, fred, master, scale_topo_googleP]);    //removed for now, LINZ layer stopped working: , scale_topo_googleP
+            map.addLayers([googleH, googleP, scale_topo_googleP, linzTopo50, linzTopo250, dtm, oneGeolNZ, fred, master]);    //removed for now, LINZ layer stopped working: , scale_topo_googleP
             
             map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4326, p900913), 4);
                 
