@@ -1,6 +1,6 @@
 <table border="0" cellpadding="0" cellspacing="2">
 <tr><td>&nbsp;</td></tr>
-<tr><td><input type="button" onclick="window.location.href='folder_detail.jsp?ID={@folderId}';" id="cancel-button" value="Cancel"/></td></tr>
+<tr><td><input type="button" onclick="window.location.href='folder_detail.jsp?ID=' + new URLSearchParams(window.location.search).get('FoldID');" id="cancel-button" value="Cancel"/></td></tr>
 <tr><td><input type="button" onclick="submitForm('Save')" id="save-button" value="Save"/></td></tr>
 {@@isAllowedSubmit:<tr><td><input type="button" onclick="submitForm('Submit')" id="submit-button" value="Submit"/></td></tr>@}
 </table>
