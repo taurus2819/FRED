@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <WatchedResource>WEB-INF/tomcat-web.xml</WatchedResource>
+    <WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>
+    
+    <Resource
+        name="jdbc/mis"
+        username="mis"
+        password="eoy99"
+        url="jdbc:oracle:thin:@maindb-dev.gns.cri.nz:1521:dev"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"        
+        minEvictableIdleTimeMillis="20000"
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+    
+    <Resource
+        name="jdbc/fr"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        url="jdbc:oracle:thin:@maindb-dev.gns.cri.nz:1521:dev"
+        username="fr"
+        password="ossify"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"        
+        minEvictableIdleTimeMillis="20000"
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+
+    <Resource
+        name="jdbc/ip"
+        username="ip"
+        password="manying"
+        url="jdbc:oracle:thin:@maindb-dev.gns.cri.nz:1521:dev"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"
+        minEvictableIdleTimeMillis="20000"
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+
+    <Resource
+        name="jdbc/metacat"
+        username="metacat"
+        password="catalog"
+        url="jdbc:oracle:thin:@maindb-dev.gns.cri.nz:1521:dev"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"
+        minEvictableIdleTimeMillis="20000" 
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+    
+    <Resource
+        name="jdbc/bib"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        url="jdbc:oracle:thin:@maindb-dev.gns.cri.nz:1521:dev"
+        username="bib"
+        password="dewey"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"        
+        minEvictableIdleTimeMillis="20000" 
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+
+    <Resource
+        name="jdbc/npc"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        url="jdbc:oracle:thin:@maindb-dev.gns.cri.nz:1521:dev"
+        username="npc"
+        password="kr4ftyw0rd"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"        
+        minEvictableIdleTimeMillis="20000"
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+
+    <Resource
+        name="jdbc/paleo"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        url="jdbc:oracle:thin:@maindb-dev.gns.cri.nz:1521:dev"
+        username="paleo"
+        password="gammal"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"        
+        minEvictableIdleTimeMillis="20000"
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+
+    <Resource
+        name="jdbc/sl"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        url="jdbc:oracle:thin:@maindb-dev.gns.cri.nz:1521:dev"
+        username="sl"
+        password="palaeo"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"        
+        minEvictableIdleTimeMillis="20000"
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+
+    <Resource
+        name="jdbc/petroleum"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        url="jdbc:oracle:thin:@maindb-dev:1521:dev"
+        username="petroleum"
+        password="oily"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"        
+        minEvictableIdleTimeMillis="20000"
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+
+    <Resource
+        name="jdbc/sc"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.OracleDriver"
+        url="jdbc:oracle:thin:@maindb-dev.gns.cri.nz:1521:dev"
+        username="sc"
+        password="newton"
+        initialSize="0"
+        minIdle="0"
+        maxIdle="1"
+        maxActive="3"        
+        minEvictableIdleTimeMillis="20000"
+        logAbandoned="true"        
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+    
+    <Resource
+        auth="Container"
+        mail.smtp.host="hut-outbound-relay.gns.cri.nz"
+        name="mail/session"
+        type="jakarta.mail.Session"/>
+
+    <Environment
+        name="environment"
+        value="dev"
+        type="java.lang.String"/>
+
+    <Environment
+        name="onlineUrlBase"
+        value="https://online-dev.gns.cri.nz"
+        type="java.lang.String"
+    />
+
+    <Environment
+        name="dataUrlBase"
+        value="https://data-dev.gns.cri.nz"
+        type="java.lang.String"
+    />
+
+    <Environment
+        name="authServiceUrlBase"
+        value="https://online-dev.gns.cri.nz/auth/"
+        type="java.lang.String"
+    />
+
+    <Environment
+        name="authServiceApiPassword"
+        value="foraccessingtheauthservicesecurebits"
+        type="java.lang.String"/>
+
+    <Environment
+        name="googleRecaptchaSecretKey"
+        value="6LeTVBUUAAAAAFPKHjKcFlJ3a3oqO8KCIM3xqpVh"
+        type="java.lang.String"
+    />
+    
+    <Environment 
+        name="site_feature_service" 
+        value="https://data-dev.gns.cri.nz/gis/rest/services/site_dev/FeatureServer/" 
+        type="java.lang.String"/>
+
+    <Environment 
+        name="online_site_service" 
+        value="https://online-dev.gns.cri.nz/online/json/site.jsp" 
+        type="java.lang.String"/>
+
+    <Environment 
+        name="token_service" 
+        value="https://data-dev.gns.cri.nz/gis/tokens/" 
+        type="java.lang.String"/>
+
+    <Environment 
+        name="site_user" 
+        value="arc_site" 
+        type="java.lang.String"/>
+
+    <Environment 
+        name="site_pwd" 
+        value="M0nt60m3ry" 	
+        type="java.lang.String"/>
+       
+     <!-- PETLAB Environment configuration -->
+     <Environment
+        name="WFS"
+        type="java.lang.String"
+        value="https://data-dev.gns.cri.nz/webmaps/gns/wfs"
+        override="false"/>
+
+    <!-- Maps URL used by search page map pop-up -->
+    <Environment
+        name="WMS"
+        type="java.lang.String"
+        value="https://data-dev.gns.cri.nz/webmaps/gns/wms"
+        override="false"/>
+
+    <Environment
+        name="WMS_CACHED"
+        type="java.lang.String"
+        value="https://data-dev.gns.cri.nz/webmaps/gns/wms"
+        override="false" />
+
+    <!-- Maps URL used by main map page -->
+    <Environment
+        name="GEOSERVER_MAIN_URL"
+        type="java.lang.String"
+        value="https://data-dev.gns.cri.nz/webmaps/gns/ows"
+        override="false"/>
+
+    <Environment
+        name="IMAGE_SERVER"
+        value="https://data-dev.gns.cri.nz/online/DigitalDocument"
+        type="java.lang.String"
+        override="false"/>
+
+   <Environment
+        name="VML_IMAGE_SERVER_PAGE"
+        value="https://vml.gns.cri.nz/assetbank-gns-science"
+        type="java.lang.String"
+        override="false"/>
+
+    <Environment
+        name="smtpServer"
+        value="hut-outbound-relay.gns.cri.nz"
+        type="java.lang.String"/>
+
+        <Environment
+        name="tomcatInstanceUsername"
+        value="tomcat_paleo"
+        type="java.lang.String"
+    />
+
+    <Environment
+        name="tomcatInstancePassword"
+        value="S0adminscanupdateuserrights"
+        type="java.lang.String"
+    />
+
+    <Environment 
+        name="FRED_WFS" 
+        value="https://data.gns.cri.nz/webmaps/gns/wfs"
+        type="java.lang.String" 
+        override="false"
+    />
+
+    <Environment 
+        name="FRED_WMS" 
+        value="https://data-dev.gns.cri.nz/webmaps/gns/wms"
+        type="java.lang.String" 
+        override="false"
+    />
+	
+    <Environment 
+        name="ESRI_AGS" 
+        value="https://data-dev.gns.cri.nz/webmaps/gis"
+        type="java.lang.String" 
+        override="false"
+    />
+    <Environment
+        name="DEFAULT_SITE_API_URL"
+        value="https://webapp-staging.gns.cri.nz/site/api/v1"
+        type="java.lang.String"
+        override="false"
+    />
+</Context>

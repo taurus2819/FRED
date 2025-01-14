@@ -96,42 +96,48 @@
                 numZoomLevels: 20,
                 maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)
                 
-            });
-            
-            var googleH = new OpenLayers.Layer.Google(
-                "Google Hybrid",
-                {type: google.maps.MapTypeId.SATELLITE, sphericalMercator: true, numZoomLevels: 20},
-                {displayInLayerSwitcher: false, visibility: true}
-            );
+                });
+                
 
-            var googleP = new OpenLayers.Layer.Google(
-                "Google Physical",
-                {type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
-                {displayInLayerSwitcher: false, visibility: false}
-            );
-
-            var scale_topo_googleP = new OpenLayers.Layer.Google(
-                    "NZ Topographic Maps",
-                    {type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
-                    {displayInLayerSwitcher: false, visibility: false, minScale: 100000000, maxScale: 1000000, resolutions: googleH.resolutions }
+                            var googleH = new OpenLayers.Layer.XYZ(
+                    "Google Hybrid",
+                    "https://mt0.google.com/vt/lyrs=h&hl=en&x=${x}&y=${y}&z=${z}" +
+                        "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
+                    { 
+                    projection: p900913,
+                    sphericalMercator: true
+                    },
+                    {   
+                        displayInLayerSwitcher: false,
+                        tileOptions: {crossOriginKeyword: 'anonymous'}
+                    }
                 );
-
-            // var googleH = new OpenLayers.Layer.XYZ(
-            //     "Google Hybrid",
-            //     "http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}",
-            //     {sphericalMercator: true, displayInLayerSwitcher: false, visibility: true}
-            // );
-            // var googleP = new OpenLayers.Layer.XYZ(
-            //     "Google Physical",
-            //     "http://mt0.google.com/vt/lyrs=t&hl=en&x={x}&y={y}&z={z}",
-            //     {sphericalMercator: true, displayInLayerSwitcher: false, visibility: false}
-            // );
-            // var scale_topo_googleP = new OpenLayers.Layer.XYZ(
-            //     "NZ Topographic Maps",
-            //     "http://mt0.google.com/vt/lyrs=p&hl=en&x={x}&y={y}&z={z}",
-            //     {sphericalMercator: true, displayInLayerSwitcher: false, visibility: false,
-            //         minScale: 100000000, maxScale: 1000000}
-            // );
+                var googleP = new OpenLayers.Layer.XYZ(
+                    "Google Physical",
+                    "https://mt1.google.com/vt/lyrs=t&hl=en&x=${x}&y=${y}&z=${z}" +
+                        "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
+                    { 
+                    projection: p900913,
+                    sphericalMercator: true
+                    },
+                    {   
+                        displayInLayerSwitcher: false,
+                        tileOptions: {crossOriginKeyword: 'anonymous'}
+                    }
+                );
+                var scale_topo_googleP = new OpenLayers.Layer.XYZ(
+                    "NZ Topographic Maps",
+                    "https://mt1.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}" +
+                        "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
+                    { 
+                    projection: p900913,
+                    sphericalMercator: true
+                    },
+                    {   
+                        displayInLayerSwitcher: false,
+                        tileOptions: {crossOriginKeyword: 'anonymous'}
+                    }
+                );
             
             linzTopo250 = new OpenLayers.Layer.WMS(
                     "LINZ Topo 250",
