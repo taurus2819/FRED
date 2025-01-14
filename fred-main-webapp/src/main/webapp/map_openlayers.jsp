@@ -99,13 +99,17 @@
                 });
                 
 
-                            var googleH = new OpenLayers.Layer.XYZ(
+                var googleH = new OpenLayers.Layer.XYZ(
                     "Google Hybrid",
-                    "https://mt0.google.com/vt/lyrs=h&hl=en&x=${x}&y=${y}&z=${z}" +
+                    "https://mt0.google.com/vt/lyrs=h&hl=en&bgcolor=0x000000&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
                         "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
                     { 
                     projection: p900913,
-                    sphericalMercator: true
+                    sphericalMercator: true,
+                    bgcolor: "0x000000",
+                    transparent: true,
+                    tiled: true,
+                    isBaseLayer: false,
                     },
                     {   
                         displayInLayerSwitcher: false,
@@ -114,7 +118,7 @@
                 );
                 var googleP = new OpenLayers.Layer.XYZ(
                     "Google Physical",
-                    "https://mt1.google.com/vt/lyrs=t&hl=en&x=${x}&y=${y}&z=${z}" +
+                    "https://mt1.google.com/vt/lyrs=m&hl=en&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
                         "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
                     { 
                     projection: p900913,
@@ -127,7 +131,7 @@
                 );
                 var scale_topo_googleP = new OpenLayers.Layer.XYZ(
                     "NZ Topographic Maps",
-                    "https://mt1.google.com/vt/lyrs=p&hl=en&x=${x}&y=${y}&z=${z}" +
+                    "https://mt1.google.com/vt/lyrs=p&hl=en&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
                         "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
                     { 
                     projection: p900913,
