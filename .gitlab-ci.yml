@@ -54,6 +54,8 @@ release:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
+    - if: $CI_COMMIT_REF_NAME == "pg_live_2025"
+      when: manual
     - if: $CI_COMMIT_REF_NAME == "master"
   script:
     - git config user.name "\"$GITLAB_USER_NAME\""
@@ -62,9 +64,9 @@ release:
     - git remote set-url --push origin "https://gitlab-project-token:$release_token@git.gns.cri.nz/$CI_PROJECT_PATH.git"
     - git config pull.ff only
     - cp $settings_xml ~/.m2/settings.xml
-    - mvn $MAVEN_CLI_OPTS gitflow:release-start
+    - mvn $MAVEN_CLI_OPTS gitflow:release-start -Dgitflow.branch=$CI_COMMIT_REF_NAME
     #- mvn $MAVEN_CLI_OPTS -DpreReleaseGoals=sonar:sonar -Dsonar.projectKey=applications_FRED_AYTgDtwRQ_8RozZJZ79X gitflow:release-finish
-    - mvn $MAVEN_CLI_OPTS gitflow:release-finish
+    - mvn $MAVEN_CLI_OPTS gitflow:release-finish -Dgitflow.branch=$CI_COMMIT_REF_NAME
 
 
 

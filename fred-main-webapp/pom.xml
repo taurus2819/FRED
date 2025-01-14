@@ -3,12 +3,11 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top-pg</artifactId>
-        <version>3.4.33-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred-pg</artifactId>
     <packaging>war</packaging>
-    <version>3.4.35-SNAPSHOT</version>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
@@ -147,7 +146,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core-pg</artifactId>
-            <version>3.3.0-SNAPSHOT</version>
+            <version>4.0.0</version>
             <exclusions>
             <exclusion>
             <groupId>jakarta.activation</groupId>
@@ -235,8 +234,8 @@
         </dependency>
         <dependency>
             <groupId>nz.cri.gns</groupId>
-            <artifactId>munginator</artifactId>
-            <version>0.2.0</version>
+            <artifactId>munginator-pg</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
@@ -250,12 +249,6 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-<!--        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-cglib-repack</artifactId>
-            <version>2.1_3</version>
-            <type>jar</type>
-        </dependency>-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

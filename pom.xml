@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-top-pg</artifactId>
-    <version>3.4.33-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>
@@ -12,6 +12,7 @@
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
         <java.version>11</java.version>
+        <gitflow.branch>master</gitflow.branch>
     </properties>
     <repositories>
         <repository>
@@ -116,8 +117,8 @@
                 <configuration>
                     <fetchRemote>false</fetchRemote>
                     <gitFlowConfig>
-                        <productionBranch>master</productionBranch>
-                        <developmentBranch>master</developmentBranch>
+                        <productionBranch>${gitflow.branch}</productionBranch>
+                        <developmentBranch>${gitflow.branch}</developmentBranch>
                     </gitFlowConfig>
                     <commitMessages>
                         <releaseFinishMessage>[ci skip] Update for next development version</releaseFinishMessage>
@@ -218,8 +219,8 @@
         </dependency>
         <dependency>
             <groupId>nz.cri.gns</groupId>
-            <artifactId>munginator</artifactId>
-            <version>0.1.0.4</version>
+            <artifactId>munginator-pg</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
     
