@@ -97,21 +97,18 @@
                 maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)
                 
                 });
-                
+
 
                 var googleH = new OpenLayers.Layer.XYZ(
                     "Google Hybrid",
-                    "https://mt0.google.com/vt/lyrs=h&hl=en&bgcolor=0x000000&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
+                    "https://mt0.google.com/vt/lyrs=y&hl=en&bgcolor=0x000000&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
                         "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
-                    { 
+                    {
+                    wrapDateLine: true,
                     projection: p900913,
                     sphericalMercator: true,
-                    bgcolor: "0x000000",
-                    transparent: true,
-                    tiled: true,
-                    isBaseLayer: false,
                     },
-                    {   
+                    {
                         displayInLayerSwitcher: false,
                         tileOptions: {crossOriginKeyword: 'anonymous'}
                     }
@@ -120,11 +117,12 @@
                     "Google Physical",
                     "https://mt1.google.com/vt/lyrs=m&hl=en&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
                         "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
-                    { 
+                    {
+                        wrapDateLine: true,
                     projection: p900913,
                     sphericalMercator: true
                     },
-                    {   
+                    {
                         displayInLayerSwitcher: false,
                         tileOptions: {crossOriginKeyword: 'anonymous'}
                     }
@@ -133,11 +131,12 @@
                     "NZ Topographic Maps",
                     "https://mt1.google.com/vt/lyrs=p&hl=en&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
                         "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
-                    { 
+                    {
+                        wrapDateLine: true,
                     projection: p900913,
                     sphericalMercator: true
                     },
-                    {   
+                    {
                         displayInLayerSwitcher: false,
                         tileOptions: {crossOriginKeyword: 'anonymous'}
                     }
@@ -205,18 +204,18 @@
             map.addControl(pointSelectControl);                
             pointSelectControl.activate();    
                 
-            map.addLayers([googleH, googleP, scale_topo_googleP, linzTopo50, linzTopo250, dtm, oneGeolNZ, fred, master]);    //removed for now, LINZ layer stopped working: , scale_topo_googleP
+            map.addLayers([googleH, scale_topo_googleP, googleP, linzTopo50, linzTopo250, dtm, oneGeolNZ, fred, master]);    //removed for now, LINZ layer stopped working: , scale_topo_googleP
             
-            map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4326, p900913), 4);
+            map.setCenter(new OpenLayers.LonLat(174, -42).transform(p4326, p900913), 5);
                 
             mapPanel = new GeoExt.MapPanel({
-                region: 'center',
+                region: 'right',
                 height: 500,
                 width: 800,
                 map: map
             });
                                 
-            oneGeolNZ.resolutions =  googleH.resolutions;    
+            oneGeolNZ.resolutions =  googleH.resolutions;
             fred.resolutions = googleH.resolutions;
         };
         
