@@ -110,22 +110,47 @@
                     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)
                 });
 
-                var googleH = new OpenLayers.Layer.Google(
+                var googleH = new OpenLayers.Layer.XYZ(
                     "Google Hybrid",
-                    {type: google.maps.MapTypeId.SATELLITE, sphericalMercator: true, numZoomLevels: 20},
-                    {displayInLayerSwitcher: false, visibility: true}
+                    "https://mt0.google.com/vt/lyrs=y&hl=en&bgcolor=0x000000&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
+                    "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
+                    {
+                        wrapDateLine: true,
+                        projection: p900913,
+                        sphericalMercator: true,
+                    },
+                    {
+                        displayInLayerSwitcher: false,
+                        tileOptions: {crossOriginKeyword: 'anonymous'}
+                    }
                 );
-
-                var googleP = new OpenLayers.Layer.Google(
+                var googleP = new OpenLayers.Layer.XYZ(
                     "Google Physical",
-                    {type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
-                    {displayInLayerSwitcher: false, visibility: false}
+                    "https://mt1.google.com/vt/lyrs=m&hl=en&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
+                    "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
+                    {
+                        wrapDateLine: true,
+                        projection: p900913,
+                        sphericalMercator: true
+                    },
+                    {
+                        displayInLayerSwitcher: false,
+                        tileOptions: {crossOriginKeyword: 'anonymous'}
+                    }
                 );
-
-                var scale_topo_googleP = new OpenLayers.Layer.Google(
+                var scale_topo_googleP = new OpenLayers.Layer.XYZ(
                     "NZ Topographic Maps",
-                    {type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
-                    {displayInLayerSwitcher: false, visibility: false, minScale: 100000000, maxScale: 1000000}
+                    "https://mt1.google.com/vt/lyrs=p&hl=en&x=\$\{x\}&y=\$\{y\}&z=\$\{z\}" +
+                    "&key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0",
+                    {
+                        wrapDateLine: true,
+                        projection: p900913,
+                        sphericalMercator: true
+                    },
+                    {
+                        displayInLayerSwitcher: false,
+                        tileOptions: {crossOriginKeyword: 'anonymous'}
+                    }
                 );
 
                 linzTopo250 = new OpenLayers.Layer.WMS(
@@ -183,7 +208,7 @@
                     "FRED samples",
                      geoserver_url,
                     {layers: "gns:pg_fred_site_view", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
-                    {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
+                    {displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
                 );    
 
                 var pointSelectControl = new OpenLayers.Control.WMSGetFeatureInfo({
@@ -227,12 +252,12 @@
 
                 map.addLayers([googleH, googleP, scale_topo_googleP, linzTopo50, linzTopo250, dtm, oneGeolNZ, 
                     fredLayer, master, vectorLayer, markers]);
-        
+
                 
                 var googleCentre = new OpenLayers.LonLat(174, -41).transform(
                     new OpenLayers.Projection("EPSG:4272"), 
                     new OpenLayers.Projection("EPSG:900913"));
-                map.setCenter(googleCentre, 4);
+                map.setCenter(googleCentre, 5);
             
                 AutoSizeAnchored = OpenLayers.Class(OpenLayers.Popup.Anchored, {
                     'autoSize': true
@@ -249,7 +274,7 @@
                     
                 oneGeolNZ.resolutions =  googleH.resolutions;    
                 
-                map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4272, p900913), 4);
+                map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4272, p900913), 5);
             };
             
             function addMarker(ll, popupClass, popupContentHTML, closeBox, overflow) {
@@ -302,13 +327,13 @@
                 if(state == false)    {//switch all on    
                     //alert("switching all on");
                     oneGeolNZ.setVisibility(true);
-                    fred.setVisibility(true);
+                    fredLayer.setVisibility(true);
                     resultLayer.setVisibility(true);
                 }
                 else    {
                     //alert("switching all off");
                     oneGeolNZ.setVisibility(false);
-                    fred.setVisibility(false);
+                    fredLayer.setVisibility(false);
                     resultLayer.setVisibility(false);
                 }
                 //alert("refreshed yet?");
