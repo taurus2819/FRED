@@ -11,8 +11,9 @@ image: maven:3-openjdk-11
 stages:
   - build
   - test
+  - deploy  
+  - test-staging
   - release
-  - deploy
 
 default:
   before_script:
@@ -54,8 +55,6 @@ release:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-    - if: $CI_COMMIT_REF_NAME == "pg_live_2025"
-      when: manual
     - if: $CI_COMMIT_REF_NAME == "master"
   script:
     - git config user.name "\"$GITLAB_USER_NAME\""
@@ -68,15 +67,19 @@ release:
     #- mvn $MAVEN_CLI_OPTS -DpreReleaseGoals=sonar:sonar -Dsonar.projectKey=applications_FRED_AYTgDtwRQ_8RozZJZ79X gitflow:release-finish
     - mvn $MAVEN_CLI_OPTS gitflow:release-finish -Dgitflow.branch=$CI_COMMIT_REF_NAME
 
-
-
-# shadow environment accessed via https://data-uat.gns.cri.nz/fred
-deploy-shadow:
+deploy-staging:
   tags:
     - docker
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS -Pjenkins-build -DdeploymentURL=$shadow_env_url:8005/manager/text tomcat7:redeploy
-    - mvn $MAVEN_CLI_OPTS clean verify -Puat
+    - mvn $MAVEN_CLI_OPTS -DdeploymentURL=$webapp_staging_url:8005/manager/text tomcat7:redeploy
+  when: manual
+
+test-staging:
+  tags:
+    - docker
+  stage: test-staging
+  script:
+    - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
   when: manual
 
