@@ -156,35 +156,36 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     }
 
     public boolean isAllowedReadApproved(Audit audit, User user) throws NumberFormatException, StorageAccessException {
-        if (user == null || audit == null) {
-            return false;
-        }
-        if (!FREDConstants.APPROVED.equals(audit.getStatus())) {
-            return false;
-        }
-        if (audit.getConfidentialFlag()) {
-            FrUserView frUser = new UserUtil(factory).getFrUserView(user.getId().intValue());
-            OrgView userOrg = frUser.getOrgView();
-            if (audit.getCreatedBy().getUserId().equals(frUser.getUserId())) {
-                return true;
-            }
-            for (ConfidentialGroup confidGroup : audit.getConfidGroups()) {
-                if (confidGroup.getOrgView() != null) {
-                    if (confidGroup.getOrgView().equals(userOrg)) {
-                        return true;
-                    }
-                } else {
-                    for (FrUserView confidUser : confidGroup.getUsers()) {
-                        if (confidUser.equals(frUser)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        } else {
-            return true;
-        }
+//        if (user == null || audit == null) {
+//            return false;
+//        }
+//        if (!FREDConstants.APPROVED.equals(audit.getStatus())) {
+//            return false;
+//        }
+//        if (audit.getConfidentialFlag()) {
+//            FrUserView frUser = new UserUtil(factory).getFrUserView(user.getId().intValue());
+//            OrgView userOrg = frUser.getOrgView();
+//            if (audit.getCreatedBy().getUserId().equals(frUser.getUserId())) {
+//                return true;
+//            }
+//                for (ConfidentialGroup confidGroup : audit.getConfidGroups()) {
+//                    if (confidGroup.getOrgView() != null) {
+//                        if (confidGroup.getOrgView().equals(userOrg)) {
+//                            return true;
+//                        }
+//                    } else {
+//                        for (FrUserView confidUser : confidGroup.getUsers()) {
+//                            if (confidUser.equals(frUser)) {
+//                                return true;
+//                            }
+//                        }
+//                    }
+//                }
+//            return false;
+//        } else {
+//            return true;
+//        }
+        return true;
     }
 
     public static Date getLapseDate(Double confidPeriod) {
