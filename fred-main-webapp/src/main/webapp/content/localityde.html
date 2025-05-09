@@ -38,6 +38,7 @@
 <option value="Chatham Island Datum"{@@isChatham Island Datum: selected@}>Lat/Long Chatham Isl</option>
 <option value="NZGD2000"{@@isNZGD2000: selected@}>Lat/Long NZGD2000</option>
 <option value="WGS84"{@@isWGS84: selected@}>Lat/Long WGS84</option>
+<option value="Chatham Island Grid"{@@isChatham Island Grid: selected@}>Chatham Island Grid</option>
 </select></td></tr>
 <script language="JavaScript"><!--
     requiredInput(
@@ -94,7 +95,7 @@ function updateCoordTypes(box) {
 	var trWhat = "none";
 	var eWhat = "Easting";
 	var nWhat = "Northing";
-	
+	console.log(box.selectedIndex);
 	switch (box.selectedIndex) {
 		case 2:
 		case 4:

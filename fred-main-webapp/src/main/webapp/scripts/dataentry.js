@@ -101,6 +101,18 @@ const NZMG_NORTHING_VALIDATION = {
     min: 0,
     max: 9999999
 };
+const CHATHAM_EASTING_VALIDATION = {
+    pattern: /^\d{6}(\.\d)?$/,
+    error: " must be a number between 0 and 999999",
+    min: 0,
+    max: 999999
+};
+const CHATHAM_NORTHING_VALIDATION = {
+    pattern: /^\d{6}(\.\d)?$/,
+    error: " must be a number between 0 and 999999",
+    min: 0,
+    max: 999999
+};
 const NZTM_EASTING_VALIDATION = {
     pattern: /^\d{7}(\.\d)?$/,
     error: " must be a number between 0 and 9999999",
@@ -143,6 +155,7 @@ const LONGITUDE_VALIDATION = {
 function validateEasting(inputName, errorRow, errorCell) {
     let rules = new Map();
     rules.set("NZMG", NZMG_EASTING_VALIDATION);
+    rules.set("Chatham Island Grid", CHATHAM_EASTING_VALIDATION);
     rules.set("NZMS260", MS_EASTING_VALIDATION);
     rules.set("NZTM", NZTM_EASTING_VALIDATION);
     rules.set("NZTopo50", MS_EASTING_VALIDATION);
@@ -165,6 +178,7 @@ function validateEasting(inputName, errorRow, errorCell) {
 function validateNorthing(inputName, errorRow, errorCell) {
     let rules = new Map();
     rules.set("NZMG", NZMG_NORTHING_VALIDATION);
+    rules.set("Chatham Island Grid", CHATHAM_NORTHING_VALIDATION);
     rules.set("NZMS260", MS_NORTHING_VALIDATION);
     rules.set("NZTM", NZTM_NORTHING_VALIDATION);
     rules.set("NZTopo50", MS_EASTING_VALIDATION);
