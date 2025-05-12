@@ -165,9 +165,9 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
         if (audit.getConfidentialFlag()) {
             FrUserView frUser = new UserUtil(factory).getFrUserView(user.getId().intValue());
             OrgView userOrg = frUser.getOrgView();
-            if (audit.getCreatedBy().getUserId().equals(frUser.getUserId())) {
-                return true;
-            }
+//            if (audit.getCreatedBy().getUserId().equals(frUser.getUserId())) {
+//                return true;
+//            }
             for (ConfidentialGroup confidGroup : audit.getConfidGroups()) {
                 if (confidGroup.getOrgView() != null) {
                     if (confidGroup.getOrgView().equals(userOrg)) {

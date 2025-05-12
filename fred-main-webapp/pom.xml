@@ -146,7 +146,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core-pg</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.24</version>
             <exclusions>
             <exclusion>
             <groupId>jakarta.activation</groupId>
