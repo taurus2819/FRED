@@ -235,7 +235,7 @@
         <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>munginator-pg</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
