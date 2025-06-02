@@ -61,7 +61,7 @@
 			name="fossilGroup"
 		    class="nz.cri.gns.fred.hibernate.FossilGroup"
 		>
-    		<column name="FOSSIL_GROUP_ID" />
+    		<column name="fossil_group_id" />
 		</many-to-one>
 
     <!-- bi-directional many-to-one association to Sample -->
@@ -70,7 +70,7 @@
 		class="nz.cri.gns.fred.hibernate.Sample"
         not-null="true"
     >
-        <column name="SAMPLE_ID" />
+        <column name="sample_id" />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Lab -->
@@ -79,7 +79,7 @@
         class="nz.cri.gns.fred.hibernate.Lab"
         not-null="true"
     >
-        <column name="LAB_ID" />
+        <column name="lab_id" />
     </many-to-one>
 
 </class>

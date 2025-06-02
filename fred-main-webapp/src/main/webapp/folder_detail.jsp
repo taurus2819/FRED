@@ -346,10 +346,13 @@
 					var nameTd = document.createElement("td");
 					nameTd.setAttribute("class", "heading");
 					nameTd.appendChild(document.createTextNode(featureIdentName));
-					if (featureNode.getElementsByTagName("feature-name")[0].firstChild != null && featureNode.getElementsByTagName("feature-name")[0].firstChild.nodeValue != featureIdentName) {
-						nameTd.appendChild(document.createElement("br"));
-						nameTd.appendChild(document.createTextNode("(" + featureNode.getElementsByTagName("feature-name")[0].firstChild.nodeValue + ")"));
-					}
+                                        nameTd.appendChild(document.createTextNode("{" + featureNode.getElementsByTagName("feature-name")[0].firstChild.nodeValue + "}"));
+//					if (featureNode.getElementsByTagName("feature-name")[0].firstChild != null && featureNode.getElementsByTagName("feature-name")[0].firstChild.nodeValue != featureIdentName) {
+//						nameTd.appendChild(document.createElement("br"));
+//						nameTd.appendChild(document.createTextNode("(" + featureNode.getElementsByTagName("feature-name")[0].firstChild.nodeValue + ")"));
+//					} else {
+//						nameTd.appendChild(document.createElement("br"));
+//					}
 					nameTd.appendChild(document.createTextNode("\u00a0\u00a0"));
 					tr.appendChild(nameTd);
 					var typeTd = document.createElement("td");

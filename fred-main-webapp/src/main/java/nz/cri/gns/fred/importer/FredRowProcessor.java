@@ -85,13 +85,13 @@ public class FredRowProcessor extends TemplateRowProcessor {
         // The FR_NUMBER and MASTERSHEET are populated during the approval process.
         switch (spreadsheetType) {
             case "FRED_OUTCROP":
-                update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
-                update.set("FEATURE_ID$FEATURE_NAME", featureName);
-                update.set("FEATURE_ID$FIELD_NUMBER", featureName);
-                update.set("FEATURE_ID$ORIG_COORD", getOrigCoords(row));
-                update.set("FEATURE_ID$ORIG_SYSTEM_ID", findOrigSystemId(row, "ORIG_SYSTEM_ID"));
+                update.set("feature_id$feature_type", "Outcrop");
+                update.set("feature_id$feature_name", featureName);
+                update.set("feature_id$FIELD_NUMBER", featureName);
+                update.set("feature_id$ORIG_COORD", getOrigCoords(row));
+                update.set("feature_id$ORIG_SYSTEM_ID", findOrigSystemId(row, "ORIG_SYSTEM_ID"));
 //                update.set("FEATURE_ID$COORD_COMMENTS", getRowValueString(row, "COORD_COMMENTS"));
-                update.set("FEATURE_ID$LOCALITY", getRowValueString(row, "LOCALITY"));
+                update.set("feature_id$LOCALITY", getRowValueString(row, "LOCALITY"));
                 update.set("STRAT_UNIT", getRowValueString(row, "STRAT_UNIT"));
                 update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
                 update.set("DEPOSITION_ENV", getRowValueString(row, "INFERRED_ENVIRONMENT"));
@@ -129,22 +129,22 @@ public class FredRowProcessor extends TemplateRowProcessor {
     private void createAudit(Row row, Modify update) throws RowImportException {
         Integer folderId = findFolderId(row, "FOLDER");
 
-        Create c = schema.insert("AUDIT_TABLE");
-        c.set("WORKING_FOLDER_ID", folderId);
+        Create c = schema.insert("audit_table");
+        c.set("working_folder_id", folderId);
         // default audit status is already "working".
-        c.set("CREATED_DATE", new Date()); // TODO: should be in the DDL.
-        c.set("CREATED_BY_ID", user.getId());
-        c.set("DATA_ORIGIN_ID", 909); // Excel template.
+        c.set("created_date", new Date()); // TODO: should be in the DDL.
+        c.set("created_by_id", user.getId().intValue());
+        c.set("data_origin_id", 909); // Excel template.
         String workingComments = null;
         String recollectionOf = null;
-        if (hasRowValue(row, "WORKING_COMMENTS")) {
-            workingComments = getRowValueString(row, "WORKING_COMMENTS");
+        if (hasRowValue(row, "working_comments")) {
+            workingComments = getRowValueString(row, "working_comments");
         }
         if (hasRowValue(row, "RECOLLECTION_OF")) {
             recollectionOf = getRowValueString(row, "RECOLLECTION_OF");
         }
         if (null != workingComments || null != recollectionOf) {
-            c.set("WORKING_COMMENTS", FeatureUtil.combineWorkingComments(recollectionOf, workingComments));
+            c.set("working_comments", FeatureUtil.combineWorkingComments(recollectionOf, workingComments));
         }
 
         try {
@@ -152,10 +152,10 @@ public class FredRowProcessor extends TemplateRowProcessor {
         } catch (SQLException ex) {
             throw new RowImportException(row, "FOLDER", "Could not create AUDIT entry.", ex);
         }
-        Integer auditId = (Integer) c.get("AUDIT_ID");
+        Integer auditId = (Integer) c.get("audit_id");
 
-        update.set("AUDIT_ID", auditId);
-        update.set("FEATURE_ID$AUDIT_ID", auditId);
+        update.set("audit_id", auditId);
+        update.set("feature_id$audit_id", auditId);
     }
 
     private Integer findFolderId(Row row, String code) throws RowImportException {
@@ -176,7 +176,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     @Override
     protected void afterPerformRow(Row row, Modify update) throws RowImportException {
-        rowToSampleId.put(row.getRowNum(), (Integer) update.get("SAMPLE_ID"));
+        rowToSampleId.put(row.getRowNum(), (Integer) update.get("sample_id"));
         insertCollectors(row, update);
         insertStratRelationships(row, update);
         insertAdditionalFeatures(row, update);
@@ -190,7 +190,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
             "SAMPLE_RELATIONSHIP_PREP",
             "SAMPLE_RELATIONSHIP_REFERENCE",
             "SAMPLES_NEARBY"}) {
-            for (RowSingleValue rv : getRowMultiValue(row, each)) {
+            for (RowSingleValue rv : getRowMultiValue(row, each.toLowerCase())) {
                 if (null != rv) {
                     rv.markUsed();
                 }
@@ -416,12 +416,12 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     private void insertCollectors(Row row, Modify update) throws RowImportException {
         try {
-            List<RowSingleValue> collectors = getRowMultiValue(row, "COLLECTOR_NAME");
+            List<RowSingleValue> collectors = getRowMultiValue(row, "collector_name");
             for (RowSingleValue each : collectors) {
                 if (null != each) {
                     Integer personId;
                     personId = findPersonId(row, each, () -> insertPerson(row, each));
-                    Integer sampleId = (Integer) (update.get("SAMPLE_ID"));
+                    Integer sampleId = (Integer) (update.get("sample_id"));
                     associateCollector(sampleId, personId);
                 }
             }
