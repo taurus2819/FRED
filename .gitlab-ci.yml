@@ -71,6 +71,8 @@ deploy-staging:
   tags:
     - docker
   stage: deploy
+  rules:
+  - if: $CI_COMMIT_REF_NAME == "master"  
   script:
     - mvn $MAVEN_CLI_OPTS -DdeploymentURL=$webapp_staging_url:8005/manager/text tomcat7:redeploy
   when: manual
@@ -79,7 +81,19 @@ test-staging:
   tags:
     - docker
   stage: test-staging
+  rules:
+  - if: $CI_COMMIT_REF_NAME == "master"  
   script:
     - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
   when: manual
 
+deploy-staging-personal:
+  tags:
+    - docker
+  stage: deploy
+  script:
+    - varName="port_prefix_${GITLAB_USER_LOGIN}"
+    - port="${!varName}005"
+    - mvn $MAVEN_CLI_OPTS install -DdeploymentURL=$webapp_staging_url:$port/manager/text tomcat7:redeploy -Dmaven.test.skip=true
+    - mvn $MAVEN_CLI_OPTS  clean verify -Pdevelopment
+  when: manual
