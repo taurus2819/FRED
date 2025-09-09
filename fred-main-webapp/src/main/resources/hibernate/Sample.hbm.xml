@@ -157,13 +157,13 @@
         <!-- Associations -->
   
         <!-- bi-directional many-to-one association to ColourModifier -->
-<!--        <many-to-one
+       <many-to-one
             name="colourModifier"
             class="nz.cri.gns.fred.hibernate.ColourModifier"
             not-null="true"
         >
             <column name="modifier_id" />
-        </many-to-one>-->
+        </many-to-one>
         <!-- bi-directional many-to-one association to Hardness -->
         <many-to-one
             name="hardness"

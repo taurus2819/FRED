@@ -151,6 +151,38 @@ function setAccuracy(datID, form) {
         "localityDescInput", "localityDescErrorRow", "localityDescErrorText",
         "A locality description is required");
 //--></script>
+
+<script>
+// Save form values to localStorage
+window.addEventListener("beforeunload", function () {
+  localStorage.setItem("coordType", document.getElementById("coordTypeInput").value);
+  localStorage.setItem("mapSheet", document.getElementById("MapSheetInput").value);
+  localStorage.setItem("east", document.getElementById("eastInput").value);
+  localStorage.setItem("north", document.getElementById("northInput").value);
+  localStorage.setItem("localityDesc", document.getElementById("localityDescInput").value);
+});
+
+// Load form values from localStorage when the page loads
+window.addEventListener("DOMContentLoaded", function () {
+  if (localStorage.getItem("coordType")) {
+    document.getElementById("coordTypeInput").value = localStorage.getItem("coordType");
+    updateCoordTypes(document.getElementById("coordTypeInput")); // Re-trigger label and visibility update
+  }
+
+  if (localStorage.getItem("mapSheet"))
+    document.getElementById("MapSheetInput").value = localStorage.getItem("mapSheet");
+
+  if (localStorage.getItem("east"))
+    document.getElementById("eastInput").value = localStorage.getItem("east");
+
+  if (localStorage.getItem("north"))
+    document.getElementById("northInput").value = localStorage.getItem("north");
+
+  if (localStorage.getItem("localityDesc"))
+    document.getElementById("localityDescInput").value = localStorage.getItem("localityDesc");
+});
+</script>
+
 <tr id="localityDescErrorRow" hidden="hidden"><td></td><td></td><td id="localityDescErrorText" style="color: #FF0000"></td></tr>
 <tr><td></td><td class="smallheading">Country</td><td>{@countryCombo}</td></tr>
 <tr><td></td><td class="smallheading">Coordinate<br />Comments</td><td><textarea name="CoordComm" cols="40" rows="5">{@coordComm}</textarea></td></tr>

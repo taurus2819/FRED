@@ -20,7 +20,7 @@
     <id
         name="carbonateId"
         type="int"
-        column="CARBONATE_ID"
+        column="carbonate_id"
     >
         <generator class="assigned" />
     </id>
