@@ -146,14 +146,14 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core-pg</artifactId>
-            <version>4.0.32</version>
+            <version>4.0.33</version>
             <exclusions>
             <exclusion>
             <groupId>jakarta.activation</groupId>
             <artifactId>jakarta.activation-api</artifactId>
             </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>      
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>

@@ -134,7 +134,7 @@ public class SiteModelUtil extends ModelUtil {
             if(siteJson.has("qmapsheet") && !siteJson.isNull("qmapsheet")){
                 siteView.setQmapSheet(siteJson.getString("qmapsheet"));
             }
-        } catch (ParseException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(SiteModelUtil.class.getName()).log(Level.SEVERE, "Site details unavailable");
         }
         return siteView;
@@ -355,7 +355,7 @@ public class SiteModelUtil extends ModelUtil {
                 island.setName(fullObject.getString("name"));
                 islands.add(island);
             }
-        } catch (ParseException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(SiteModelUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -402,7 +402,7 @@ public class SiteModelUtil extends ModelUtil {
                 fullObject = siteModelArray.getJSONObject(val);
                 siteIdList.add(Integer.parseInt(fullObject.get("siteId").toString()));
             }
-        } catch (ParseException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(SiteModelUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
         return siteIdList;        
