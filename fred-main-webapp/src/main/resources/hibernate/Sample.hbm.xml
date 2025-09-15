@@ -162,7 +162,7 @@
             class="nz.cri.gns.fred.hibernate.ColourModifier"
             not-null="true"
         >
-            <column name="modifier_id" />
+            <column name="colour_modifier_id" />
         </many-to-one>
         <!-- bi-directional many-to-one association to Hardness -->
         <many-to-one
