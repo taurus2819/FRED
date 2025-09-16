@@ -60,7 +60,8 @@ public class PersonUtil extends ModelUtil {
                 crit.add(Expression.ilike("name", str, MatchMode.END));
                 break;
         }
-        return fredDAO.getList(Person.class, crit, maxMatches);
+        //return fredDAO.getList(Person.class, crit, maxMatches);
+        return null; //temp
     }
 
     public List<Person> getPeople() throws StorageAccessException {

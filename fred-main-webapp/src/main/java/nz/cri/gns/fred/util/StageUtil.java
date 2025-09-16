@@ -6,9 +6,9 @@ import java.util.Vector;
 
 import javax.naming.NamingException;
 
-import net.sf.hibernate.expression.Criterion;
-import net.sf.hibernate.expression.Expression;
-import net.sf.hibernate.expression.MatchMode;
+//import net.sf.hibernate.expression.Criterion;
+//import net.sf.hibernate.expression.Expression;
+//import net.sf.hibernate.expression.MatchMode;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
@@ -219,11 +219,17 @@ public class StageUtil extends ModelUtil {
         return getAgeStop(stage).getTopAge();
     }
 
+/*
     public List<Age> getMatchingAges(String str, int maxMatches) throws StorageAccessException {
         List<Criterion> criteria = new Vector<Criterion>();
         criteria.add(Expression.or(Expression.ilike("name", str, MatchMode.START),
                 Expression.ilike("code", str, MatchMode.START)));
         return fredDAO.getList(Age.class, criteria, maxMatches);
+    }
+    */
+
+   public List<Age> getMatchingAges(String str, int maxMatches){
+        return null; //temp
     }
 
     public Age createAge() {

@@ -18,7 +18,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.db.util.SiteUtil.SiteException;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.site.util.OrigCoordInfoUtil;
 import nz.cri.gns.fred.site.util.SiteModel;

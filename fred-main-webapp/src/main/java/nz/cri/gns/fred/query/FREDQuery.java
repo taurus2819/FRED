@@ -40,7 +40,7 @@ import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueFie
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.hibernate.Island;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;

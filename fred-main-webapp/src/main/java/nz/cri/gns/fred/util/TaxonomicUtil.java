@@ -221,6 +221,7 @@ public class TaxonomicUtil extends ModelUtil {
         return fredDAO.get(palListId, nz.cri.gns.fred.hibernate.PalList.class);
     }
 
+/*
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
         List<Criterion> criteria = new Vector<>();
         if (taxonomicGroup != null) {
@@ -238,7 +239,12 @@ public class TaxonomicUtil extends ModelUtil {
             return taxon;
         }
         return null;
-    }
+    }*/
+
+   public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
+        return null;
+        //this is temporary
+   }
 
     public Taxon createTaxon() {
         return fredDAO.createNewTaxon();

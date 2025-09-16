@@ -25,7 +25,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Paleontology;
@@ -883,11 +883,18 @@ public class ExportServlet extends FREDHibernateServlet {
      * @return the retrieved samples
      * @throws HibernateException
      */
-    private List<Sample> getBatch(String from, List<String> ids) throws HibernateException {
+    /*private List<Sample> getBatch(String from, List<String> ids) throws HibernateException {
         String idList = ids.stream().collect(Collectors.joining(", "));
         String qstr = from  + " WHERE S.id IN (" + idList + ")";
         Query query = FredHibernate.get().currentSession().createQuery(qstr);
         return query.list();
+    }*/
+
+
+    private List<Sample> getBatch(String from, List<String> ids)  {
+
+        return null;//temp
+
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

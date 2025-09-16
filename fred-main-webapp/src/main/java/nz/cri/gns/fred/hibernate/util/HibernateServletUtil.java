@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 
 /**
  * A utility for safely closing the current hibernate session.
