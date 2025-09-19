@@ -535,6 +535,8 @@ public class HibernateDAOFactory
 
     @Override
     public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object... parameters) throws StorageAccessException {
+        System.out.println("at HibernateDAOFactory.getList(): " + query);
+        
         return getList(query, null, clazz, parameters);
     }
 
@@ -578,6 +580,8 @@ public class HibernateDAOFactory
      */
     @Override
     public <T extends Comparable<? super T>> List<T> getList(String query, Integer maxResults, Class<T> clazz, Object... parameters) throws StorageAccessException {
+        System.out.println("at HibernateDAOFactory.getList2(): " + query);
+        
         List<T> items = HibernateUtils.list(provider, query, maxResults, clazz, parameters);
         Collections.sort(items);
         return items;
@@ -614,6 +618,9 @@ public class HibernateDAOFactory
 
     @Override
     public <T extends Comparable<? super T>> List<T> getUnsortedList(String query, Class<T> clazz, Object... parameters) throws StorageAccessException {
+        
+        //System.out.println("at HibernateDAOFactory.getUnsortedList(): " + query);
+        
         return getUnsortedList(query, null, clazz, parameters);
     }
 
@@ -704,7 +711,7 @@ public class HibernateDAOFactory
             throw new RuntimeException(e);
         }
     }*/
-   
+
 
     public LabSection getLabSection(String labName, String labCode) {
         return null; //temp

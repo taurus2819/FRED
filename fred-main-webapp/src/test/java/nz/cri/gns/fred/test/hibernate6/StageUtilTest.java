@@ -30,10 +30,59 @@ public class StageUtilTest {
         assertNotNull(age);
         assertEquals("Modern", age.getName());
         
-        
 
     }
 
-    
+    @Test
+    public void testAgeByName() throws StorageAccessException {
+        DAOFactory factory = FredHibernate.get().getDAOFactory();
+	    
+        StageUtil util= new StageUtil(factory);
+        assertNotNull(util);
+        
+        Age age = util.getAgeByName("Modern");
+        assertNotNull(age);
+        assertEquals(1, (int)age.getAgeId());
+    }
+
+
+    @Test
+    public void testMatchingAges() throws StorageAccessException {
+        DAOFactory factory = FredHibernate.get().getDAOFactory();
+	    
+        StageUtil util= new StageUtil(factory);
+        assertNotNull(util);
+
+        List<Age> ageList= util.getMatchingAges("Ma", 20);
+        assertNotNull(ageList);
+        assertEquals(9, ageList.size());
+        
+        
+    }
+
+    @Test
+    public void testCreateAge() throws StorageAccessException {
+        DAOFactory factory = FredHibernate.get().getDAOFactory();
+        
+        StageUtil util= new StageUtil(factory);
+        assertNotNull(util);
+
+        Age age = util.createAge();
+        assertNotNull(age);
+        age.setName("TestAge");
+        age.setCode("TestCode");
+        
+        age.setPeriod("TestPeriod");
+        age.setBaseAge(0.0);
+        age.setTopAge(0.0);
+        age.setComments("TestComments");
+        age.setObsoleteFlag(0);
+        age.setDuplicateFlag(0);
+        
+        util.saveOrUpdate(age);
+
+
+    }
+
      
 }

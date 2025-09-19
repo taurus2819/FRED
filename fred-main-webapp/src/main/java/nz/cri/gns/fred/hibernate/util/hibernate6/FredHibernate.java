@@ -62,6 +62,14 @@ public class FredHibernate implements HibernateProvider {
         props.put("hibernate.connection.username", "postgres");
         props.put("hibernate.connection.password", "Hs58W0C*&9");
         props.put("hibernate.default_schema", "fr");
+        props.put("show_sql", "true");
+        //props.put("logging.level.org.hibernate.SQL", "DEBUG");
+        //props.put("logging.level.org.hibernate.type.descriptor.sql.BasicBinder", "TRACE");
+
+        //logging.level.org.hibernate.SQL=DEBUG
+        //logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+
+        
 
 
 

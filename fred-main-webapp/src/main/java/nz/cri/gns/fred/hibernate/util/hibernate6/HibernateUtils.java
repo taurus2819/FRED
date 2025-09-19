@@ -14,6 +14,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import org.hibernate.Transaction;
+
 
 
 
@@ -81,7 +83,8 @@ public class HibernateUtils {
 	public static <T> T saveOrUpdate(HibernateProvider provider, T object) throws StorageAccessException {
 		return saveOrUpdate(provider, object, true);
 	}
-	public static <T> T saveOrUpdate(HibernateProvider provider, T object, boolean flush) throws StorageAccessException {
+	
+	/*public static <T> T saveOrUpdate(HibernateProvider provider, T object, boolean flush) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
 			session.saveOrUpdate(object);
@@ -91,7 +94,63 @@ public class HibernateUtils {
 	    } catch (Exception e) {
 	        throw new StorageAccessException(e);
 	    }
+	}*/
+
+	public static <T> T saveOrUpdate(HibernateProvider provider, T object, boolean flush) throws StorageAccessException {
+		Transaction tx = null;
+		try {
+			Session session = provider.currentSession();
+			tx = session.beginTransaction();
+			session.saveOrUpdate(object);
+			if (flush)
+				session.flush();
+			tx.commit();
+	        return object;
+	    } catch (Exception e) {
+	        
+			e.printStackTrace();
+            if(tx!=null){
+                tx.rollback();
+            }
+			
+			throw new StorageAccessException(e);
+	    }
 	}
+
+
+
+
+	/*
+
+	public static <T> T saveOrUpdate( T object) throws StorageAccessException {
+		
+        SessionFactory factory = HibernateUtil.getSessionFactory();
+        Transaction tx = null;
+        try (Session session = factory.openSession()) {
+
+            tx = session.beginTransaction();
+            session.saveOrUpdate(object);
+            session.flush();
+            
+            tx.commit();
+            return object;
+
+        }
+        catch(Exception e) {
+            
+            e.printStackTrace();
+            if(tx!=null){
+                tx.rollback();
+            }
+
+            
+            throw new StorageAccessException(e);
+        }
+
+	}
+
+	*/
+
 
 	public static <T> T update(HibernateProvider provider, T object) throws StorageAccessException {
 		return update(provider, object, true);
@@ -150,6 +209,8 @@ public class HibernateUtils {
 
 	
 	public static <T> List<T> list(HibernateProvider provider, String query, Class<T> clazz, Object ... parameters) throws StorageAccessException {
+		
+		System.out.println("at list(): " + query);
 		return list(provider, query, null, clazz, parameters);
 	}
 	
@@ -167,12 +228,34 @@ public class HibernateUtils {
 
 	}
 	
+	/*
 	public static <T> List<T> list(HibernateProvider provider, String query, Integer maxResults, Class<T> clazz, Object ... parameters) throws StorageAccessException {
+		System.out.println("at list2(): " + query);
+		
 		Session session = provider.currentSession();
 		try {
 			Query hqlQuery = session.createQuery(query);	
 			for (int i = 0; i < parameters.length; i++) {
 				hqlQuery.setParameter(i, parameters[i]);
+			}
+			if (maxResults != null)
+				hqlQuery.setMaxResults(maxResults);
+			@SuppressWarnings("unchecked")
+	        List<T> list = (List<T>)hqlQuery.list();
+			return list;
+		} catch (HibernateException e) {
+			throw new StorageAccessException(e);
+		}
+	}*/
+
+	public static <T> List<T> list(HibernateProvider provider, String query, Integer maxResults, Class<T> clazz, Object ... parameters) throws StorageAccessException {
+		System.out.println("at list2(): " + query);
+		
+		Session session = provider.currentSession();
+		try {
+			Query hqlQuery = session.createQuery(query);	
+			for (int i = 0; i < parameters.length; i++) {
+				hqlQuery.setParameter(i+1, parameters[i]); //note: in H6 the first param must be 1 not 0
 			}
 			if (maxResults != null)
 				hqlQuery.setMaxResults(maxResults);
