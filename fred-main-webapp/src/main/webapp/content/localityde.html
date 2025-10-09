@@ -152,7 +152,7 @@ function setAccuracy(datID, form) {
         "A locality description is required");
 //--></script>
 
-<script>
+<!--<script>
 // Save form values to localStorage
 window.addEventListener("beforeunload", function () {
   localStorage.setItem("coordType", document.getElementById("coordTypeInput").value);
@@ -181,7 +181,7 @@ window.addEventListener("DOMContentLoaded", function () {
   if (localStorage.getItem("localityDesc"))
     document.getElementById("localityDescInput").value = localStorage.getItem("localityDesc");
 });
-</script>
+</script>-->
 
 <tr id="localityDescErrorRow" hidden="hidden"><td></td><td></td><td id="localityDescErrorText" style="color: #FF0000"></td></tr>
 <tr><td></td><td class="smallheading">Country</td><td>{@countryCombo}</td></tr>
