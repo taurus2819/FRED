@@ -294,10 +294,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             attributes = Attributes.createNameOnlyAttributes("Carb");
             cSelectBox.writeBox(attributes, "-- Choose --", null, sample.getCarbonate(), out);
 
-//            template.loadUntil(out, "{@ColMod}");
-//            SelectBox<ColourModifier> cmSelectBox = new SelectBox<>(sampleUtil.getColourModifiers());
-//            attributes = Attributes.createNameOnlyAttributes("ColMod");
-//            cmSelectBox.writeBox(attributes, "-- Choose --", null, sample.getColourModifier(), out);
+            template.loadUntil(out, "{@ColMod}");
+            SelectBox<ColourModifier> cmSelectBox = new SelectBox<>(sampleUtil.getColourModifiers());
+            attributes = Attributes.createNameOnlyAttributes("ColMod");
+            cmSelectBox.writeBox(attributes, "-- Choose --", null, sample.getColourModifier(), out);
 
             template.loadUntil(out, "{@primaryColour}");
             SelectBox<RockColour> clSelectBox = new SelectBox<>(sampleUtil.getRockColours());
