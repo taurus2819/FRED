@@ -93,9 +93,9 @@ public interface Sample extends Audited, Comparable<Sample> {
 
     public void setCorrespondence(String correspondence);
 
-//    public ColourModifier getColourModifier();
-//
-//    public void setColourModifier(ColourModifier colourModifier);
+    public ColourModifier getColourModifier();
+
+    public void setColourModifier(ColourModifier colourModifier);
 
     public Hardness getHardness();
 

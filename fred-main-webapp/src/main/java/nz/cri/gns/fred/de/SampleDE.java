@@ -177,7 +177,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         sample.setWeathering(fromSample.getWeathering());
         sample.setHardness(fromSample.getHardness());
         sample.setCarbonate(fromSample.getCarbonate());
-//        sample.setColourModifier(fromSample.getColourModifier());
+        sample.setColourModifier(fromSample.getColourModifier());
         sample.setPrimaryColour(fromSample.getPrimaryColour());
         sample.setSecondaryColour(fromSample.getSecondaryColour());
         sample.setWet(fromSample.getWet());
@@ -294,10 +294,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             attributes = Attributes.createNameOnlyAttributes("Carb");
             cSelectBox.writeBox(attributes, "-- Choose --", null, sample.getCarbonate(), out);
 
-//            template.loadUntil(out, "{@ColMod}");
-//            SelectBox<ColourModifier> cmSelectBox = new SelectBox<>(sampleUtil.getColourModifiers());
-//            attributes = Attributes.createNameOnlyAttributes("ColMod");
-//            cmSelectBox.writeBox(attributes, "-- Choose --", null, sample.getColourModifier(), out);
+            template.loadUntil(out, "{@ColMod}");
+            SelectBox<ColourModifier> cmSelectBox = new SelectBox<>(sampleUtil.getColourModifiers());
+            attributes = Attributes.createNameOnlyAttributes("ColMod");
+            cmSelectBox.writeBox(attributes, "-- Choose --", null, sample.getColourModifier(), out);
 
             template.loadUntil(out, "{@primaryColour}");
             SelectBox<RockColour> clSelectBox = new SelectBox<>(sampleUtil.getRockColours());
@@ -1010,7 +1010,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         sample.setWeathering(getWeathering(request.getParameter("Weath")));
         sample.setHardness(getHardness(request.getParameter("Hard")));
         sample.setCarbonate(getCarbonate(request.getParameter("Carb")));
-//        sample.setColourModifier(getColourModifier(request.getParameter("ColMod")));
+        sample.setColourModifier(getColourModifier(request.getParameter("ColMod")));
         sample.setPrimaryColour(getColour(request.getParameter("ColourP")));
         sample.setSecondaryColour(getColour(request.getParameter("ColourS")));
 
