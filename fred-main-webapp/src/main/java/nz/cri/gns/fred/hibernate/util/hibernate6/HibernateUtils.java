@@ -200,12 +200,18 @@ public class HibernateUtils {
 	    }
 	}*/
 
-	public static <T> T getFirst(HibernateProvider provider, String query, String value, Class<T> clazz) throws StorageAccessException {
-		return null; //temp
-
-
-	
-	}
+	public static <T> T getFirst(HibernateProvider provider, String hql, String param, Class<T> clazz) throws StorageAccessException {
+            try {
+                Session session = provider.currentSession();
+                Query<T> query = session.createQuery(hql, clazz);
+                query.setParameter(1, param);  // Hibernate 6 uses 1-indexed parameters
+                query.setMaxResults(1);
+                List<T> results = query.getResultList();
+                return results.isEmpty() ? null : results.get(0);
+            } catch (HibernateException e) {
+                throw new StorageAccessException(e);
+            }
+    }
 
 	
 	public static <T> List<T> list(HibernateProvider provider, String query, Class<T> clazz, Object ... parameters) throws StorageAccessException {
@@ -248,24 +254,38 @@ public class HibernateUtils {
 		}
 	}*/
 
-	public static <T> List<T> list(HibernateProvider provider, String query, Integer maxResults, Class<T> clazz, Object ... parameters) throws StorageAccessException {
-		System.out.println("at list2(): " + query);
-		
-		Session session = provider.currentSession();
-		try {
-			Query hqlQuery = session.createQuery(query);	
-			for (int i = 0; i < parameters.length; i++) {
-				hqlQuery.setParameter(i+1, parameters[i]); //note: in H6 the first param must be 1 not 0
-			}
-			if (maxResults != null)
-				hqlQuery.setMaxResults(maxResults);
-			@SuppressWarnings("unchecked")
-	        List<T> list = (List<T>)hqlQuery.list();
-			return list;
-		} catch (HibernateException e) {
-			throw new StorageAccessException(e);
-		}
-	}
+	 /**
+     * Get a list of results from an HQL query with max results limit
+     * Note: In Hibernate 6, queries must use ?1, ?2 notation for positional parameters
+     * @param <T>
+     * @param provider
+     * @param hql
+     * @param maxResults
+     * @param clazz
+     * @param params
+     * @return 
+     * @throws nz.cri.gns.dataaccess.StorageAccessException 
+     */
+        public static <T> List<T> list(HibernateProvider provider, String hql, Integer maxResults,
+                                       Class<T> clazz, Object... params) throws StorageAccessException {
+            try {
+                Session session = provider.currentSession();
+                Query<T> query = session.createQuery(hql, clazz);
+
+                // Set parameters (Hibernate 6 uses 1-indexed parameters)
+                for (int i = 0; i < params.length; i++) {
+                    query.setParameter(i + 1, params[i]);
+                }
+
+                if (maxResults != null) {
+                    query.setMaxResults(maxResults);
+                }
+
+                return query.getResultList();
+            } catch (HibernateException e) {
+                throw new StorageAccessException(e);
+            }
+        }
 	
 	public static <T> List<T> listByNamedQuery(HibernateProvider provider, String queryName, Class<T> clazz, Object ... parameters) throws StorageAccessException {
 		return list(provider, queryName, null, clazz, parameters);

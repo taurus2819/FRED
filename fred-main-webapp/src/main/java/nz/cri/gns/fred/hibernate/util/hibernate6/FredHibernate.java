@@ -58,7 +58,8 @@ public class FredHibernate implements HibernateProvider {
 
         props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         props.put("hibernate.connection.driver_class", "org.postgresql.Driver");
-        props.put("hibernate.connection.url", "jdbc:postgresql://appsdb.gns.cri.nz:5433/gns_dev?currentSchema=fr");
+//        props.put("hibernate.connection.url", "jdbc:postgresql://appsdb.gns.cri.nz:5433/gns_dev?currentSchema=fr");
+        props.put("hibernate.connection.url", "jdbc:postgresql://appsdb.gns.cri.nz:5437/gns?currentSchema=fr");
         props.put("hibernate.connection.username", "postgres");
         props.put("hibernate.connection.password", "Hs58W0C*&9");
         props.put("hibernate.default_schema", "fr");

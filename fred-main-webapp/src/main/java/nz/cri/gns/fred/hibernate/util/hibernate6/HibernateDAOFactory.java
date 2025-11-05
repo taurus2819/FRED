@@ -535,7 +535,7 @@ public class HibernateDAOFactory
 
     @Override
     public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object... parameters) throws StorageAccessException {
-        System.out.println("at HibernateDAOFactory.getList(): " + query);
+        System.out.println("HibernateDAOFactory (line# 538): at HibernateDAOFactory.getList(): " + query);
         
         return getList(query, null, clazz, parameters);
     }
