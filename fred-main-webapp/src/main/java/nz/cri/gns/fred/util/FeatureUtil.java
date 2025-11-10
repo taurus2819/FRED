@@ -499,15 +499,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public List<Audit> getAuditsFor(Folder folder) throws StorageAccessException {
-        return fredDAO.getList("FROM AuditTable as a WHERE a.folder = ?", Audit.class, folder);
+        return fredDAO.getList("FROM AuditTable as a WHERE a.folder = ?1", Audit.class, folder);
     }
 
     public List<Feature> getFeaturesBySample(Audit audit) throws StorageAccessException {
-        return fredDAO.getList("SELECT s.feature FROM Sample AS s WHERE s.audit = ?", Feature.class, audit);
+        return fredDAO.getList("SELECT s.feature FROM Sample AS s WHERE s.audit = ?1", Feature.class, audit);
     }
 
     public List<Feature> getFeaturesByRecord(Audit audit) throws StorageAccessException {
-        return fredDAO.getList("SELECT r.sample.feature FROM Record AS r WHERE r.audit = ?", Feature.class, audit);
+        return fredDAO.getList("SELECT r.sample.feature FROM Record AS r WHERE r.audit = ?1", Feature.class, audit);
     }
 
     public List<Feature> getFeaturesBySampleSubquery(String sampleSubquery) throws StorageAccessException {
