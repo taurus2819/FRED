@@ -220,7 +220,7 @@ public class HibernateDAOFactory
 
     @Override
     public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException {
-        return HibernateUtils.getFirst(provider, "FROM TaxonomicGroup As g WHERE g.name = ?", groupName, TaxonomicGroup.class);
+        return HibernateUtils.getFirst(provider, "FROM TaxonomicGroup As g WHERE g.name = ?1", groupName, TaxonomicGroup.class);
     }
 
     //FeatureDAO methods
@@ -288,7 +288,7 @@ public class HibernateDAOFactory
 
     @Override
     public FossilGroup getFossilGroup(String name) throws StorageAccessException {
-        return HibernateUtils.getFirst(provider, "FROM FossilGroup AS fg WHERE fg.name = ?", name, FossilGroup.class);
+        return HibernateUtils.getFirst(provider, "FROM FossilGroup AS fg WHERE fg.name = ?1", name, FossilGroup.class);
     }
 
     @Override
@@ -372,7 +372,7 @@ public class HibernateDAOFactory
 
     @Override
     public SedimentaryFeatureType getSedimentaryFeatureTypeWithName(String sedFeature) throws StorageAccessException {
-        return HibernateUtils.getFirst(provider, "FROM SedimentaryFeatureType AS t WHERE t.name = ?", sedFeature, SedimentaryFeatureType.class);
+        return HibernateUtils.getFirst(provider, "FROM SedimentaryFeatureType AS t WHERE t.name = ?1", sedFeature, SedimentaryFeatureType.class);
     }
 
     @Override
@@ -401,7 +401,7 @@ public class HibernateDAOFactory
 
     @Override
     public Folder getMasterfileFolder(Record record) throws StorageAccessException {
-        return HibernateUtils.getFirst(provider, "SELECT f FROM Record AS r INNER JOIN r.sample AS s INNER JOIN s.feature AS feat INNER JOIN feat.masterFile AS f WHERE r.recordId = ?", record.getRecordId(), Folder.class);
+        return HibernateUtils.getFirst(provider, "SELECT f FROM Record AS r INNER JOIN r.sample AS s INNER JOIN s.feature AS feat INNER JOIN feat.masterFile AS f WHERE r.recordId = ?1", record.getRecordId(), Folder.class);
     }
 
     /**
@@ -663,27 +663,27 @@ public class HibernateDAOFactory
 
     @Override
     public Lab findLab(String labName) throws StorageAccessException {
-        return HibernateUtils.getFirst(provider, "FROM Lab As l WHERE l.name = ?", labName, Lab.class);
+        return HibernateUtils.getFirst(provider, "FROM Lab As l WHERE l.name = ?1", labName, Lab.class);
     }
 
     @Override
     public StratigraphicUnit findStratigraphicUnit(String name) throws StorageAccessException {
-        return HibernateUtils.getFirst(provider, "FROM StratigraphicUnit AS s WHERE s.name = ?", name, StratigraphicUnit.class);
+        return HibernateUtils.getFirst(provider, "FROM StratigraphicUnit AS s WHERE s.name = ?1", name, StratigraphicUnit.class);
     }
 
     @Override
     public RelationshipType findRelationshipType(String name) throws StorageAccessException {
-        return HibernateUtils.getFirst(provider, "FROM RelationshipType AS r WHERE r.name = ?", name, RelationshipType.class);
+        return HibernateUtils.getFirst(provider, "FROM RelationshipType AS r WHERE r.name = ?1", name, RelationshipType.class);
     }
 
     @Override
     public List<Paleontology> getPaleontologies(Sample sample) throws StorageAccessException {
-        return HibernateUtils.list(provider, "FROM Paleontology AS p WHERE p.record.sample = ?", Paleontology.class, sample);
+        return HibernateUtils.list(provider, "FROM Paleontology AS p WHERE p.record.sample = ?1", Paleontology.class, sample);
     }
 
     @Override
     public List<Adoption> getAdoptions(Sample sample) throws StorageAccessException {
-        return HibernateUtils.list(provider, "FROM Adoption AS a WHERE a.record.sample = ?", Adoption.class, sample);
+        return HibernateUtils.list(provider, "FROM Adoption AS a WHERE a.record.sample = ?1", Adoption.class, sample);
     }
 
     @Override

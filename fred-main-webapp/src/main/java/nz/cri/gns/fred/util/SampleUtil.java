@@ -904,19 +904,19 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public RelationType getRelationType(String relationTypeName) throws StorageAccessException {
-        return fredDAO.getFirst("FROM RelationType AS rt WHERE rt.name = ?", RelationType.class, relationTypeName);
+        return fredDAO.getFirst("FROM RelationType AS rt WHERE rt.name = ?1", RelationType.class, relationTypeName);
     }
 
     public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException {
         try {
-            return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ? AND r.name = ?", RelationshipType.class, relationType, relationshipTypeName).get(0);
+            return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?1 AND r.name = ?2", RelationshipType.class, relationType, relationshipTypeName).get(0);
         } catch (StorageAccessException e) {
         }
         return null;
     }
 
     public List<Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException {
-        return fredDAO.getList("FROM Relationship AS r WHERE r.relationshipType = ? AND r.sample = ?", Relationship.class, relationshipType, sample);
+        return fredDAO.getList("FROM Relationship AS r WHERE r.relationshipType = ?1 AND r.sample = ?2", Relationship.class, relationshipType, sample);
     }
 
     public static String getDipStrikeDescription(Sample sample) {
@@ -1198,7 +1198,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public DrillType getDrillType(String drillType) throws StorageAccessException {
-        return fredDAO.getFirst("FROM DrillType AS t WHERE t.name = ?", DrillType.class, drillType);
+        return fredDAO.getFirst("FROM DrillType AS t WHERE t.name = ?1", DrillType.class, drillType);
     }
 
     public List<DrillType> getDrillTypes() throws StorageAccessException {
@@ -1291,7 +1291,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     public List<RelationshipType> getRelationshipTypes(String relationType) throws StorageAccessException {
         RelationType relType = getRelationType(relationType);
-        return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?", RelationshipType.class, relType);
+        return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?1", RelationshipType.class, relType);
     }
 
     public RelationshipType findRelationshipType(String name) throws StorageAccessException {

@@ -580,13 +580,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate, String status) throws StorageAccessException {
-        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ? AND "
+        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ?1 AND "
                 + (status.equals(FREDConstants.WAITING) ? "f.audit.submittedDate" : "f.audit.approvedDate")
-                + " BETWEEN ? AND ? AND f.audit.status = ?", Feature.class, masterfileFolder, startDate, endDate, status);
+                + " BETWEEN ?2 AND ?3 AND f.audit.status = ?4", Feature.class, masterfileFolder, startDate, endDate, status);
     }
 
     public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, String status) throws StorageAccessException {
-        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ? AND f.audit.status = ?", Feature.class, masterfileFolder, status);
+        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ?1 AND f.audit.status = ?2", Feature.class, masterfileFolder, status);
     }
 
     /**
@@ -876,7 +876,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public Integer getNextAvailableSerialNumber(String mapSheet) throws StorageAccessException {
-        Integer maxNum = fredDAO.getFirst("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE fr.serialNumber < 6000 AND fr.obsolete IS NULL AND fr.mapSheet = ?", Integer.class, mapSheet);
+        Integer maxNum = fredDAO.getFirst("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE fr.serialNumber < 6000 AND fr.obsolete IS NULL AND fr.mapSheet = ?1", Integer.class, mapSheet);
         if (maxNum == null) {
             return 1;
         }
@@ -1398,7 +1398,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public Country
             getCountry(String countryCode) throws StorageAccessException {
-        return fredDAO.getFirst("FROM Country AS c WHERE c.countryCode = ?", Country.class, countryCode);
+        return fredDAO.getFirst("FROM Country AS c WHERE c.countryCode = ?1", Country.class, countryCode);
     }
 
     public List<Country> getCountries() throws StorageAccessException {

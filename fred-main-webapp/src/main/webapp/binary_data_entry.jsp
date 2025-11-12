@@ -12,7 +12,7 @@
         %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
         %><%@page import="nz.cri.gns.jsp.PageState"
         %><%@page import="nz.cri.gns.auth.domain.User"
-        %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+        %><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
         %><%@page import="nz.cri.gns.db.metadata.DocumentAttacher"
         %><%@page import="nz.cri.gns.db.metadata.MetadataRecord"
         %><%@page import="nz.cri.gns.jsp.IconnedLink"
