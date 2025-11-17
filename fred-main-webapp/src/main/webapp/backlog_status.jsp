@@ -3,7 +3,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="java.net.URL"
 %><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
-%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+%><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.BacklogStatus"
 %><%@page import="nz.cri.gns.fred.model.Folder"

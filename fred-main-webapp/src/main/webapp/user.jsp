@@ -4,7 +4,7 @@
 %><%@page import="nz.cri.gns.jsp.NewExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.util.UserUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
-%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+%><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.FrUserView"
 %><%@page import="nz.cri.gns.fred.model.FrUser"
 %><%@page import="nz.cri.gns.auth.domain.User"
