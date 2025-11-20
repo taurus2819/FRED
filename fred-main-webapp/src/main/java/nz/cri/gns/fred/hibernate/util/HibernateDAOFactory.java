@@ -3,6 +3,7 @@ package nz.cri.gns.fred.hibernate.util;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import net.sf.hibernate.Criteria;
 import net.sf.hibernate.HibernateException;
@@ -530,7 +531,26 @@ public class HibernateDAOFactory
     @Override
     public <T extends Comparable<? super T>> List<T> getList(String query, Integer maxResults, Class<T> clazz, Object... parameters) throws StorageAccessException {
         List<T> items = HibernateUtils.list(provider, query, maxResults, clazz, parameters);
-        Collections.sort(items);
+        try {
+            items = items.stream()
+             .filter(Objects::nonNull)
+             .collect(Collectors.toList());
+
+            Collections.sort(items);
+        } catch (IllegalArgumentException e) {
+            for (int i = 0; i < items.size(); i++) {
+                for (int j = i + 1; j < items.size(); j++) {
+                    try {
+                        items.get(i).compareTo(items.get(j));
+                        items.get(j).compareTo(items.get(i));
+                        System.out.println("Comparing items: " + items.get(i) + " vs " + items.get(j));
+                    } catch (Exception ex) {
+                        System.out.println("Problem with: " + items.get(i) + " vs " + items.get(j));
+                    }
+                }
+            }
+            throw e;
+        }
         return items;
     }
 
