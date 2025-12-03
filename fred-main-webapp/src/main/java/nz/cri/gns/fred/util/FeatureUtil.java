@@ -511,7 +511,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public List<Feature> getFeaturesBySampleSubquery(String sampleSubquery) throws StorageAccessException {
-        List<Feature> cartesianFeatures = fredDAO.getList("select new Feature(s.feature.featureId, s.feature.frNumber) FROM Sample s WHERE s.sampleId in (" + sampleSubquery + ")", Feature.class);
+        //Hibernate6 : SemanticException - Missing constructor for type 'Feature' was thrown. Hibernate 2 accepted without
+        //a constructor. But, Hibernate 6 is very strict. If a "new Feature(...)" was in the hql query, then a constructor should be declared in the Feature.java
+        String hql =
+                "select distinct s.feature " +
+                "from Sample s " +
+                "where s.sampleId in (" + sampleSubquery + ")";
+        List<Feature> cartesianFeatures = fredDAO.getList(hql, Feature.class);
         Set<Feature> features = new HashSet<>();
         features.addAll(cartesianFeatures);
         return FREDUtil.getSortedList(features);

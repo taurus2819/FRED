@@ -300,7 +300,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public List<Sample> getLightweightSamples(String sampleSubquery) throws StorageAccessException {
-        return fredDAO.getList("select new Sample(s.sampleId) FROM Sample AS s WHERE s.sampleId in (" + sampleSubquery + ")", Sample.class);
+        return fredDAO.getList("select s FROM Sample AS s WHERE s.sampleId in (" + sampleSubquery + ")", Sample.class);
     }
 
     public static String getDrillHoleDepthDescription(Sample sample) {
