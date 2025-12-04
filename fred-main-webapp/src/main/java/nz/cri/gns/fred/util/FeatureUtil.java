@@ -930,7 +930,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             if (frNumStr.indexOf("-") > 0) {
                 String[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
                 Integer endSerialNum = Integer.valueOf(frNumStr.substring(frNumStr.indexOf("-") + 1));
-                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], Integer.parseInt(frNumBits[1]), endSerialNum);
+                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.serialNumber BETWEEN ?2 AND ?3", FrNumber.class, frNumBits[0], Integer.parseInt(frNumBits[1]), endSerialNum);
             }
 
             //single
@@ -957,12 +957,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                     if (recoll == null) {
                         serial = num.substring(frNumStr.indexOf("/f") + 2); //serial: "0001"
                         serialNum = Integer.valueOf(serial);
-                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ?",
+                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.serialNumber = ?2",
                                 FrNumber.class, mapSheet, serialNum);
                     } else {
                         serial = num.substring(0, num.indexOf(recoll)).substring(frNumStr.indexOf("/f") + 2);
                         serialNum = Integer.valueOf(serial);
-                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ? AND f.recollectionNumber=?",
+                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.serialNumber = ?2 AND f.recollectionNumber=?3",
                                 FrNumber.class, mapSheet, serialNum, recoll);
                     }
                 }
@@ -1240,7 +1240,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public Feature
             getFeatureWithName(String name) throws StorageAccessException {
-        return fredDAO.getFirst("FROM Feature AS f WHERE f.featureName = ?", Feature.class, name);
+        return fredDAO.getFirst("FROM Feature AS f WHERE f.featureName = ?1", Feature.class, name);
     }
 
     /**
@@ -1265,12 +1265,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public FrNumber
             getFrNumber(String frNum) throws StorageAccessException {
-        return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NULL", FrNumber.class, frNum);
+        return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ?1 AND f.obsolete IS NULL", FrNumber.class, frNum);
     }
 
     public FrNumber
             getYardFrNumber(String frNum) throws StorageAccessException {
-        return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NOT NULL", FrNumber.class, frNum);
+        return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ?1 AND f.obsolete IS NOT NULL", FrNumber.class, frNum);
     }
 
     /**
@@ -1342,11 +1342,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
-        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.obsolete IS NULL", FrNumber.class, mapSheet);
+        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.obsolete IS NULL", FrNumber.class, mapSheet);
     }
 
     public List<FrNumber> getFrNumbers(String mapSheet, Integer start, Integer end) throws StorageAccessException {
-        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ? AND f.obsolete IS NULL", FrNumber.class, mapSheet, start, end);
+        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.serialNumber BETWEEN ?2 AND ?3 AND f.obsolete IS NULL", FrNumber.class, mapSheet, start, end);
     }
 
     private static final String RECOLL_COMMENTS = "*Recoll:";
@@ -1381,7 +1381,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public Integer
             getTotalFeatureCount() throws StorageAccessException {
-        return fredDAO.getFirst("SELECT COUNT(*) FROM Feature AS f WHERE f.audit.status=?", Integer.class, AuditUtil.APPROVED);
+        return fredDAO.getFirst("SELECT COUNT(*) FROM Feature AS f WHERE f.audit.status=?1", Integer.class, AuditUtil.APPROVED);
     }
 
     public Date
