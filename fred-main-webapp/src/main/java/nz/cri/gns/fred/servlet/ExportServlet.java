@@ -883,19 +883,20 @@ public class ExportServlet extends FREDHibernateServlet {
      * @return the retrieved samples
      * @throws HibernateException
      */
-    /*private List<Sample> getBatch(String from, List<String> ids) throws HibernateException {
+    private List<Sample> getBatch(String from, List<String> ids) throws HibernateException {
         String idList = ids.stream().collect(Collectors.joining(", "));
         String qstr = from  + " WHERE S.id IN (" + idList + ")";
-        Query query = FredHibernate.get().currentSession().createQuery(qstr);
+//        fredDAO.getList(qstr, Sample.class);
+        org.hibernate.query.Query<Sample> query = FredHibernate.get().currentSession().createQuery(qstr, Sample.class);
         return query.list();
-    }*/
-
-
-    private List<Sample> getBatch(String from, List<String> ids)  {
-
-        return null;//temp
-
     }
+
+
+//    private List<Sample> getBatch(String from, List<String> ids)  {
+//
+//        return null;//temp
+//
+//    }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
