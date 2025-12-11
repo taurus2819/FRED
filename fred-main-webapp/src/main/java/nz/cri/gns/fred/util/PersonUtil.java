@@ -1,11 +1,8 @@
 package nz.cri.gns.fred.util;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
-import net.sf.hibernate.expression.Criterion;
-import net.sf.hibernate.expression.Expression;
-import net.sf.hibernate.expression.MatchMode;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -24,13 +21,14 @@ public class PersonUtil extends ModelUtil {
     /**
      * Returns the person with the given name and will create them if they don't
      * exist
-     *
-     * @throws StorageAccessException
      */
     public Person findOrCreatePerson(String name) throws StorageAccessException {
-        Person person = fredDAO.getFirst("FROM Person As p WHERE p.name = ?", Person.class, name);
+        Person person = fredDAO.getFirst(
+            "FROM Person p WHERE p.name = ?1",
+            Person.class,
+            name
+        );
         if (person == null) {
-            //Insert them
             person = fredDAO.createNewPerson();
             person.setName(name);
             fredDAO.saveOrUpdate(person);
@@ -40,32 +38,52 @@ public class PersonUtil extends ModelUtil {
 
     /**
      * Returns the person with the given name or null if they don't exist
-     *
-     * @throws StorageAccessException
      */
     public Person findPerson(String name) throws StorageAccessException {
-        return fredDAO.getFirst("FROM Person As p WHERE p.name = ?", Person.class, name);
+        return fredDAO.getFirst(
+            "FROM Person p WHERE p.name = ?1",
+            Person.class,
+            name
+        );
     }
 
-    public List<Person> getMatchingPersons(String str, Match matchType, Integer maxMatches) throws StorageAccessException {
-        List<Criterion> crit = new Vector<Criterion>();
+    public List<Person> getMatchingPersons(String str, Match matchType, Integer maxMatches)
+            throws StorageAccessException {
+
+        if (str == null || str.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        // Build LIKE pattern based on match type
+        String pattern;
         switch (matchType) {
             case ANYWHERE:
-                crit.add(Expression.ilike("name", str, MatchMode.ANYWHERE));
+                pattern = "%" + str + "%";
                 break;
             case BEGINNING:
-                crit.add(Expression.ilike("name", str, MatchMode.START));
+                pattern = str + "%";
                 break;
             case END:
-                crit.add(Expression.ilike("name", str, MatchMode.END));
+                pattern = "%" + str;
                 break;
+            default:
+                // Fallback: behave like ANYWHERE
+                pattern = "%" + str + "%";
         }
-        //return fredDAO.getList(Person.class, crit, maxMatches);
-        return null; //temp
+
+        // Case-insensitive match using lower(...)
+        String hql = "FROM Person p " +
+                     "WHERE lower(p.name) LIKE lower(?1) " +
+                     "ORDER BY p.name";
+
+        if (maxMatches == null) {
+            return fredDAO.getList(hql, Person.class, pattern);
+        } else {
+            return fredDAO.getList(hql, maxMatches, Person.class, pattern);
+        }
     }
 
     public List<Person> getPeople() throws StorageAccessException {
-        return fredDAO.getList("FROM Person AS P", Person.class);
+        return fredDAO.getList("FROM Person p", Person.class);
     }
-
 }

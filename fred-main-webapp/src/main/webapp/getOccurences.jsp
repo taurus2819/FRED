@@ -24,7 +24,7 @@
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.Stage"
 %><%@page import="nz.cri.gns.fred.model.util.ByCreationDateComparator"
-%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+%><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><?xml version="1.0" encoding="UTF-8"?><%
 
