@@ -23,6 +23,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
+import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Audit;
@@ -173,24 +174,29 @@ public class HibernateDAOFactory
      */
     @SuppressWarnings("unchecked")
     @Override
-    /*
     public int getTaxaCount(TaxonomicGroup group, String status) throws StorageAccessException {
-        try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT count(taxon) FROM TaxonomicLookup AS taxon WHERE taxon.taxonomicGroup = :group AND taxon.status = :prov AND taxon.taxonomicName IS NOT NULL");
-            query.setEntity("group", group);
-            query.setString("prov", status);
-            List<Integer> list = query.list();
-            return list.get(0);
-        } catch (HibernateException | StorageAccessException e) {
-            throw new StorageAccessException(e);
-        }
-    }*/
+    try {
+        Session session = provider.currentSession();
 
-     public int getTaxaCount(TaxonomicGroup group, String status)  {
-        return 0; //temp
-     }
+        String hql =
+            "select count(taxon) " +
+            "from TaxonomicLookup taxon " +
+            "where taxon.taxonomicGroup = :group " +
+            "  and taxon.status = :status " +
+            "  and taxon.taxonomicName is not null";
 
+        Long count = session.createQuery(hql, Long.class)
+                            .setParameter("group", group)
+                            .setParameter("status", status)
+                            .getSingleResult();
+
+        // this is for safety to guard against overflow if you the count is huge
+        return Math.toIntExact(count);
+
+    } catch (HibernateException e) {
+        throw new StorageAccessException(e);
+    }
+}
 
     /**
      *
@@ -201,22 +207,33 @@ public class HibernateDAOFactory
      */
     @SuppressWarnings("unchecked")
     @Override
-    /*
+    
     public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException {
-        try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT taxon FROM TaxonomicLookup AS taxon WHERE taxon.taxonomicGroup = :group AND taxon.status = :prov AND taxon.taxonomicName IS NOT NULL");
-            query.setEntity("group", group);
-            query.setString("prov", status);
-            return query.list();
-        } catch (HibernateException | StorageAccessException e) {
-            throw new StorageAccessException(e);
-        }
-    }*/
+    try {
+        Session session = provider.currentSession();
 
-    public List<Taxon> getTaxa(TaxonomicGroup group, String status) {
-        return null; //temp
+        String hql =
+            "select taxon " +
+            "from TaxonomicLookup taxon " +
+            "where taxon.taxonomicGroup = :group " +
+            "  and taxon.status = :status " +
+            "  and taxon.taxonomicName is not null";
+
+        List<Taxon> results =
+            session.createQuery(hql, Taxon.class)
+                   .setParameter("group", group)
+                   .setParameter("status", status)
+                   .getResultList();
+
+        // Return as interface type
+        return (List) results;
+
+    } catch (HibernateException e) {
+        throw new StorageAccessException(e);
     }
+}
+
+
 
     @Override
     public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException {
@@ -413,21 +430,26 @@ public class HibernateDAOFactory
      */
     @SuppressWarnings("unchecked")
     @Override
-    /*public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
+    public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
         try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT ple FROM PalList AS ple INNER JOIN ple.paleontology AS p WHERE ple.taxonomicGroup = :grp AND p = :pal");
-            query.setEntity("grp", group);
-            query.setEntity("pal", pal);
-            return query.list();
-        } catch (HibernateException | StorageAccessException e) {
-            throw new StorageAccessException(e);
-        }
-    }*/
+        Session session = provider.currentSession();
 
-    public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group)  {
-        return null; //temp
+        String hql = "select ple from PalList ple where ple.taxonomicGroup = :grp and ple.paleontology = :pal";
+
+        return session.createQuery(hql, PaleontologyListEntry.class)
+                      .setParameter("grp", group)
+                      .setParameter("pal", pal)
+                      .getResultList();
+
+    } catch (HibernateException e) {
+        throw new StorageAccessException(e);
     }
+}
+    
+
+//    public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group)  {
+//        return null; //temp
+//    }
 
     @Override
     public Person createNewPerson() {

@@ -227,10 +227,17 @@ public interface FredDAO {
     public int getTaxaCount(TaxonomicGroup group, String status) throws StorageAccessException;
 
     /**
+     * @param group
+     * @param status
      * @return a list of taxa within the given group with the given status
      * @throws StorageAccessException
+     * below is the best signature since TaxonomicLookup implements your Taxon interface. 
+     * In Hibernate 6, the typed query result type must be a mapped entity class, not an interface.
+     * public List<? extends Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException
      */
+    
     public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException;
+
 
     /**
      * Returns the group with the given name
