@@ -850,9 +850,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
      */
     private String getCommonRelationshipPropertiesFromDescription(String desc, Relationship rel, RelationType relationType) throws StorageAccessException {
         //assume no distance data first
-
-        desc = desc.trim();
-        String[] parts = desc.split("\\s");
+        //modified for broken stratlex link AS-1295
+        desc = (desc == null) ? "" : desc.trim();
+        if (desc.isEmpty()) {
+            throw new IllegalArgumentException("Relationship description is blank");
+        }
+        String[] parts = desc.split("\\s+");
         int where = 0;
 
         try {
@@ -884,7 +887,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
                     where++;
                 }
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Relationship description not properly formatted");
+                throw new IllegalArgumentException(
+                    "Relationship description is invalid. token1=[" + parts[where-1] + "], token2=["
+                    + ((where < parts.length) ? parts[where] : "<none>") + "], desc=[" + desc + "]"
+                );
             }
         }
 
@@ -893,27 +899,38 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         if (relType == null) {
             relType = getRelationshipType(relationType, parts[where - 1] + " " + parts[where++]);
             if (relType == null) {
-                throw new IllegalArgumentException("Relationship description is invalid");
+                throw new IllegalArgumentException(
+                    "Relationship description is invalid. token1=[" + parts[where-1] + "], token2=["
+                    + ((where < parts.length) ? parts[where] : "<none>") + "], desc=[" + desc + "]"
+                );
             }
         }
         rel.setRelationshipType(relType);
         rel.setRelationType(relationType);
 
         return FREDUtil.join(parts, where);
-
     }
+	//modified for broken stratlex link AS-1295
 
     public RelationType getRelationType(String relationTypeName) throws StorageAccessException {
         return fredDAO.getFirst("FROM RelationType AS rt WHERE rt.name = ?", RelationType.class, relationTypeName);
     }
 
+    //modified for broken stratlex link AS-1295
     public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException {
-        try {
-            return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ? AND r.name = ?", RelationshipType.class, relationType, relationshipTypeName).get(0);
-        } catch (StorageAccessException e) {
-        }
-        return null;
+        if (relationType == null) return null;
+        if (relationshipTypeName == null) return null;
+
+        String name = relationshipTypeName.trim();
+        if (name.isEmpty()) return null;
+
+        List<RelationshipType> list =
+                fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ? AND r.name = ?",
+                        RelationshipType.class, relationType, name);
+
+        return (list == null || list.isEmpty()) ? null : list.get(0);
     }
+	//modified for stratlex link AS-1295
 
     public List<Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException {
         return fredDAO.getList("FROM Relationship AS r WHERE r.relationshipType = ? AND r.sample = ?", Relationship.class, relationshipType, sample);
