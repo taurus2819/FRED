@@ -482,6 +482,7 @@
 				attributes = Attributes.createNameOnlyAttributes("StratLex");
 				attributes.setAttribute("onChange", "form1.StratName.value = parseDropDown(StratLex.value);");
 				slSelectBox.writeBox(attributes, "-- Choose --", null, (StratigraphicUnit)null, new PrintWriter(out));
+//                                slSelectBox.writeBox(attributes, "-- Choose --", null, (StratigraphicUnit)sampleUtil.getStratigraphicUnits(), new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading">Stratigraphic Name</td><td><input type="text" name="StratName" size="40" /></td></tr>
 				</table>
