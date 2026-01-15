@@ -835,7 +835,7 @@ public class ExportServlet extends FREDHibernateServlet {
         } else if (request.getParameter("sampId") != null) {
             samples.add(sampleUtil.getSample(Integer.parseInt(
                 request.getParameter("sampId"))));
-        } else if (session.getAttribute("FRED.samples") != null && ((List<Sample>) session.getAttribute(
+        } else if (session.getAttribute("FRED.samples") != null && ((List<Sample>) session.getAttribute(          //from here
             "FRED.samples")).size() > 0) {
             List<Sample> samps = (List<Sample>) session.getAttribute(
                 "FRED.samples");
@@ -864,7 +864,7 @@ public class ExportServlet extends FREDHibernateServlet {
                 Set<Sample> featSamples = feature.getSamples();
                 if (featSamples != null && featSamples.size() > 0) {
                     for (Sample sample : featSamples) {
-                        samples.add(sample);
+                        samples.add(sample);                                            //to here
                     }
                 }
             }
