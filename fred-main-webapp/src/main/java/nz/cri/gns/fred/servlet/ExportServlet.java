@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -40,6 +41,7 @@ import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.TaxonomicNameAndGroup;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
+import nz.cri.gns.fred.servlet.util.SearchSessionState;
 import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
@@ -835,36 +837,36 @@ public class ExportServlet extends FREDHibernateServlet {
         } else if (request.getParameter("sampId") != null) {
             samples.add(sampleUtil.getSample(Integer.parseInt(
                 request.getParameter("sampId"))));
-        } else if (session.getAttribute("FRED.samples") != null && ((List<Sample>) session.getAttribute(          //from here
-            "FRED.samples")).size() > 0) {
-            List<Sample> samps = (List<Sample>) session.getAttribute(
-                "FRED.samples");
-            //use samples (if comes from simple and adv searches)
-            List<String> ids = new ArrayList(SAMPLE_BATCH_SIZE);
-            for (Sample samp : samps) {
-                ids.add(samp.getSampleId().toString());
-                // Oracle has a limit of 1000 values in an IN clause
-                // So we batch. An in clause is used to reduce the number of
-                // round trips over the network.
-                if (ids.size() == SAMPLE_BATCH_SIZE) {
-                    samples.addAll(getBatch(from, ids));
-                    ids.clear();
-                }
-            }
-            if (!ids.isEmpty()) {
-                samples.addAll(getBatch(from, ids));
-            }
-        } else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute(
-            "FRED.features")).size() > 0) {
-            List<Feature> features = (List<Feature>) session.getAttribute(
-                "FRED.features");
-            //use features for localityServlet
-            for (Feature feature : features) {
-                FredHibernate.get().currentSession().refresh(feature);
-                Set<Sample> featSamples = feature.getSamples();
-                if (featSamples != null && featSamples.size() > 0) {
-                    for (Sample sample : featSamples) {
-                        samples.add(sample);                                            //to here
+        } else {
+            Optional<SearchSessionState.Snapshot> snapshot = SearchSessionState.restore(session);
+            if (snapshot.isPresent()) {
+                SearchSessionState.Snapshot state = snapshot.get();
+                if (state.hasSampleIds()) {
+                    List<String> ids = new ArrayList(SAMPLE_BATCH_SIZE);
+                    for (Integer sampleId : state.getSampleIds()) {
+                        ids.add(sampleId.toString());
+                        // Oracle has a limit of 1000 values in an IN clause
+                        // So we batch. An in clause is used to reduce the number of
+                        // round trips over the network.
+                        if (ids.size() == SAMPLE_BATCH_SIZE) {
+                            samples.addAll(getBatch(from, ids));
+                            ids.clear();
+                        }
+                    }
+                    if (!ids.isEmpty()) {
+                        samples.addAll(getBatch(from, ids));
+                    }
+                } else {
+                    //use features for localityServlet
+                    for (Integer featureId : state.getFeatureIds()) {
+                        Feature feature = featureUtil.getFeature(featureId);
+                        FredHibernate.get().currentSession().refresh(feature);
+                        Set<Sample> featSamples = feature.getSamples();
+                        if (featSamples != null && featSamples.size() > 0) {
+                            for (Sample sample : featSamples) {
+                                samples.add(sample);
+                            }
+                        }
                     }
                 }
             }
