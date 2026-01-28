@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -184,15 +186,16 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 featureIds = snapshot.get().getFeatureIds();
                 sampleIds = snapshot.get().getSampleIds();
                 queryString = snapshot.get().getQueryString();
-                features = featureIds.stream()
-                        .map(fid -> {
-                            try {
-                                return featureUtil.getFeature(fid);
-                            } catch (StorageAccessException e) {
-                                throw new IllegalStateException(e);
-                            }
-                        })
-                        .collect(Collectors.toList());
+//                features = featureIds.stream()
+//                        .map(fid -> {
+//                            try {
+//                                return featureUtil.getFeature(fid);
+//                            } catch (StorageAccessException e) {
+//                                throw new IllegalStateException(e);
+//                            }
+//                        })
+//                        .collect(Collectors.toList());
+                features = loadFeaturesByIds(featureUtil, featureIds);
             }  else if ("Adv".equals(type)) {
                 long startTime =  System.currentTimeMillis();
                 if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_WEBSITE_ACCESS))) {
@@ -374,9 +377,14 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 }
 
                 List<Feature> pageFeatures = features.subList(startIndex - 1, endIndex);
+                Map<Integer, Feature> fullPageFeaturesById = loadFullFeaturesByIds(featureUtil, pageFeatures);
 
                 for (Feature feature : pageFeatures) {
-                    feature = featureUtil.getFeature(feature.getFeatureId());
+                    Feature fullFeature = fullPageFeaturesById.get(feature.getFeatureId());
+                    if (fullFeature == null) {
+                        fullFeature = featureUtil.getFeature(feature.getFeatureId());
+                    }
+                    feature = fullFeature;
                     if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
 
                         String checkedText = ""; // default un-checked
@@ -532,6 +540,43 @@ public class ResultList_jsp extends FREDHibernateServlet {
         } finally {
             out.flush();
         }
+    }
+    
+    private List<Feature> loadFeaturesByIds(FeatureUtil featureUtil, List<Integer> featureIds) throws StorageAccessException {
+        if (featureIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        int maxItems = 1000;
+        int offset = 0;
+        List<Feature> features = new ArrayList<>();
+
+        while (offset * maxItems < featureIds.size()) {
+            StringBuilder buffer = new StringBuilder(1024);
+            for (int i = 0; i < maxItems && offset * maxItems + i < featureIds.size(); i++) {
+                buffer.append(featureIds.get(offset * maxItems + i));
+                buffer.append(',');
+            }
+            String subQuery = buffer.substring(0, buffer.length() - 1);
+            features.addAll(featureUtil.getFeaturesByFeatureSubquery(subQuery));
+            offset++;
+        }
+
+        Collections.sort(features);
+        return features;
+    }
+
+    private Map<Integer, Feature> loadFullFeaturesByIds(FeatureUtil featureUtil, List<Feature> pageFeatures)
+            throws StorageAccessException {
+        List<Integer> featureIds = pageFeatures.stream()
+                .map(Feature::getFeatureId)
+                .collect(Collectors.toList());
+        List<Feature> fullFeatures = featureUtil.getFeaturesByIds(featureIds);
+        Map<Integer, Feature> featureMap = new HashMap<>();
+        for (Feature feature : fullFeatures) {
+            featureMap.put(feature.getFeatureId(), feature);
+        }
+        return featureMap;
     }
 
     public Integer paramAsInt(HttpServletRequest req, String paramName) throws ServletException {
