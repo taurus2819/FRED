@@ -4,8 +4,10 @@
  */
 package nz.cri.gns.fred.servlet.util;
 
+import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpSession;
@@ -39,6 +41,14 @@ public class SearchSessionState {
         if(featureIds == null || featureIds.isEmpty() || queryString == null){
             return Optional.empty();
         }
+        
+        // print session contents
+//        Enumeration e = session.getAttributeNames();
+//        while (e.hasMoreElements()) {
+//            String name = (String)e.nextElement();
+//            String value = session.getAttribute(name).toString();
+//            out.println(name + " = " + value);
+//        }
         
         List<Integer> sampleIds = immutableCopy((List<Integer>) session.getAttribute(SAMPLE_IDS_KEY));
         return Optional.of(new Snapshot(featureIds, sampleIds, queryString));
