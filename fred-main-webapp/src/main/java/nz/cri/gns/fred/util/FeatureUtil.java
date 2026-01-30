@@ -549,7 +549,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     
     public List<Feature> getFeaturesByIds(List<Integer> featureIds) throws StorageAccessException {
         if (featureIds.isEmpty()) {
-            return new Vector<>();
+            return new ArrayList<>();
         }
 
         int maxItems = 1000;
