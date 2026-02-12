@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-top-pg</artifactId>
-    <version>4.0.14</version>
+    <version>4.0.15-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>
