@@ -546,6 +546,30 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     public List<Feature> getFeaturesByFeatureSubquery(String featureSubquery) throws StorageAccessException {
         return fredDAO.getList("select new Feature(f.featureId, f.frNumber) FROM Feature AS f join fetch f.frNumber WHERE f.featureId in (" + featureSubquery + ")", Feature.class);
     }
+    
+    public List<Feature> getFeaturesByIds(List<Integer> featureIds) throws StorageAccessException {
+        if (featureIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        int maxItems = 1000;
+        int offset = 0;
+        List<Feature> features = new ArrayList<>();
+
+        while (offset * maxItems < featureIds.size()) {
+            StringBuilder buffer = new StringBuilder(1024);
+            for (int i = 0; i < maxItems && offset * maxItems + i < featureIds.size(); i++) {
+                buffer.append(featureIds.get(offset * maxItems + i));
+                buffer.append(',');
+            }
+            String subQuery = buffer.substring(0, buffer.length() - 1);
+            features.addAll(fredDAO.getList("FROM Feature AS f WHERE f.featureId in (" + subQuery + ")", Feature.class));
+            offset++;
+        }
+
+        Collections.sort(features);
+        return features;
+    }
 
     public List<Feature> getFeatures(List<Sample> samples) {
         Set<Feature> features = new HashSet<>();
