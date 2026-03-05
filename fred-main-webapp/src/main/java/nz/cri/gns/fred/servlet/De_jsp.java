@@ -189,6 +189,9 @@ public class De_jsp extends FREDHibernateServlet {
 
     protected DataEntryForm getDataEntryForm(FredHelper h, HttpServletRequest request) throws ServletException {
         DataEntryForm form = getDataEntryFormImpl(h, request);
+        DAOFactory factory = FredHibernate.get().getDAOFactory();
+        ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
+        form.reattach(factory, provider);
         request.setAttribute(WebsiteConstants.DATA_ENTRY_FORM, form);
         request.getSession().setAttribute(WebsiteConstants.DATA_ENTRY_FORM, form);
         return form;

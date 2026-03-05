@@ -26,14 +26,27 @@ public class SearchSessionState {
     }
 
     // Store search results in user's session
+    /**
+     * @param session - HTTP session to write to
+     * @param featureIds - ids for matching features
+     * @param sampleIds - ids for matching samples
+     * @param queryString - human readable format of the executed query
+     */
     public static void save(HttpSession session, List<Integer> featureIds, List<Integer> sampleIds, String queryString){
-        session.setAttribute(FEATURE_IDS_KEY, immutableCopy(featureIds));
-        session.setAttribute(SAMPLE_IDS_KEY, sampleIds == null ? null : immutableCopy(sampleIds));
+        List<Integer> featureCopy = new ArrayList<>(featureIds);
+        List<Integer> sampleCopy = sampleIds == null ? null : new ArrayList<>(sampleIds);
+        session.setAttribute(FEATURE_IDS_KEY, immutableCopy(featureCopy));
+        session.setAttribute(SAMPLE_IDS_KEY, sampleIds == null ? null : immutableCopy(sampleCopy));
         session.setAttribute(QUERY_STRING_KEY, queryString);
         
     }
     
     //restor the saved resulots from the session
+    /**
+     * 
+     * @param session - HTTP session to read from pps
+     * @return 
+     */
     public static Optional<Snapshot> restore(HttpSession session){
         List<Integer> featureIds = immutableCopy((List<Integer>) session.getAttribute(FEATURE_IDS_KEY));
         String queryString = (String) session.getAttribute(QUERY_STRING_KEY);

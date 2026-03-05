@@ -55,6 +55,7 @@ import nz.cri.gns.xss.SanitizeHttpServletRequest;
 public class SampleDE extends DETemplate implements DataEntryForm {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.SampleDE");
+    private static final long serialVersionUID = 1L;
 
     private User user;
     private Sample sample;
@@ -62,12 +63,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     private boolean isAllowedSave = false;
     private boolean isAllowedSubmit = false;
     private boolean outcropSample = false;
-    private SampleUtil sampleUtil;
-    private StageUtil stageUtil;
-    private DAOFactory factory;
-    private ContentProvider provider;
+    private transient SampleUtil sampleUtil;
+    private transient StageUtil stageUtil;
+    private transient DAOFactory factory;
+    private transient ContentProvider provider;
     private UserFolder workingFolder;
-    protected SanitizeHttpServletRequest sanitizeHttpRequest;
+    protected transient SanitizeHttpServletRequest sanitizeHttpRequest;
 
     public SampleDE(User user, Feature feature, int folderID, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         this(user, feature, folderID, factory, content, false);
@@ -80,6 +81,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     public SampleDE(Sample sample, int folderId, User user, DAOFactory factory, ContentProvider provider) throws InsufficientPrivelegesException, StorageAccessException {
         initialise(sample, folderId, user, factory, provider);
     }
+    
+    @Override
+    public void reattach(DAOFactory factory, ContentProvider provider) {
+        this.factory = factory;
+        this.provider = provider;
+        this.sampleUtil = new SampleUtil(factory);
+        this.stageUtil = new StageUtil(factory);
+        this.sanitizeHttpRequest = new SanitizeHttpServletRequest();
+    }
+
 
     private void initialise(Sample sample, int folderId, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {
         this.sample = sample;
