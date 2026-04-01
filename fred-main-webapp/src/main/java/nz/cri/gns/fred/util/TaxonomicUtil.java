@@ -23,11 +23,14 @@ import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.de.DataInputException;
+import nz.cri.gns.fred.hibernate.TaxonomicLookup;
+import nz.cri.gns.fred.hibernate.util.hibernate6.HibernateProvider;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
+import org.hibernate.HibernateException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -221,30 +224,38 @@ public class TaxonomicUtil extends ModelUtil {
         return fredDAO.get(palListId, nz.cri.gns.fred.hibernate.PalList.class);
     }
 
-/*
-    public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
-        List<Criterion> criteria = new Vector<>();
-        if (taxonomicGroup != null) {
-            criteria.add(Expression.eq("taxonomicGroup", taxonomicGroup));
-        }
-        criteria.add(Expression.eq("taxonomicName", name));
-        List<Taxon> taxa = fredDAO.getList(Taxon.class, criteria);
-        if (!taxa.isEmpty()) {
-            Taxon taxon = taxa.get(0);
-            if (author != null && (taxon.getAuthor() == null || taxon.getAuthor().length() == 0)) {
-                //If no author then fill in the gap.
-//                taxon.setAuthor(author);
-                taxon.setAuthor(author.length() > 0 ? author : "");
-            }
-            return taxon;
-        }
-        return null;
-    }*/
 
-   public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
-        return null;
-        //this is temporary
-   }
+//    public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
+//        List<Criterion> criteria = new Vector<>();
+//        if (taxonomicGroup != null) {
+//            criteria.add(Expression.eq("taxonomicGroup", taxonomicGroup));
+//        }
+//        criteria.add(Expression.eq("taxonomicName", name));
+//        List<Taxon> taxa = fredDAO.getList(Taxon.class, criteria);
+//        if (!taxa.isEmpty()) {
+//            Taxon taxon = taxa.get(0);
+//            if (author != null && (taxon.getAuthor() == null || taxon.getAuthor().length() == 0)) {
+//                //If no author then fill in the gap.
+////                taxon.setAuthor(author);
+//                taxon.setAuthor(author.length() > 0 ? author : "");
+//            }
+//            return taxon;
+//        }
+//        return null;
+//    }
+
+    /**
+     *
+     * @param taxonomicGroup
+     * @param name
+     * @param author
+     * @return
+     * @throws StorageAccessException
+     */    
+    public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException{
+        TaxonomicLookup taxon = (TaxonomicLookup) fredDAO.getTaxonomicLookup(taxonomicGroup, name, author);
+        return taxon;
+    }
 
     public Taxon createTaxon() {
         return fredDAO.createNewTaxon();

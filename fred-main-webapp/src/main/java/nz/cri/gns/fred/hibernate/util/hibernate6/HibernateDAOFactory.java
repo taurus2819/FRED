@@ -1,6 +1,9 @@
 package nz.cri.gns.fred.hibernate.util.hibernate6;
 
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -466,7 +469,8 @@ public class HibernateDAOFactory
         return getMatchingTaxa(str, group, matchType, maxMatches, false);
     }
 
-    /*public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches, boolean good) throws StorageAccessException {
+    /* OLD HIBERNATE CODE - hibernate 2
+    public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches, boolean good) throws StorageAccessException {
         Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.TaxonomicLookup.class);
         switch (matchType) {
             case ANYWHERE:
@@ -501,12 +505,115 @@ public class HibernateDAOFactory
             throw new StorageAccessException(e);
         }
     }*/
+        
+    public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType,
+                                   int maxMatches, boolean good) throws StorageAccessException {
+    try {
+        if (str == null || str.trim().isEmpty()) {
+            return List.of();
+        }
 
-    public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches, boolean good)  {
-        return null; //temp
+        str = str.trim();
+
+        Session session = provider.currentSession();
+
+        String pattern;
+        switch (matchType) {
+            case ANYWHERE:
+                pattern = "%" + str + "%";
+                break;
+            case BEGINNING:
+                pattern = str + "%";
+                break;
+            case END:
+                pattern = "%" + str;
+                break;
+            case EXACT:
+                pattern = str;
+                break;
+            default:
+                pattern = str;
+                break;
+        }
+
+        List<String> statuses = good
+                ? List.of("approved", "provisional")
+                : List.of("rejected", "obsolete");
+
+        StringBuilder hql = new StringBuilder(
+            "from TaxonomicLookup taxon " +
+            "where taxon.taxonomicName like :pattern " +
+             "and taxon.status in (:statuses) ");
+
+        if (group != null) {
+            hql.append(" and taxon.taxonomicGroup = :group ");
+        }
+
+        hql.append("order by taxon.taxonomicGroup.groupId asc, taxon.taxonomicName asc");
+
+        var query = session.createQuery(hql.toString(), TaxonomicLookup.class)
+                .setParameter("pattern", pattern)
+                .setParameterList("statuses", statuses)
+                .setMaxResults(maxMatches);
+
+        if (group != null) {
+            query.setParameter("group", group);
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Taxon> result = (List<Taxon>) (List<?>) query.getResultList();
+
+        return result;
+
+    } catch (HibernateException e) {
+        throw new StorageAccessException(e);
     }
-
+}
+    
+    /**
+     *
+     * @param taxonomicGroup
+     * @param hql
+     * @param taxonomicCleanName
+     * @return
+     * @throws StorageAccessException
+     */
     @Override
+    public TaxonomicLookup getTaxonomicLookup(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException{
+        try {
+        String cleanName = name == null ? null : name.trim();
+
+        StringBuilder hql = new StringBuilder(
+            "from TaxonomicLookup t " +
+            "where t.taxonomicName = :name " );
+
+        if (taxonomicGroup != null) {
+            hql.append(" and t.taxonomicGroup = :group");
+        }
+
+        var query = provider.currentSession()
+                .createQuery(hql.toString(), TaxonomicLookup.class)
+                .setParameter("name", cleanName)
+                .setMaxResults(1);
+
+        if (taxonomicGroup != null) {
+            query.setParameter("group", taxonomicGroup);
+        }
+
+        TaxonomicLookup taxon = query.uniqueResult();   
+
+        if (taxon != null && author != null && (taxon.getAuthor() == null || taxon.getAuthor().isEmpty())) {
+            taxon.setAuthor(author.isEmpty() ? "" : author);
+        }
+
+        return taxon;
+    } catch (HibernateException e) {
+        throw new StorageAccessException(e);
+    }
+    }
+ 
+    @Override
+    //OLD HIBERNATE CODE - hibernate 2
     /*public List<TaxonomicGroup> getMatchingTaxonomicGroups(String str, Match matchType, int maxMatches) throws StorageAccessException {
         Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.TaxonomicGroup.class);
         switch (matchType) {
@@ -531,9 +638,42 @@ public class HibernateDAOFactory
         }
     }*/
 
-    public List<TaxonomicGroup> getMatchingTaxonomicGroups(String str, Match matchType, int maxMatches)  {
-        return null; //temp
+    public List<TaxonomicGroup> getMatchingTaxonomicGroups(String str, Match matchType, int maxMatches)
+        throws StorageAccessException {
+    try {
+        Session session = provider.currentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<TaxonomicGroup> cq = cb.createQuery(TaxonomicGroup.class);
+        Root<nz.cri.gns.fred.hibernate.TaxonomicGroup> root = cq.from(nz.cri.gns.fred.hibernate.TaxonomicGroup.class);
+
+        String pattern;
+        switch (matchType) {
+            case ANYWHERE:
+                pattern = "%" + str + "%";
+                break;
+            case BEGINNING:
+                pattern = str + "%";
+                break;
+            case END:
+                pattern = "%" + str;
+                break;
+            default:
+                pattern = str;
+                break;
+        }
+
+        cq.select(root)
+          .where(cb.like(cb.lower(root.get("name")), pattern.toLowerCase()))
+          .orderBy(cb.asc(root.get("groupId")));
+
+        return session.createQuery(cq)
+                      .setMaxResults(maxMatches)
+                      .getResultList();
+
+    } catch (HibernateException e) {
+        throw new StorageAccessException(e);
     }
+}
 
     @Override
     public PaleontologyListEntry createNewPaleontologyListEntry() {

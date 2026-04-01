@@ -247,6 +247,8 @@ public interface FredDAO {
     public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException;
 
     public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException;
+    
+    public Taxon getTaxonomicLookup(TaxonomicGroup taxonomicGroup, String name, String author)throws StorageAccessException;
 
     public List<Taxon> getMatchingBadTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException;
 
