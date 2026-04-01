@@ -5,7 +5,7 @@
     <!-- a SessionFactory instance listed as /jndi/name -->
     <session-factory>
         <!-- properties -->
-        <property name="show_sql">true</property>
+        <property name="show_sql">false</property>
         <property name="hibernate.query.substitutions">TRUE=1, FALSE=0</property>
         <!-- Rest done programmatically -->
 
