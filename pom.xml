@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-top-pg</artifactId>
-    <version>4.0.13</version>
+    <version>4.0.15-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>
@@ -12,7 +12,8 @@
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
         <java.version>11</java.version>
-        <gitflow.branch>master</gitflow.branch>
+        <!-- TODO: change this back to master -->
+        <gitflow.branch>master-tmp-2026</gitflow.branch>
     </properties>
     <repositories>
         <repository>
