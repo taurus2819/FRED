@@ -851,6 +851,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     private String getCommonRelationshipPropertiesFromDescription(String desc, Relationship rel, RelationType relationType) throws StorageAccessException {
         //assume no distance data first
 
+        //modified for broken stratlex link AS-1295
         desc = (desc == null) ? "" : desc.trim();
         if (desc.isEmpty()) {
             throw new IllegalArgumentException("Relationship description is blank");
@@ -909,13 +910,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         rel.setRelationType(relationType);
 
         return FREDUtil.join(parts, where);
-
     }
+	//modified for broken stratlex link AS-1295
 
     public RelationType getRelationType(String relationTypeName) throws StorageAccessException {
         return fredDAO.getFirst("FROM RelationType AS rt WHERE rt.name = ?1", RelationType.class, relationTypeName);
     }
 
+    //modified for broken stratlex link AS-1295
     public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException {
         if (relationType == null) return null;
         if (relationshipTypeName == null) return null;
@@ -929,6 +931,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
         return (list == null || list.isEmpty()) ? null : list.get(0);
     }
+	//modified for stratlex link AS-1295
 
     public List<Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException {
         return fredDAO.getList("FROM Relationship AS r WHERE r.relationshipType = ?1 AND r.sample = ?2", Relationship.class, relationshipType, sample);
