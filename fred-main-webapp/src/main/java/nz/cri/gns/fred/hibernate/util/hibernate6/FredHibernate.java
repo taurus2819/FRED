@@ -48,35 +48,52 @@ public class FredHibernate implements HibernateProvider {
      * Configure by pulling the database details from JNDI.
      */
     private static FredHibernate configure(boolean skipJNDI) {
-        Properties props = new Properties();        
-        if (!skipJNDI) {
-            props.put("hibernate.connection.datasource", "java:comp/env/jdbc/fr");
-        } else {
-            props.put("hibernate.default_schema", "fr");
-        }
-        props.put("hibernate.dialect", "net.sf.hibernate.dialect.PostgreSQLDialect");
-
-//        props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-//        props.put("hibernate.connection.driver_class", "org.postgresql.Driver");
-//        props.put("hibernate.connection.url", "jdbc:postgresql://appsdb.gns.cri.nz:5433/gns_dev?currentSchema=fr");
-//        props.put("hibernate.connection.username", "postgres");
-//        props.put("hibernate.connection.password", "Hs58W0C*&9");
-//        props.put("hibernate.default_schema", "fr");
-//        props.put("show_sql", "true");
-        //props.put("logging.level.org.hibernate.SQL", "DEBUG");
-        //props.put("logging.level.org.hibernate.type.descriptor.sql.BasicBinder", "TRACE");
-
-        //logging.level.org.hibernate.SQL=DEBUG
-        //logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
-//        props.put("hibernate.query.substitutions", "true=1, false=0");
-
         try {
+            return buildSessionFactory(skipJNDI);
+        } catch (Exception  e) {
+            log.log(Level.WARNING, "Primary config failed, falling back", e);
+            try{
+                return buildFallbackSessionFactory();
+            }catch (Exception ex){
+                throw new RuntimeException("Hibernate configuration failed completely", ex);
+            }
+        }
+    }
+    
+    private static FredHibernate buildSessionFactory(boolean jndi){
+        Properties props = new Properties();        
+            if (!jndi) {
+                props.put("hibernate.connection.datasource", "java:comp/env/jdbc/fr");
+            } else {
+                props.put("hibernate.default_schema", "fr");
+            }
+            props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
             Configuration config = (new Configuration()).setProperties(props).configure(getHibernateCfg());
             sessionFactory = config.buildSessionFactory();
             return new FredHibernate(sessionFactory);
-        } catch (HibernateException e) {
-            throw new RuntimeException(e);
-        }
+    }
+    
+    private static FredHibernate buildFallbackSessionFactory() {
+        Properties props = new Properties();
+
+        props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        props.put("hibernate.connection.driver_class", "org.postgresql.Driver");
+        props.put("hibernate.connection.url",
+                "jdbc:postgresql://appsdb.gns.cri.nz:5433/gns_dev?currentSchema=fr");
+        props.put("hibernate.connection.username", "postgres");
+        props.put("hibernate.connection.password", "Hs58W0C*&9");
+
+        props.put("hibernate.default_schema", "fr");
+        props.put("hibernate.show_sql", "true");
+        props.put("hibernate.format_sql", "true");
+
+        Configuration config = new Configuration()
+                .setProperties(props)
+                .configure(getHibernateCfg());
+
+        sessionFactory = config.buildSessionFactory();
+
+        return new FredHibernate(sessionFactory);
     }
 
     /**
