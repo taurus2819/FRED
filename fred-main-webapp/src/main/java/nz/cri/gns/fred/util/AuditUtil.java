@@ -316,7 +316,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
      */
     public List<Sample> getConfidentialSamples(User user) throws StorageAccessException {
         UserView userView = new UserUtil(factory).getUserView(user.getId().intValue());
-        return fredDAO.getList("FROM Sample AS s WHERE s.feature.featureType <> ? AND s.audit.confidentialFlag = ? AND s.audit.createdBy = ?", Sample.class, FREDConstants.OUTCROP, true, userView);
+        return fredDAO.getList("FROM Sample AS s WHERE s.feature.featureType <> ?1 AND s.audit.confidentialFlag = ?2 AND s.audit.createdBy = ?3", Sample.class, FREDConstants.OUTCROP, true, userView);
     }
 
     /**
@@ -352,7 +352,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
      */
     public List<Paleontology> getConfidentialPaleontologyRecords(User user) throws StorageAccessException {
         UserView userView = new UserUtil(factory).getUserView(user.getId().intValue());
-        return fredDAO.getList("FROM Paleontology AS p WHERE p.record.audit.confidentialFlag = ? AND p.record.audit.createdBy = ?", Paleontology.class, true, userView);
+        return fredDAO.getList("FROM Paleontology AS p WHERE p.record.audit.confidentialFlag = ?1 AND p.record.audit.createdBy = ?2", Paleontology.class, true, userView);
     }
 
     /**
@@ -389,7 +389,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
      */
     public List<Paleontology> getConfidentialPalLists(User user) throws StorageAccessException {
         UserView userView = new UserUtil(factory).getUserView(user.getId().intValue());
-        return fredDAO.getList("FROM Paleontology AS p WHERE p.record.palListAudit.confidentialFlag = ? AND p.record.palListAudit.createdBy = ?", Paleontology.class, true, userView);
+        return fredDAO.getList("FROM Paleontology AS p WHERE p.record.palListAudit.confidentialFlag = ?1 AND p.record.palListAudit.createdBy = ?2", Paleontology.class, true, userView);
     }
 
     /**
@@ -425,7 +425,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
      */
     public List<Adoption> getConfidentialAdoptionRecords(User user) throws StorageAccessException {
         UserView userView = new UserUtil(factory).getUserView(user.getId().intValue());
-        return fredDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = ? AND a.record.audit.createdBy = ?", Adoption.class, true, userView);
+        return fredDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = ?1 AND a.record.audit.createdBy = ?2", Adoption.class, true, userView);
     }
 
     /**

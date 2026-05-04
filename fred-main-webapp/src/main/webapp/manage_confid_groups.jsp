@@ -6,7 +6,7 @@
 %><%@page import="nz.cri.gns.fred.model.ConfidentialGroup"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.UserUtil"
-%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+%><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
 %><%@page import="nz.cri.gns.auth.domain.User"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"

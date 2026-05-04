@@ -300,7 +300,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public List<Sample> getLightweightSamples(String sampleSubquery) throws StorageAccessException {
-        return fredDAO.getList("select new Sample(s.sampleId) FROM Sample AS s WHERE s.sampleId in (" + sampleSubquery + ")", Sample.class);
+        return fredDAO.getList("select s FROM Sample AS s WHERE s.sampleId in (" + sampleSubquery + ")", Sample.class);
     }
 
     public static String getDrillHoleDepthDescription(Sample sample) {
@@ -911,9 +911,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return FREDUtil.join(parts, where);
     }
 	//modified for broken stratlex link AS-1295
-
     public RelationType getRelationType(String relationTypeName) throws StorageAccessException {
-        return fredDAO.getFirst("FROM RelationType AS rt WHERE rt.name = ?", RelationType.class, relationTypeName);
+        return fredDAO.getFirst("FROM RelationType AS rt WHERE rt.name = ?1", RelationType.class, relationTypeName);
     }
 
     //modified for broken stratlex link AS-1295
@@ -925,15 +924,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         if (name.isEmpty()) return null;
 
         List<RelationshipType> list =
-                fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ? AND r.name = ?",
+                fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?1 AND r.name = ?2",
                         RelationshipType.class, relationType, name);
 
         return (list == null || list.isEmpty()) ? null : list.get(0);
     }
 	//modified for stratlex link AS-1295
-
     public List<Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException {
-        return fredDAO.getList("FROM Relationship AS r WHERE r.relationshipType = ? AND r.sample = ?", Relationship.class, relationshipType, sample);
+        return fredDAO.getList("FROM Relationship AS r WHERE r.relationshipType = ?1 AND r.sample = ?2", Relationship.class, relationshipType, sample);
     }
 
     public static String getDipStrikeDescription(Sample sample) {
@@ -1215,7 +1213,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public DrillType getDrillType(String drillType) throws StorageAccessException {
-        return fredDAO.getFirst("FROM DrillType AS t WHERE t.name = ?", DrillType.class, drillType);
+        return fredDAO.getFirst("FROM DrillType AS t WHERE t.name = ?1", DrillType.class, drillType);
     }
 
     public List<DrillType> getDrillTypes() throws StorageAccessException {
@@ -1308,7 +1306,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     public List<RelationshipType> getRelationshipTypes(String relationType) throws StorageAccessException {
         RelationType relType = getRelationType(relationType);
-        return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?", RelationshipType.class, relType);
+        return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?1", RelationshipType.class, relType);
     }
 
     public RelationshipType findRelationshipType(String name) throws StorageAccessException {

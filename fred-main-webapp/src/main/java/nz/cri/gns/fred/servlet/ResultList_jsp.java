@@ -12,7 +12,7 @@ import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.jsp.ExtranetTemplate;
 import nz.cri.gns.jsp.PageState;

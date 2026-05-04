@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.hibernate.util.HibernateServletUtil;
 import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.util.UserUtil;

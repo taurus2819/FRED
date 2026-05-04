@@ -2,8 +2,9 @@ package nz.cri.gns.fred.dao;
 
 import java.util.List;
 
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.expression.Criterion;
+//import net.sf.hibernate.HibernateException;
+//import net.sf.hibernate.expression.Criterion;
+import org.hibernate.HibernateException;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.model.Adoption;
@@ -65,9 +66,9 @@ public interface FredDAO {
 
     public <T extends Comparable<? super T>> List<T> getList(String query, Integer maxResults, Class<T> clazz, Object... parameters) throws StorageAccessException;
 
-    public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria) throws StorageAccessException;
+    //public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria) throws StorageAccessException;
 
-    public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria, Integer matches) throws StorageAccessException;
+    //public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria, Integer matches) throws StorageAccessException;
 
     public <T extends Comparable<? super T>> List<T> getUnsortedList(String query, Class<T> clazz, Object... parameters) throws StorageAccessException;
 
@@ -226,10 +227,17 @@ public interface FredDAO {
     public int getTaxaCount(TaxonomicGroup group, String status) throws StorageAccessException;
 
     /**
+     * @param group
+     * @param status
      * @return a list of taxa within the given group with the given status
      * @throws StorageAccessException
+     * below is the best signature since TaxonomicLookup implements your Taxon interface. 
+     * In Hibernate 6, the typed query result type must be a mapped entity class, not an interface.
+     * public List<? extends Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException
      */
+    
     public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException;
+
 
     /**
      * Returns the group with the given name
@@ -239,6 +247,8 @@ public interface FredDAO {
     public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException;
 
     public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException;
+    
+    public Taxon getTaxonomicLookup(TaxonomicGroup taxonomicGroup, String name, String author)throws StorageAccessException;
 
     public List<Taxon> getMatchingBadTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException;
 

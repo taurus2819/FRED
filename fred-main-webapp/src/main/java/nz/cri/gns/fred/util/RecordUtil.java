@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -426,6 +427,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
      */
     public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
         List<PaleontologyListEntry> entries = fredDAO.getListEntries(pal, group);
+        entries.removeIf(Objects::isNull);
         Collections.sort(entries);
         return entries;
     }

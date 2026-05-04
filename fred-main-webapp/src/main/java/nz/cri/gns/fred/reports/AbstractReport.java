@@ -10,7 +10,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.util.NullOutputStream;
 
 public abstract class AbstractReport {

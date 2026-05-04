@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.jsp.IPSysJspPage;
 import nz.cri.gns.munginator.MgException;

@@ -499,19 +499,25 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public List<Audit> getAuditsFor(Folder folder) throws StorageAccessException {
-        return fredDAO.getList("FROM AuditTable as a WHERE a.folder = ?", Audit.class, folder);
+        return fredDAO.getList("FROM AuditTable as a WHERE a.folder = ?1", Audit.class, folder);
     }
 
     public List<Feature> getFeaturesBySample(Audit audit) throws StorageAccessException {
-        return fredDAO.getList("SELECT s.feature FROM Sample AS s WHERE s.audit = ?", Feature.class, audit);
+        return fredDAO.getList("SELECT s.feature FROM Sample AS s WHERE s.audit = ?1", Feature.class, audit);
     }
 
     public List<Feature> getFeaturesByRecord(Audit audit) throws StorageAccessException {
-        return fredDAO.getList("SELECT r.sample.feature FROM Record AS r WHERE r.audit = ?", Feature.class, audit);
+        return fredDAO.getList("SELECT r.sample.feature FROM Record AS r WHERE r.audit = ?1", Feature.class, audit);
     }
 
     public List<Feature> getFeaturesBySampleSubquery(String sampleSubquery) throws StorageAccessException {
-        List<Feature> cartesianFeatures = fredDAO.getList("select new Feature(s.feature.featureId, s.feature.frNumber) FROM Sample s WHERE s.sampleId in (" + sampleSubquery + ")", Feature.class);
+        //Hibernate6 : SemanticException - Missing constructor for type 'Feature' was thrown. Hibernate 2 accepted without
+        //a constructor. But, Hibernate 6 is very strict. If a "new Feature(...)" was in the hql query, then a constructor should be declared in the Feature.java
+        String hql =
+                "select distinct s.feature " +
+                "from Sample s " +
+                "where s.sampleId in (" + sampleSubquery + ")";
+        List<Feature> cartesianFeatures = fredDAO.getList(hql, Feature.class);
         Set<Feature> features = new HashSet<>();
         features.addAll(cartesianFeatures);
         return FREDUtil.getSortedList(features);
@@ -580,13 +586,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate, String status) throws StorageAccessException {
-        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ? AND "
+        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ?1 AND "
                 + (status.equals(FREDConstants.WAITING) ? "f.audit.submittedDate" : "f.audit.approvedDate")
-                + " BETWEEN ? AND ? AND f.audit.status = ?", Feature.class, masterfileFolder, startDate, endDate, status);
+                + " BETWEEN ?2 AND ?3 AND f.audit.status = ?4", Feature.class, masterfileFolder, startDate, endDate, status);
     }
 
     public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, String status) throws StorageAccessException {
-        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ? AND f.audit.status = ?", Feature.class, masterfileFolder, status);
+        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ?1 AND f.audit.status = ?2", Feature.class, masterfileFolder, status);
     }
 
     /**
@@ -876,7 +882,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public Integer getNextAvailableSerialNumber(String mapSheet) throws StorageAccessException {
-        Integer maxNum = fredDAO.getFirst("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE fr.serialNumber < 6000 AND fr.obsolete IS NULL AND fr.mapSheet = ?", Integer.class, mapSheet);
+        Integer maxNum = fredDAO.getFirst("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE fr.serialNumber < 6000 AND fr.obsolete IS NULL AND fr.mapSheet = ?1", Integer.class, mapSheet);
         if (maxNum == null) {
             return 1;
         }
@@ -924,7 +930,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             if (frNumStr.indexOf("-") > 0) {
                 String[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
                 Integer endSerialNum = Integer.valueOf(frNumStr.substring(frNumStr.indexOf("-") + 1));
-                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], Integer.parseInt(frNumBits[1]), endSerialNum);
+                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.serialNumber BETWEEN ?2 AND ?3", FrNumber.class, frNumBits[0], Integer.parseInt(frNumBits[1]), endSerialNum);
             }
 
             //single
@@ -951,12 +957,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                     if (recoll == null) {
                         serial = num.substring(frNumStr.indexOf("/f") + 2); //serial: "0001"
                         serialNum = Integer.valueOf(serial);
-                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ?",
+                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.serialNumber = ?2",
                                 FrNumber.class, mapSheet, serialNum);
                     } else {
                         serial = num.substring(0, num.indexOf(recoll)).substring(frNumStr.indexOf("/f") + 2);
                         serialNum = Integer.valueOf(serial);
-                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ? AND f.recollectionNumber=?",
+                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.serialNumber = ?2 AND f.recollectionNumber=?3",
                                 FrNumber.class, mapSheet, serialNum, recoll);
                     }
                 }
@@ -1234,7 +1240,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public Feature
             getFeatureWithName(String name) throws StorageAccessException {
-        return fredDAO.getFirst("FROM Feature AS f WHERE f.featureName = ?", Feature.class, name);
+        return fredDAO.getFirst("FROM Feature AS f WHERE f.featureName = ?1", Feature.class, name);
     }
 
     /**
@@ -1259,12 +1265,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public FrNumber
             getFrNumber(String frNum) throws StorageAccessException {
-        return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NULL", FrNumber.class, frNum);
+        return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ?1 AND f.obsolete IS NULL", FrNumber.class, frNum);
     }
 
     public FrNumber
             getYardFrNumber(String frNum) throws StorageAccessException {
-        return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NOT NULL", FrNumber.class, frNum);
+        return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ?1 AND f.obsolete IS NOT NULL", FrNumber.class, frNum);
     }
 
     /**
@@ -1336,11 +1342,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
-        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.obsolete IS NULL", FrNumber.class, mapSheet);
+        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.obsolete IS NULL", FrNumber.class, mapSheet);
     }
 
     public List<FrNumber> getFrNumbers(String mapSheet, Integer start, Integer end) throws StorageAccessException {
-        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ? AND f.obsolete IS NULL", FrNumber.class, mapSheet, start, end);
+        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ?1 AND f.serialNumber BETWEEN ?2 AND ?3 AND f.obsolete IS NULL", FrNumber.class, mapSheet, start, end);
     }
 
     private static final String RECOLL_COMMENTS = "*Recoll:";
@@ -1375,7 +1381,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public Integer
             getTotalFeatureCount() throws StorageAccessException {
-        return fredDAO.getFirst("SELECT COUNT(*) FROM Feature AS f WHERE f.audit.status=?", Integer.class, AuditUtil.APPROVED);
+        return fredDAO.getFirst("SELECT COUNT(*) FROM Feature AS f WHERE f.audit.status=?1", Integer.class, AuditUtil.APPROVED);
     }
 
     public Date
@@ -1398,7 +1404,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
     public Country
             getCountry(String countryCode) throws StorageAccessException {
-        return fredDAO.getFirst("FROM Country AS c WHERE c.countryCode = ?", Country.class, countryCode);
+        return fredDAO.getFirst("FROM Country AS c WHERE c.countryCode = ?1", Country.class, countryCode);
     }
 
     public List<Country> getCountries() throws StorageAccessException {

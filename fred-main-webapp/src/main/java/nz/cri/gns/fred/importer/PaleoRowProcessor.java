@@ -8,8 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Transaction;
+//import net.sf.hibernate.HibernateException;
+//import net.sf.hibernate.Transaction;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Transaction;
 
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -22,7 +25,7 @@ import nz.cri.gns.fred.hibernate.Paleontology;
 import nz.cri.gns.fred.hibernate.Person;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.*;
 import nz.cri.gns.fred.util.*;
 import nz.cri.gns.munginator.MgException;

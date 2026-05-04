@@ -18,7 +18,7 @@ import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.de.DataInputException;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Person;

@@ -6,14 +6,24 @@ import java.util.Vector;
 
 import javax.naming.NamingException;
 
-import net.sf.hibernate.expression.Criterion;
-import net.sf.hibernate.expression.Expression;
-import net.sf.hibernate.expression.MatchMode;
+//import net.sf.hibernate.expression.Criterion;
+//import net.sf.hibernate.expression.Expression;
+//import net.sf.hibernate.expression.MatchMode;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Stage;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root; 
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
+import java.util.ArrayList;
+
+
 
 public class StageUtil extends ModelUtil {
 
@@ -80,7 +90,9 @@ public class StageUtil extends ModelUtil {
     }
 
     public Age getAgeByName(String ageName) throws StorageAccessException {
-        List<Age> ages = fredDAO.getList("FROM Age AS a WHERE a.name = ?", Age.class, ageName);
+        
+        System.out.println("getAgeByName: " + ageName);
+        List<Age> ages = fredDAO.getList("FROM Age AS a WHERE a.name = ?1", Age.class, ageName);
         if (ages != null && ages.size() > 0) {
             return ages.get(0);
         }
@@ -88,7 +100,7 @@ public class StageUtil extends ModelUtil {
     }
 
     public Age getCurrentAgeByName(String ageName) throws StorageAccessException {
-        List<Age> ages = fredDAO.getList("FROM Age AS a WHERE a.name = ? AND a.obsoleteFlag = ? AND a.duplicateFlag = ?", Age.class, ageName, 0, 0);
+        List<Age> ages = fredDAO.getList("FROM Age AS a WHERE a.name = ?1 AND a.obsoleteFlag = ?2 AND a.duplicateFlag = ?3", Age.class, ageName, 0, 0);
         if (ages != null && ages.size() > 0) {
             return ages.get(0);
         }
@@ -100,15 +112,15 @@ public class StageUtil extends ModelUtil {
     }
 
     public List<Age> getCurrentAges() throws StorageAccessException {
-        return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ? AND a.duplicateFlag = ? order by a.baseAge, a.topAge", Age.class, 0, 0);
+        return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ?1 AND a.duplicateFlag = ?2 order by a.baseAge, a.topAge", Age.class, 0, 0);
     }
 
     public List<Age> getActiveAges() throws StorageAccessException {
-        return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ? AND a.code NOT IN (?, ?)", Age.class, 0, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
+        return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ?1 AND a.code NOT IN (?2, ?3)", Age.class, 0, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
     }
 
     public List<Age> getNonDuplicateAges() throws StorageAccessException {
-        return fredDAO.getList("FROM Age AS a WHERE a.duplicateFlag = ? AND a.code NOT IN (?, ?)", Age.class, 0, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
+        return fredDAO.getList("FROM Age AS a WHERE a.duplicateFlag = ?1 AND a.code NOT IN (?2, ?3)", Age.class, 0, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
     }
 
     public int getMaxAgeId() throws StorageAccessException {
@@ -219,12 +231,44 @@ public class StageUtil extends ModelUtil {
         return getAgeStop(stage).getTopAge();
     }
 
-    public List<Age> getMatchingAges(String str, int maxMatches) throws StorageAccessException {
-        List<Criterion> criteria = new Vector<Criterion>();
-        criteria.add(Expression.or(Expression.ilike("name", str, MatchMode.START),
-                Expression.ilike("code", str, MatchMode.START)));
-        return fredDAO.getList(Age.class, criteria, maxMatches);
+
+
+   public List<Age> getMatchingAges(String str, int maxMatches) throws StorageAccessException {
+        //return null; //temp
+
+        System.out.println("getMatchingAges: " + str);
+
+        str= str.toUpperCase();
+        try{
+
+            Session session= FredHibernate.get().currentSession();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<nz.cri.gns.fred.hibernate.Age> cr = cb.createQuery(nz.cri.gns.fred.hibernate.Age.class);
+            Root<nz.cri.gns.fred.hibernate.Age> root = cr.from(nz.cri.gns.fred.hibernate.Age.class);
+            cr.select(root).where(cb.or(cb.like(cb.upper(root.get("name")), str + "%"), cb.like(cb.upper(root.get("code")), str + "%")));
+            Query<nz.cri.gns.fred.hibernate.Age> q = session.createQuery(cr);
+            q.setMaxResults(maxMatches);
+
+            System.out.println("number of matches: " + q.getResultList().size());
+            
+            List<Age> ages = new ArrayList<Age>();
+            for(nz.cri.gns.fred.hibernate.Age a : q.getResultList()){
+                ages.add(a);
+            }
+            return ages;
+            
+            //return q.getResultList();
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw new StorageAccessException(e);
+        }
+        
+
     }
+
+    
 
     public Age createAge() {
         return fredDAO.createNewAge();

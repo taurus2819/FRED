@@ -40,7 +40,7 @@ import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueFie
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.hibernate.Island;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
@@ -90,7 +90,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 
     public FREDQuery() {
         //this.people = getValues("FROM Person AS p", Person.class);
-        this.ages = getValues("FROM Age AS a WHERE a.code NOT IN (?, ?) AND a.obsoleteFlag = ?", Age.class, "nd", "nf", 0);
+        this.ages = getValues("FROM Age AS a WHERE a.code NOT IN (?1, ?2) AND a.obsoleteFlag = ?3", Age.class, "nd", "nf", 0);
         try {
             this.frUsers = new UserUtil(FredHibernate.get().getDAOFactory()).getFrWriters();
         } catch (StorageAccessException e) {

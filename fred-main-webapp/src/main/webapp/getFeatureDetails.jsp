@@ -24,7 +24,7 @@
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.util.ByCreationDateComparator"
-%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+%><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%!
 	public String getStatusColour(String status) {
