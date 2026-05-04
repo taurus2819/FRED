@@ -36,14 +36,41 @@ public class HibernateUtils {
 	}
 	
 	public static void delete(HibernateProvider provider, Object o, boolean flush) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			session.delete(o);
-			if (flush)
-				session.flush();
-		} catch (HibernateException e) {
-			throw new StorageAccessException(e);
-		}
+            //getting message "Error processing this request: no transaction is in progress"
+            //error means Hibernate reached a database write/delete/flush, but there is no active transaction.
+            //In Hibernate 6, flush() requires an active transaction.
+            
+            if (o == null) return;
+
+            Transaction tx = null;
+
+            try {
+                Session session = provider.currentSession();
+
+                boolean startedTransaction = false;
+
+                if (!session.getTransaction().isActive()) {
+                    tx = session.beginTransaction();
+                    startedTransaction = true;
+                }
+
+                Object managed = session.contains(o) ? o : session.merge(o);
+                session.remove(managed);
+
+                if (flush) {
+                    session.flush();
+                }
+
+                if (startedTransaction) {
+                    tx.commit();
+                }
+
+            } catch (HibernateException e) {
+                if (tx != null && tx.isActive()) {
+                    tx.rollback();
+                }
+                throw new StorageAccessException(e);
+            }
 	}
 	
 	public static void delete(HibernateProvider provider, Object o) throws StorageAccessException {
