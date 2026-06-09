@@ -67,12 +67,14 @@
 	} else {
 		document.write('Easting/Longitude');
 	}
-//--></script></td><td><input type="text" name="East" id="eastInput" value="{@easting}" required/></td></tr>
+//--></script></td><td><input type="text" name="East" id="eastInput" value="{@easting}" aria-describedby="coordinateFormatHelp eastErrorText" required/></td></tr>
 <script language="JavaScript"><!--
     requiredInput(
         "eastInput", "eastErrorRow", "eastErrorText",
         "The Easting/Longitude is required");
-    validateEasting( "eastInput", "eastErrorRow", "eastErrorText");
+    window.addEventListener("load", function() {
+        validateLocalityCoordinate("eastInput", "eastErrorRow", "eastErrorText", "longitude");
+    });
 //--></script>
 <tr id="eastErrorRow" hidden="hidden"><td></td><td></td><td id="eastErrorText" style="color: #FF0000"></td></tr>
 <tr><td></td><td class="smallheading" style="color: #FF0000"><script><!--
@@ -81,47 +83,174 @@
 	} else {
 		document.write('Northing/Latitude');
 	}
-//--></script></td><td><input type="text" name="North" id="northInput" value="{@northing}" required/></td></tr>
+//--></script></td><td><input type="text" name="North" id="northInput" value="{@northing}" aria-describedby="coordinateFormatHelp northErrorText" required/></td></tr>
 <script language="JavaScript"><!--
     requiredInput(
         "northInput", "northErrorRow", "northErrorText",
-        "The Northing/Lattitude is required");
-    validateNorthing( "northInput", "northErrorRow", "northErrorText");
+        "The Northing/Latitude is required");
+    window.addEventListener("load", function() {
+        validateLocalityCoordinate("northInput", "northErrorRow", "northErrorText", "latitude");
+    });
 //--></script>
 <tr id="northErrorRow" hidden="hidden"><td></td><td></td><td id="northErrorText" style="color: #FF0000"></td></tr>
+<tr id="coordinateFormatHelpRow" style="display: none"><td></td><td></td><td id="coordinateFormatHelp" class="smalltext">
+    Latitude and longitude may be entered as decimal degrees (<code>-39.081020</code>),
+    degrees and decimal minutes (<code>39 4.8612 S</code>), or degrees, minutes and
+    decimal seconds (<code>39&deg; 4' 51.672&quot; S</code>). Longitude accepts E/W in the same formats.
+</td></tr>
 <script language="JavaScript"><!--
+function isLatitudeLongitudeType(coordType) {
+    return coordType === "NZGD49" || coordType === "Chatham Island Datum" ||
+        coordType === "NZGD2000" || coordType === "WGS84";
+}
+
+function parseLocalityCoordinate(value, axis) {
+    const trimmed = value.trim();
+    const hemisphereMatches = trimmed.match(/(^|[^A-Za-z])([NSEW])(?=$|[^A-Za-z])/ig) || [];
+    let hemisphere = null;
+    hemisphereMatches.forEach(function(match) {
+        const found = match.match(/[NSEW]/i)[0].toUpperCase();
+        if (hemisphere !== null && hemisphere !== found) {
+            throw new Error("Conflicting hemisphere letters were supplied");
+        }
+        hemisphere = found;
+    });
+
+    if (hemisphere !== null) {
+        const validHemisphere = axis === "latitude" ? /[NS]/ : /[EW]/;
+        if (!validHemisphere.test(hemisphere)) {
+            throw new Error("The hemisphere does not match the " + axis);
+        }
+    }
+
+    const matches = trimmed.match(/[-+]?\d+(?:\.\d+)?/g) || [];
+    if (matches.length < 1 || matches.length > 3) {
+        throw new Error("Use decimal degrees, degrees and decimal minutes, or degrees, minutes and decimal seconds");
+    }
+
+    const values = matches.map(Number);
+    if (values.some(function(valuePart) { return !Number.isFinite(valuePart); })) {
+        throw new Error("The coordinate contains an invalid number");
+    }
+    if (matches.length > 1 && (values[1] < 0 || values[1] >= 60)) {
+        throw new Error("Minutes must be between 0 and 59.999...");
+    }
+    if (matches.length > 2 && (values[2] < 0 || values[2] >= 60)) {
+        throw new Error("Seconds must be between 0 and 59.999...");
+    }
+
+    let decimalDegrees = Math.abs(values[0]);
+    if (matches.length > 1) decimalDegrees += values[1] / 60;
+    if (matches.length > 2) decimalDegrees += values[2] / 3600;
+    if (values[0] < 0 || hemisphere === "S" || hemisphere === "W") decimalDegrees *= -1;
+    if (hemisphere === "N" || hemisphere === "E") decimalDegrees = Math.abs(decimalDegrees);
+
+    const maximum = axis === "latitude" ? 90 : 180;
+    if (Math.abs(decimalDegrees) > maximum) {
+        throw new Error(axis.charAt(0).toUpperCase() + axis.slice(1) + " must be between -" + maximum + " and " + maximum);
+    }
+    return decimalDegrees;
+}
+
+
+function getProjectedCoordinateRule(coordType, axis) {
+    const rules = {
+        "NZMG": {
+            longitude: {pattern: /^\d{7}(?:\.\d)?$/, min: 2000000, max: 3999999, message: "must be a number between 2000000 and 3999999"},
+            latitude: {pattern: /^\d{7}(?:\.\d)?$/, min: 5000000, max: 6999999, message: "must be a number between 5000000 and 6999999"}
+        },
+        "Chatham Island Grid": {
+            longitude: {pattern: /^\d{6}(?:\.\d)?$/, min: 0, max: 999999, message: "must be a number between 0 and 999999"},
+            latitude: {pattern: /^\d{6}(?:\.\d)?$/, min: 0, max: 999999, message: "must be a number between 0 and 999999"}
+        },
+        "NZTM": {
+            longitude: {pattern: /^\d{7}(?:\.\d)?$/, min: 0, max: 9999999, message: "must be a number between 0 and 9999999"},
+            latitude: {pattern: /^\d{7}(?:\.\d)?$/, min: 0, max: 9999999, message: "must be a number between 0 and 9999999"}
+        },
+        "NZMS260": {
+            longitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"},
+            latitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"}
+        },
+        "NZTopo50": {
+            longitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"},
+            latitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"}
+        },
+        "NZ Yard SthIsl": {
+            longitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"},
+            latitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"}
+        },
+        "NZ Yard NthIsl": {
+            longitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"},
+            latitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"}
+        },
+        "NZMS1 SthIsl": {
+            longitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"},
+            latitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"}
+        },
+        "NZMS1 NthIsl": {
+            longitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"},
+            latitude: {pattern: /^\d{3,4}$/, min: 0, max: 9999, message: "must be a number between 0 and 9999"}
+        }
+    };
+    return rules[coordType] && rules[coordType][axis];
+}
+function validateLocalityCoordinate(inputName, errorRow, errorCell, axis) {
+    const input = document.getElementById(inputName);
+    const validate = function() {
+        const value = input.value;
+        let message = "";
+        if (!value || !value.trim()) {
+            message = "A value is required for " + axis;
+        } else {
+            const coordType = document.getElementById("coordTypeInput").value;
+            if (isLatitudeLongitudeType(coordType)) {
+                try {
+                    parseLocalityCoordinate(value, axis);
+                } catch (error) {
+                    message = "Invalid " + axis + ": " + error.message;
+                }
+            } else {
+                const projectedRule = getProjectedCoordinateRule(coordType, axis);
+                const numericValue = Number(value);
+                if (projectedRule && (!projectedRule.pattern.test(value) || numericValue < projectedRule.min || numericValue > projectedRule.max)) {
+                    message = "Invalid " + axis + ": " + projectedRule.message;
+                }
+            }
+        }
+        input.setCustomValidity(message);
+        document.getElementById(errorCell).innerHTML = message;
+        if (message) {
+            document.getElementById(errorRow).removeAttribute("hidden");
+        } else {
+            document.getElementById(errorRow).setAttribute("hidden", "hidden");
+        }
+    };
+    input.addEventListener("input", validate);
+    input.addEventListener("change", validate);
+}
+
 function updateCoordTypes(box) {
 
 	var trWhat = "none";
 	var eWhat = "Easting";
 	var nWhat = "Northing";
-	console.log(box.selectedIndex);
-	switch (box.selectedIndex) {
-		case 2:
-		case 4:
-		case 5:
-		case 6:
-			var trWhat = "table-row";
-			if (navigator.appName.indexOf("Microsoft Internet Explorer") > -1)
-				trWhat = "block";
-            document.getElementById("MapSheetInput").setAttribute("required", '');
-			break;
-		case 7:
-		case 8:
-		case 9:
-        case 10:
-			eWhat = "Longitude";
-			nWhat = "Latitude";
-            document.getElementById("MapSheetInput").removeAttribute("required");
-            document.getElementById("MapSheetInput").setCustomValidity("");
-            document.getElementById("MapSheetErrorRow").setAttribute("hidden", "hidden");
-			break;
-        default:
-            document.getElementById("MapSheetInput").removeAttribute("required");
-            document.getElementById("MapSheetInput").setCustomValidity("");
-            document.getElementById("MapSheetErrorRow").setAttribute("hidden", "hidden");
-			break;
-	}
+    const mapSheetTypes = ["NZMS260", "NZTopo50", "NZ Yard SthIsl", "NZ Yard NthIsl", "NZMS1 SthIsl", "NZMS1 NthIsl"];
+    if (mapSheetTypes.indexOf(box.value) !== -1) {
+        trWhat = "table-row";
+        document.getElementById("MapSheetInput").setAttribute("required", "required");
+    } else {
+        document.getElementById("MapSheetInput").removeAttribute("required");
+        document.getElementById("MapSheetInput").setCustomValidity("");
+        document.getElementById("MapSheetErrorRow").setAttribute("hidden", "hidden");
+    }
+
+    if (isLatitudeLongitudeType(box.value)) {
+        eWhat = "Longitude";
+        nWhat = "Latitude";
+        document.getElementById("coordinateFormatHelpRow").style.display = "table-row";
+    } else {
+        document.getElementById("coordinateFormatHelpRow").style.display = "none";
+    }
 
 	document.getElementById("mapSheetTr").style.display = trWhat;
     document.getElementById("easting").innerHTML = eWhat;

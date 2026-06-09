@@ -9,9 +9,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -31,6 +35,12 @@ public class OrigCoordInfoUtil {
     }
     
     private static final Map<Integer, OrigCoordEpsgFormatDetail> ORIGID_ORIGCOORD_LIST = createMap();
+
+    private static final Pattern HEMISPHERE_PATTERN = Pattern.compile("(?<![A-Z])[NSEW](?![A-Z])", Pattern.CASE_INSENSITIVE);
+    private static final Pattern COORDINATE_NUMBER_PATTERN = Pattern.compile("[-+]?\\d+(?:\\.\\d+)?");
+    private static final int DECIMAL_DEGREES_SCALE = 12;
+    private static final char LATITUDE = 'L';
+    private static final char LONGITUDE = 'G';
     
     private static Map<Integer, OrigCoordEpsgFormatDetail> createMap() {
         Map<Integer, OrigCoordEpsgFormatDetail> result = new HashMap<>();
@@ -192,6 +202,167 @@ public class OrigCoordInfoUtil {
         }
     }
     
+
+    /**
+     * Converts a spreadsheet latitude/longitude value to signed decimal degrees.
+     *
+     * Supported input formats are:
+     * <ul>
+     *   <li>decimal degrees, for example {@code -39.08102037777}</li>
+     *   <li>degrees and decimal minutes, for example {@code 39 4.861222666 S}</li>
+     *   <li>degrees, minutes, and decimal seconds, for example {@code 39° 4' 51.67336" S}</li>
+     * </ul>
+     *
+     * A leading sign and/or trailing hemisphere letter may be used. Hemisphere letters
+     * take precedence over the sign because they are the clearest user intent in a
+     * spreadsheet cell.
+     */
+    public static String parseCoordinate(String rawCoordinate, char axis) {
+        if (rawCoordinate == null || rawCoordinate.trim().isEmpty()) {
+            throw new IllegalArgumentException("Coordinate must not be empty.");
+        }
+
+        String coordinate = rawCoordinate.trim();
+        Hemisphere hemisphere = findHemisphere(coordinate);
+        Matcher numberMatcher = COORDINATE_NUMBER_PATTERN.matcher(coordinate);
+        BigDecimal[] values = new BigDecimal[3];
+        int valueCount = 0;
+        while (numberMatcher.find()) {
+            if (valueCount == values.length) {
+                throw new IllegalArgumentException("Coordinate has too many numeric parts: " + rawCoordinate);
+            }
+            values[valueCount] = new BigDecimal(numberMatcher.group());
+            valueCount++;
+        }
+
+        if (valueCount == 0) {
+            throw new IllegalArgumentException("Coordinate has no numeric value: " + rawCoordinate);
+        }
+
+        boolean negative = values[0].signum() < 0;
+        BigDecimal degrees = values[0].abs();
+        BigDecimal decimalDegrees;
+        switch (valueCount) {
+            case 1:
+                decimalDegrees = degrees;
+                break;
+            case 2:
+                validateMinutes(values[1], rawCoordinate);
+                decimalDegrees = degrees.add(values[1].abs().divide(BigDecimal.valueOf(60), DECIMAL_DEGREES_SCALE + 4, RoundingMode.HALF_UP));
+                break;
+            case 3:
+                validateMinutes(values[1], rawCoordinate);
+                validateSeconds(values[2], rawCoordinate);
+                decimalDegrees = degrees
+                        .add(values[1].abs().divide(BigDecimal.valueOf(60), DECIMAL_DEGREES_SCALE + 4, RoundingMode.HALF_UP))
+                        .add(values[2].abs().divide(BigDecimal.valueOf(3600), DECIMAL_DEGREES_SCALE + 4, RoundingMode.HALF_UP));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported coordinate format: " + rawCoordinate);
+        }
+
+        if (hemisphere != null) {
+            validateHemisphereForAxis(hemisphere, axis, rawCoordinate);
+            negative = hemisphere.isNegative();
+        }
+
+        if (negative) {
+            decimalDegrees = decimalDegrees.negate();
+        }
+        validateCoordinateRange(decimalDegrees, axis, rawCoordinate);
+        return decimalDegrees.setScale(DECIMAL_DEGREES_SCALE, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
+    }
+
+    private static Hemisphere findHemisphere(String coordinate) {
+        Matcher hemisphereMatcher = HEMISPHERE_PATTERN.matcher(coordinate);
+        Hemisphere hemisphere = null;
+        while (hemisphereMatcher.find()) {
+            Hemisphere found = Hemisphere.from(hemisphereMatcher.group().charAt(0));
+            if (hemisphere != null && hemisphere != found) {
+                throw new IllegalArgumentException("Coordinate has conflicting hemisphere letters: " + coordinate);
+            }
+            hemisphere = found;
+        }
+        return hemisphere;
+    }
+
+    private static void validateMinutes(BigDecimal minutes, String rawCoordinate) {
+        if (minutes.signum() < 0) {
+            throw new IllegalArgumentException("Coordinate minutes must not be negative: " + rawCoordinate);
+        }
+        BigDecimal absMinutes = minutes.abs();
+        if (absMinutes.compareTo(BigDecimal.valueOf(60)) >= 0) {
+            throw new IllegalArgumentException("Coordinate minutes must be less than 60: " + rawCoordinate);
+        }
+    }
+
+    private static void validateSeconds(BigDecimal seconds, String rawCoordinate) {
+        if (seconds.signum() < 0) {
+            throw new IllegalArgumentException("Coordinate seconds must not be negative: " + rawCoordinate);
+        }
+        BigDecimal absSeconds = seconds.abs();
+        if (absSeconds.compareTo(BigDecimal.valueOf(60)) >= 0) {
+            throw new IllegalArgumentException("Coordinate seconds must be less than 60: " + rawCoordinate);
+        }
+    }
+
+    private static void validateHemisphereForAxis(Hemisphere hemisphere, char axis, String rawCoordinate) {
+        if ((axis == LATITUDE && !hemisphere.isLatitude()) || (axis == LONGITUDE && !hemisphere.isLongitude())) {
+            throw new IllegalArgumentException("Coordinate hemisphere does not match the coordinate axis: " + rawCoordinate);
+        }
+    }
+
+    private static void validateCoordinateRange(BigDecimal decimalDegrees, char axis, String rawCoordinate) {
+        BigDecimal max = axis == LATITUDE ? BigDecimal.valueOf(90) : BigDecimal.valueOf(180);
+        if (decimalDegrees.abs().compareTo(max) > 0) {
+            throw new IllegalArgumentException("Coordinate is outside the valid range: " + rawCoordinate);
+        }
+    }
+
+    private enum Hemisphere {
+        NORTH(false, true, false),
+        SOUTH(true, true, false),
+        EAST(false, false, true),
+        WEST(true, false, true);
+
+        private final boolean negative;
+        private final boolean latitude;
+        private final boolean longitude;
+
+        Hemisphere(boolean negative, boolean latitude, boolean longitude) {
+            this.negative = negative;
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+
+        boolean isNegative() {
+            return negative;
+        }
+
+        boolean isLatitude() {
+            return latitude;
+        }
+
+        boolean isLongitude() {
+            return longitude;
+        }
+
+        static Hemisphere from(char c) {
+            switch (Character.toUpperCase(c)) {
+                case 'N':
+                    return NORTH;
+                case 'S':
+                    return SOUTH;
+                case 'E':
+                    return EAST;
+                case 'W':
+                    return WEST;
+                default:
+                    throw new IllegalArgumentException("Unsupported hemisphere: " + c);
+            }
+        }
+    }
+
     public static OrigCoord getJson(int system_id, String origCoord) throws JsonProcessingException, IOException {
          
         JsonNode siteDetails = null;
@@ -205,7 +376,7 @@ public class OrigCoordInfoUtil {
                   if (parts.length!=2) {
                       return null;
                   }
-                  js += "\"latitude\":\"" + parts[0] + "\", \"longitude\":\"" + parts[1] + "\"";
+                  js += "\"latitude\":\"" + parseCoordinate(parts[0], LATITUDE) + "\", \"longitude\":\"" + parseCoordinate(parts[1], LONGITUDE) + "\"";
                   break;
               case "gridref":
                   if (parts.length!=3) {
