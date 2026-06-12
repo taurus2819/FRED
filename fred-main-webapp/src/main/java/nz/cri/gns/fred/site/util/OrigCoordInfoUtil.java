@@ -211,6 +211,7 @@ public class OrigCoordInfoUtil {
      *   <li>decimal degrees, for example {@code -39.08102037777}</li>
      *   <li>degrees and decimal minutes, for example {@code 39 4.861222666 S}</li>
      *   <li>degrees, minutes, and decimal seconds, for example {@code 39° 4' 51.67336" S}</li>
+     *   <li>degrees, minutes, and decimal seconds, for example {@code 39 4 51.67336 S}</li>
      * </ul>
      *
      * A leading sign and/or trailing hemisphere letter may be used. Hemisphere letters
