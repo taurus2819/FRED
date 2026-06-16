@@ -140,4 +140,19 @@ public class OrigCoordInfoUtilTest {
     public void rejectWrongHemisphere() {
         OrigCoordInfoUtil.parseCoordinate("39 4.5 E", 'L');
     }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsNorthHemisphereForLongitude() {
+        OrigCoordInfoUtil.parseCoordinate("174 31.4571685 N", 'G');
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsConflictingLatitudeHemisphereLetters() {
+        OrigCoordInfoUtil.parseCoordinate("39 4.8612 S N", 'L');
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsConflictingLongitudeHemisphereLetters() {
+        OrigCoordInfoUtil.parseCoordinate("174 31.4571685 E W", 'G');
+    }
 }

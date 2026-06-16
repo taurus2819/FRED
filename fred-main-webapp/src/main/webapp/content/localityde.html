@@ -106,10 +106,17 @@ function isLatitudeLongitudeType(coordType) {
 
 function parseLocalityCoordinate(value, axis) {
     const trimmed = value.trim();
+    // Find standalone N, S, E, or W hemisphere letters.
+    // If no letters are found, use an empty array instead of null.
     const hemisphereMatches = trimmed.match(/(^|[^A-Za-z])([NSEW])(?=$|[^A-Za-z])/ig) || [];
-    let hemisphere = null;
+    let hemisphere = null; // No hemisphere has been processed yet.
+    // Process every hemisphere found so conflicting letters can be rejected.
+    //processes all matches to detect conflicting inputs like 39 4.5 N S or 174 31 E W
     hemisphereMatches.forEach(function(match) {
+        //searches the matched substring N, S, E, W. Uses [0] to take first matchign letter
         const found = match.match(/[NSEW]/i)[0].toUpperCase();
+        
+        // Reject contradictory combinations such as "N S" or "E W".
         if (hemisphere !== null && hemisphere !== found) {
             throw new Error("Conflicting hemisphere letters were supplied");
         }
@@ -117,13 +124,17 @@ function parseLocalityCoordinate(value, axis) {
     });
 
     if (hemisphere !== null) {
+        //validate the supplied heisphere - lattitue allows N/S; longitude allows E/W
         const validHemisphere = axis === "latitude" ? /[NS]/ : /[EW]/;
+        // Reject latitude with E/W or longitude with N/S.
         if (!validHemisphere.test(hemisphere)) {
             throw new Error("The hemisphere does not match the " + axis);
         }
     }
 
+    // Extract one to three signed integer or decimal number
     const matches = trimmed.match(/[-+]?\d+(?:\.\d+)?/g) || [];
+    // One number means DD, two mean DDM, and three mean DMS.
     if (matches.length < 1 || matches.length > 3) {
         throw new Error("Use decimal degrees, degrees and decimal minutes, or degrees, minutes and decimal seconds");
     }
@@ -139,12 +150,17 @@ function parseLocalityCoordinate(value, axis) {
         throw new Error("Seconds must be between 0 and 59.999...");
     }
 
-    let decimalDegrees = Math.abs(values[0]);
-    if (matches.length > 1) decimalDegrees += values[1] / 60;
-    if (matches.length > 2) decimalDegrees += values[2] / 3600;
-    if (values[0] < 0 || hemisphere === "S" || hemisphere === "W") decimalDegrees *= -1;
+    let decimalDegrees = Math.abs(values[0]); //unsigned degree component
+    if (matches.length > 1) decimalDegrees += values[1] / 60;  //add mins to degrees 
+    if (matches.length > 2) decimalDegrees += values[2] / 3600; //add after converting seconds to degrees
+    
+    //A negative degree sign, S, or W makes the result negative.
+    if (values[0] < 0 || hemisphere === "S" || hemisphere === "W") decimalDegrees *= -1;  
+    
+    // N and E are always positive
     if (hemisphere === "N" || hemisphere === "E") decimalDegrees = Math.abs(decimalDegrees);
 
+    // validation for latitude (90 degree limit) and lon (180 degree limit)
     const maximum = axis === "latitude" ? 90 : 180;
     if (Math.abs(decimalDegrees) > maximum) {
         throw new Error(axis.charAt(0).toUpperCase() + axis.slice(1) + " must be between -" + maximum + " and " + maximum);
@@ -196,6 +212,9 @@ function getProjectedCoordinateRule(coordType, axis) {
 }
 function validateLocalityCoordinate(inputName, errorRow, errorCell, axis) {
     const input = document.getElementById(inputName);
+    
+    // this is a reusable validation inner callback which is attached to 2 browser events (input.addEventListener)
+    //builds the required field message 
     const validate = function() {
         const value = input.value;
         let message = "";
