@@ -141,9 +141,16 @@
         Feature feature = null;
         Sample sample = null;
 
-        int site = ServletUtils.getSite(getPageState(request, response));
-        if (request.getRemoteAddr().equals("127.0.0.1")) {
+        int site = 0;
+        String remoteAddr = request.getRemoteAddr();
+        if ("127.0.0.1".equals(remoteAddr) || "0:0:0:0:0:0:0:1".equals(remoteAddr) || "::1".equals(remoteAddr)) {
             site = 1;
+        } else {
+            try {
+                site = ServletUtils.getSite(getPageState(request, response));
+            } catch (IllegalArgumentException e) {
+                log.log(Level.WARNING, "Unable to determine request site from IP address; continuing without intranet site context.", e);
+            }
         }
 
         String backURL = request.getParameter("backURL");

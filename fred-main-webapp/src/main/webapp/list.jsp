@@ -7,10 +7,10 @@
         %><%@page import="nz.cri.gns.fred.model.UserFolder"
         %><%@page import="nz.cri.gns.fred.model.FREDConstants"
         %><%@page import="nz.cri.gns.fred.model.Sample"
-        %><%@page import="nz.cri.gns.fred.model.Record"
+        %><%@page import="nz.cri.gns.fred.model.FREDRecord"
         %><%@page import="nz.cri.gns.fred.model.Paleontology"
         %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
-        %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
+        %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactorySiteApi"
         %><%@page import="nz.cri.gns.fred.de.DataInputException"
         %><%@page import="nz.cri.gns.fred.util.FREDUtil"
         %><%@page import="nz.cri.gns.fred.util.FolderUtil"
@@ -95,7 +95,7 @@ public IpGrantedAuthority getRequiredRights() {
                             for (Iterator i = userFolder.getFolder().getFeatures().iterator(); i.hasNext();) {
                                 Feature feature = (Feature) i.next();
                                 try {
-                                    DataEntryForm dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(feature.getFeatureId().intValue(), userFolder.getFolderId().intValue(), user, factory, provider);
+                                    DataEntryForm dataEntryForm = DataEntryFormFactorySiteApi.getLocalityDataEntryForm(feature.getFeatureId().intValue(), userFolder.getFolderId().intValue(), user, factory, provider);
                                     dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
                                 } catch (Exception e) {}
                             }
@@ -113,13 +113,13 @@ public IpGrantedAuthority getRequiredRights() {
                     int folderID = Integer.parseInt(request.getParameter("folderID"));
                     if (request.getParameter("docType").equals("Locality")) {
                         Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("id")));
-                        dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(feature.getFeatureId().intValue(), folderID, user, factory, provider);
+                        dataEntryForm = DataEntryFormFactorySiteApi.getLocalityDataEntryForm(feature.getFeatureId().intValue(), folderID, user, factory, provider);
                     } else if (request.getParameter("docType").equals("Sample")) {
                         Sample sample = sampleUtil.getSample(Integer.parseInt(request.getParameter("id")));
-                        dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(sample.getSampleId().intValue(), folderID, user, factory, provider);
+                        dataEntryForm = DataEntryFormFactorySiteApi.getSampleDataEntryForm(sample.getSampleId().intValue(), folderID, user, factory, provider);
                     } else if (request.getParameter("docType").equals(FREDConstants.PALEONTOLOGICAL) || request.getParameter("docType").equals(FREDConstants.ADOPTION)) {
-                        Record record = recordUtil.getRecord(Integer.parseInt(request.getParameter("id")));
-                        dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(record.getRecordId().intValue(), folderID, user, factory, provider);
+                        FREDRecord record = recordUtil.getRecord(Integer.parseInt(request.getParameter("id")));
+                        dataEntryForm = DataEntryFormFactorySiteApi.getRecordDataEntryForm(record.getRecordId().intValue(), folderID, user, factory, provider);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

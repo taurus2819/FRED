@@ -12,8 +12,8 @@ public interface Adoption extends RecordDetails {
 	public void setDateRounding(String dateRounding);
 	public String getComments();
 	public void setComments(String comments);
-	public Record getRecord();
-	public void setRecord(Record record);
+	public FREDRecord getRecord();
+	public void setRecord(FREDRecord record);
 	public Stage getStage();
 	public void setStage(Stage stage);
 	public Set<Person> getAdoptors();

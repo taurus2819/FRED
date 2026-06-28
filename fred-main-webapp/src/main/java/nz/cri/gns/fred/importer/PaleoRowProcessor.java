@@ -47,7 +47,7 @@ import nz.cri.gns.munginator.upload.stagingarea.RowValue;
  */
 public class PaleoRowProcessor extends RowProcessor {
 
-    Map<Integer, Record> paleoMatrix; // Map column num -> Record.
+    Map<Integer, FREDRecord> paleoMatrix; // Map column num -> Record.
     Map<Integer, String> folderNameMatrix; // Map column num  -> Folder name
     Map<Integer, String> localityNameMatrix; // Map column num  -> Locality name.
     Map<Integer, BigDecimal> topDepthMatrix; // Map column num -> top depth
@@ -93,7 +93,7 @@ public class PaleoRowProcessor extends RowProcessor {
     private boolean isRolledBack = false;
     private Transaction transaction = null;
 
-    public PaleoRowProcessor(User user, DAOFactory factory, String code, Map<Integer, Record> paleoMatrix) {
+    public PaleoRowProcessor(User user, DAOFactory factory, String code, Map<Integer, FREDRecord> paleoMatrix) {
         super(code);
         this.user = user;
         this.paleoMatrix = paleoMatrix;
@@ -267,7 +267,7 @@ public class PaleoRowProcessor extends RowProcessor {
     @Override
     public void commit() throws SQLException {
         if (!isRolledBack) {
-            for (Record each : paleoMatrix.values()) {
+            for (FREDRecord each : paleoMatrix.values()) {
                 try {
                     fredDAO.save(each);
                 } catch (StorageAccessException ex) {
@@ -285,11 +285,11 @@ public class PaleoRowProcessor extends RowProcessor {
     /**
      * Create the record, add it to the matrix.
      */
-    private Record createRecord(int index, Sample sample, Integer folderId, User user) {
+    private FREDRecord createRecord(int index, Sample sample, Integer folderId, User user) {
         if (paleoMatrix.containsKey(index)) {
             throw new MgException("The programmer made a mistake. This row already has a record.");
         }
-        Record r;
+        FREDRecord r;
         try {
             r = recordUtil.createRecord(sample, RecordUtil.PALEONTOLOGICAL, folderId, user);
 

@@ -8,7 +8,7 @@
 %><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.Sample"
-%><%@page import="nz.cri.gns.fred.model.Record"
+%><%@page import="nz.cri.gns.fred.model.FREDRecord"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
@@ -85,7 +85,7 @@
 				%><tr><th>Locality</th><th>Sample</th><th>Record</th></tr><%
 				for (int i = 0; i < features.length; i++) {
 					for (Sample sample : features[i].getSamples()) {
-						for (Record record : sample.getRecords()) {
+						for (FREDRecord record : sample.getRecords()) {
 							if (record != null && RecordUtil.getRecordType(record).equals(recType) && (recID == null || record.getRecordId().intValue() != Integer.parseInt(recID))) {
 								%><tr><td><%=FeatureUtil.getFeatureIdentifyingName(features[i])%>&nbsp;&nbsp;</td>
 								<td><%=(features[i].getFeatureType().equals(FREDConstants.OUTCROP)) ? "" : SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>

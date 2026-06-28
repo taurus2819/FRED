@@ -28,7 +28,7 @@ import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.Stage;
@@ -47,7 +47,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         featureUtil = new FeatureUtil(factory);
     }
 
-    public static boolean isTaxaApproved(Record record) {
+    public static boolean isTaxaApproved(FREDRecord record) {
         if (record.getPaleontology() == null || record.getPaleontology().getListEntries() == null) {
             return true;
         }
@@ -59,11 +59,11 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return true;
     }
 
-    public static RecordDetails getRecordDetails(Record record) {
+    public static RecordDetails getRecordDetails(FREDRecord record) {
         return (record.getAdoption() == null) ? ((record.getPaleontology() == null) ? null : record.getPaleontology()) : record.getAdoption();
     }
 
-    public static String getRecordName(Record record) {
+    public static String getRecordName(FREDRecord record) {
         return getRecordName(getRecordDetails(record));
     }
 
@@ -148,11 +148,11 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
     public void deleteRecord(int recordId, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException {
-        Record record = fredDAO.get(recordId, nz.cri.gns.fred.hibernate.Record.class);
+        FREDRecord record = fredDAO.get(recordId, nz.cri.gns.fred.hibernate.FREDRecord.class);
         deleteRecord(record, folder, user);
     }
 
-    public void deleteRecord(Record record, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException {
+    public void deleteRecord(FREDRecord record, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException {
         if (!isAllowedDeleteRecord(user, record, folder)) {
             throw new InsufficientPrivelegesException();
         }
@@ -169,7 +169,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         submitRecord(getRecord(recordId), folder, user);
     }
 
-    public void submitRecord(Record record, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException {
+    public void submitRecord(FREDRecord record, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException {
         if (!folder.isAllowedSubmitLocalities()) {
             throw new InsufficientPrivelegesException();
         }
@@ -222,8 +222,8 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
      * @return a new <code>Record</code>
      * @throws StorageAccessException
      */
-    public Record createRecord(Sample sample, String recordType, int folderId, User user) throws StorageAccessException {
-        Record record = fredDAO.createNewRecord();
+    public FREDRecord createRecord(Sample sample, String recordType, int folderId, User user) throws StorageAccessException {
+        FREDRecord record = fredDAO.createNewRecord();
         record.setSample(sample);
 
         Audit audit = fredDAO.createNewAudit();
@@ -253,7 +253,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return record;
     }
 
-    public boolean isAllowedEditRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+    public boolean isAllowedEditRecord(User user, FREDRecord record, UserFolder userFolder) throws StorageAccessException {
         Audit audit = record.getAudit();
         if (audit.getStatus().equals(APPROVED)) {
             return featureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO)
@@ -263,7 +263,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return userFolder.isAllowedEditLocalities();
     }
 
-    public boolean isAllowedEditRecordConfid(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+    public boolean isAllowedEditRecordConfid(User user, FREDRecord record, UserFolder userFolder) throws StorageAccessException {
         FrUserView frUser = new UserUtil(factory).getFrUserView(user.getId().intValue());
         Audit audit = record.getAudit();
 
@@ -285,7 +285,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return userFolder.isAllowedEditLocalities();
     }
 
-    public boolean isAllowedDeleteRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+    public boolean isAllowedDeleteRecord(User user, FREDRecord record, UserFolder userFolder) throws StorageAccessException {
         Audit audit = record.getAudit();
         if (audit.getStatus().equals(APPROVED)) {
             return featureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
@@ -294,7 +294,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return userFolder.isAllowedDeleteLocalities();
     }
 
-    public boolean isAllowedSubmitRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+    public boolean isAllowedSubmitRecord(User user, FREDRecord record, UserFolder userFolder) throws StorageAccessException {
         //check if pal record has non-approved taxa
         if (record.getPaleontology() != null && !RecordUtil.isTaxaApproved(record)) {
             return false;
@@ -308,15 +308,15 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return userFolder.isAllowedSubmitLocalities();
     }
 
-    public boolean hasMasterfileEditRights(User user, Record record) throws StorageAccessException {
+    public boolean hasMasterfileEditRights(User user, FREDRecord record) throws StorageAccessException {
         return featureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
     }
 
-    public Record getRecord(int recordId) throws StorageAccessException {
-        return fredDAO.get(recordId, nz.cri.gns.fred.hibernate.Record.class);
+    public nz.cri.gns.fred.hibernate.FREDRecord getRecord(int recordId) throws StorageAccessException {
+        return fredDAO.get(recordId, nz.cri.gns.fred.hibernate.FREDRecord.class);
     }
 
-    public boolean isRecordConfidential(Record record) {
+    public boolean isRecordConfidential(FREDRecord record) {
         if (record.getAudit().getConfidentialFlag().booleanValue()) {
             return true;
         }
@@ -330,7 +330,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return isRecordConfidential(palRecord.getRecord());
     }
 
-    public String getRecordConfidAccessListDescription(Record record) {
+    public String getRecordConfidAccessListDescription(FREDRecord record) {
         String recDes = new AuditUtil(factory).getConfidAccessListDescription(record.getAudit());
         if (recDes != null) {
             return recDes;
@@ -346,7 +346,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return getRecordConfidAccessListDescription(palRecord.getRecord());
     }
 
-    public boolean isAllowedReadRecord(User user, Record record) throws StorageAccessException {
+    public boolean isAllowedReadRecord(User user, FREDRecord record) throws StorageAccessException {
         if (user == null) {
             return false;
         }
@@ -380,7 +380,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return isAllowedReadRecord(user, palRecord.getRecord());
     }
 
-    public static String getRecordType(Record record) {
+    public static String getRecordType(FREDRecord record) {
         return (record.getAdoption() != null) ? ADOPTION : PALEONTOLOGICAL;
     }
 
@@ -388,11 +388,11 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return fredDAO.saveOrUpdate(audit);
     }
 
-    public void saveOrUpdate(Record record) throws StorageAccessException {
+    public void saveOrUpdate(FREDRecord record) throws StorageAccessException {
         fredDAO.saveOrUpdate(record);
     }
 
-    public void delete(Record record) throws StorageAccessException {
+    public void delete(FREDRecord record) throws StorageAccessException {
         Audit audit = record.getAudit();
         fredDAO.delete(record);
         //try and delete audit record (if can't then probably also used by feature) so just ignore error
@@ -464,8 +464,8 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         fredDAO.saveOrUpdate(details);
     }
 
-    public List<Record> getListFromQueryBuilder(String query) throws StorageAccessException {
-        return fredDAO.getList(query, Record.class);
+    public List<FREDRecord> getListFromQueryBuilder(String query) throws StorageAccessException {
+        return fredDAO.getList(query, FREDRecord.class);
     }
 
     public List<? extends Paleontology> getPaleontologyRecords(Feature feature) throws StorageAccessException, HibernateException {

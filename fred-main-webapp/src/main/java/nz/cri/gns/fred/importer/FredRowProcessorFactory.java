@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.RowProcessorFactory;
@@ -16,7 +16,7 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
 
     User user;
     DAOFactory factory = null;
-    Map<Integer, Record>  paleoMatrix;
+    Map<Integer, FREDRecord>  paleoMatrix;
     
     public FredRowProcessorFactory(User user, DAOFactory factory) {
         this.user = user;
@@ -51,9 +51,9 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
         }
     }
     
-    public Map<Integer, Record>  getPaleoRowProcessorMatrix() {
+    public Map<Integer, FREDRecord>  getPaleoRowProcessorMatrix() {
         if (null==paleoMatrix) {
-            paleoMatrix = new HashMap<Integer, Record> ();
+            paleoMatrix = new HashMap<Integer, FREDRecord> ();
         }
         return paleoMatrix;
     }

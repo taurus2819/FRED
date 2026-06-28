@@ -187,7 +187,7 @@
             <column name="audit_id" />
         </key>
         <one-to-many 
-            class="nz.cri.gns.fred.hibernate.Record"
+            class="nz.cri.gns.fred.hibernate.FREDRecord"
         />
     </set>
     <!-- bi-directional one-to-many association to Record -->
@@ -201,7 +201,7 @@
             <column name="pal_list_audit_id" />
         </key>
         <one-to-many 
-            class="nz.cri.gns.fred.hibernate.Record"
+            class="nz.cri.gns.fred.hibernate.FREDRecord"
         />
     </set>
     <!-- bi-directional one-to-many association to Feature -->

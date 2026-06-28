@@ -22,7 +22,7 @@ import nz.cri.gns.fred.dao.DAOFactory;
 //import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.importer.PaleoRowProcessor;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.munginator.upload.Importer;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.XLSUploader;

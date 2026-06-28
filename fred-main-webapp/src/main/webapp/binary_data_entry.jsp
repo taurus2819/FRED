@@ -21,7 +21,7 @@
         %><%@page import="java.io.PrintWriter"
         %><%@page import="nz.cri.gns.fred.model.Feature"
         %><%@page import="nz.cri.gns.fred.model.Sample"
-        %><%@page import="nz.cri.gns.fred.model.Record"
+        %><%@page import="nz.cri.gns.fred.model.FREDRecord"
         %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
         %><%@page import="nz.cri.gns.fred.util.SampleUtil"
         %><%@page import="nz.cri.gns.fred.util.RecordUtil"
@@ -49,7 +49,7 @@
         int loadID;
         Feature feature;
         Sample sample;
-        Record record;
+        FREDRecord record;
         PaleontologyListEntry palListEntry;
         DAOFactory factory = FredHibernate.get().getDAOFactory();
         FeatureUtil featureUtil = new FeatureUtil(factory);
@@ -64,7 +64,7 @@
 
             if (this.type.equals(Item.RECORD)) {
                 docType = "RECORD";
-                Record record = recordUtil.getRecord(intID);
+                FREDRecord record = recordUtil.getRecord(intID);
                 this.title = record.toString();
                 this.subtype = recordUtil.getRecordType(record);
             } else if (this.type.equals("SMP")) {

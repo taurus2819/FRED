@@ -9,8 +9,8 @@ public interface RecordStageView extends Comparable<RecordStageView> {
 	public Double getBaseAge();
 	public void setTopAge(Double topAge);
 	public Double getTopAge();
-	public void setRecord(Record record);
-	public Record getRecord();
+	public void setRecord(FREDRecord record);
+	public FREDRecord getRecord();
 	public void setStage(Stage stage);
 	public Stage getStage();
 }

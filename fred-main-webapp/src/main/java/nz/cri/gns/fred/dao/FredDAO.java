@@ -24,7 +24,7 @@ import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
 import nz.cri.gns.fred.model.Sample;
@@ -83,7 +83,7 @@ public interface FredDAO {
 
     public Person createNewPerson();
 
-    public Record createNewRecord();
+    public FREDRecord createNewRecord();
 
     public Sample createNewSample();
 
@@ -98,7 +98,7 @@ public interface FredDAO {
      *
      * @throws StorageAccessException
      */
-    public Folder getMasterfileFolder(Record record) throws StorageAccessException;
+    public Folder getMasterfileFolder(FREDRecord record) throws StorageAccessException;
 
     public Lab findLab(String labName) throws StorageAccessException;
 

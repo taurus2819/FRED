@@ -10,7 +10,7 @@ import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Folder;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserView;
 
@@ -39,8 +39,8 @@ public class AuditTable implements Serializable, Audit {
     private UserView submittedBy;
     private UserView approvedBy;
     private Set<Sample> samples;
-    private Set<Record> records;
-    private Set<Record> recordByPalListAuditIds;
+    private Set<FREDRecord> records;
+    private Set<FREDRecord> recordByPalListAuditIds;
     private Set<Feature> features;
     private Set<AuditEdit> auditEdits;
     private Set<ConfidentialGroup> confidGroups;
@@ -384,22 +384,21 @@ public class AuditTable implements Serializable, Audit {
     }
 
     @Override
-    public Set<Record> getRecords() {
+    public Set<FREDRecord> getRecords() {
         return this.records;
     }
 
     @Override
-    public void setRecords(Set<Record> records) {
+    public void setRecords(Set<FREDRecord> records) {
         this.records = records;
     }
 
     @Override
-    public Set<Record> getRecordByPalListAuditIds() {
+    public Set<FREDRecord> getRecordByPalListAuditIds() {
         return recordByPalListAuditIds;
     }
 
-    @Override
-    public void setRecordByPalListAuditIds(Set<Record> recordByPalListAuditIds) {
+    public void setRecordByPalListAuditIds(Set<FREDRecord> recordByPalListAuditIds) {
         this.recordByPalListAuditIds = recordByPalListAuditIds;
     }
 

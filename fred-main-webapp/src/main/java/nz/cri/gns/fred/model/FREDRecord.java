@@ -2,7 +2,7 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-public interface Record extends Audited, Comparable<Record> {
+public interface FREDRecord extends Audited, Comparable<FREDRecord> {
 	public Integer getRecordId();
 	public void setRecordId(Integer recordId);
 	public Paleontology getPaleontology();

@@ -34,7 +34,7 @@ import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
@@ -672,7 +672,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     public int getPaleontologyRecordCount(Sample sample) {
         int count = 0;
-        for (Record record : sample.getRecords()) {
+        for (FREDRecord record : sample.getRecords()) {
             count += (record.getPaleontology() != null) ? 1 : 0;
         }
         return count;
@@ -680,7 +680,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     public int getAdoptionRecordCount(Sample sample) {
         int count = 0;
-        for (Record record : sample.getRecords()) {
+        for (FREDRecord record : sample.getRecords()) {
             count += (record.getAdoption() != null) ? 1 : 0;
         }
         return count;
@@ -688,7 +688,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     public List<Paleontology> getPaleontologyRecords(Sample sample) {
         List<Paleontology> palRecords = new Vector<>();
-        for (Record record : sample.getRecords()) {
+        for (FREDRecord record : sample.getRecords()) {
             if (record.getPaleontology() != null) {
                 palRecords.add(record.getPaleontology());
             }
@@ -699,7 +699,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
     public List<Adoption> getAdoptionRecords(Sample sample) {
         List<Adoption> adoRecords = new Vector<>();
-        for (Record record : sample.getRecords()) {
+        for (FREDRecord record : sample.getRecords()) {
             if (record.getAdoption() != null) {
                 adoRecords.add(record.getAdoption());
             }

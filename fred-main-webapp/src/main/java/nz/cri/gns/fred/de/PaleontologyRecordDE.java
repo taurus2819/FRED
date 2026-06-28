@@ -28,7 +28,7 @@ import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.Taxon;
@@ -57,7 +57,7 @@ public class PaleontologyRecordDE extends RecordDE {
         taxonomicUtil = new TaxonomicUtil(factory);
     }
 
-    public PaleontologyRecordDE(Record record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws IllegalArgumentException, DataInputException, SQLException, IOException, InsufficientPrivelegesException, StorageAccessException {
+    public PaleontologyRecordDE(FREDRecord record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws IllegalArgumentException, DataInputException, SQLException, IOException, InsufficientPrivelegesException, StorageAccessException {
         super(record, folderId, user, factory, provider);
         taxonomicUtil = new TaxonomicUtil(factory);
     }

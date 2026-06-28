@@ -12,7 +12,7 @@
 -->
 
 <class 
-    name="nz.cri.gns.fred.hibernate.Record" 
+    name="nz.cri.gns.fred.hibernate.FREDRecord" 
     table="record"
     schema="fr"
 >
