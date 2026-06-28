@@ -6,7 +6,7 @@ variables:
   GIT_STRATEGY: clone
   TZ: "Pacific/Auckland"
 
-image: maven:3-openjdk-11
+image: maven:3.9.11-eclipse-temurin-25-noble
 
 stages:
   - build

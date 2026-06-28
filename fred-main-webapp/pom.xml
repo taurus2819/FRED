@@ -29,8 +29,8 @@
                 <version>3.10.1</version>
                 <configuration>
                     <showDeprecation>true</showDeprecation>
-                    <source>25</source>
-                    <target>25</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
