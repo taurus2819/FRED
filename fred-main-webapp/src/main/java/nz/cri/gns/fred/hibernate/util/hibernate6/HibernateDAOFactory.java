@@ -410,7 +410,7 @@ public class HibernateDAOFactory
     }
 
     public Folder getMasterfileFolder(FREDRecord record) throws StorageAccessException {
-        return HibernateUtils.getFirst(provider, "SELECT f FROM Record AS r INNER JOIN r.sample AS s INNER JOIN s.feature AS feat INNER JOIN feat.masterFile AS f WHERE r.recordId = ?1", record.getRecordId(), Folder.class);
+        return HibernateUtils.getFirst(provider, "SELECT f FROM FREDRecord AS r INNER JOIN r.sample AS s INNER JOIN s.feature AS feat INNER JOIN feat.masterFile AS f WHERE r.recordId = ?1", record.getRecordId(), Folder.class);
     }
 
     /**
