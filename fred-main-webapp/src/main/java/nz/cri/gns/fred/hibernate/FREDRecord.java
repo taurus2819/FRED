@@ -15,7 +15,7 @@ import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 
 /** @author Hibernate CodeGenerator */
-public class Record implements Serializable, nz.cri.gns.fred.model.Record {
+public class FREDRecord implements Serializable, nz.cri.gns.fred.model.FREDRecord {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -92,7 +92,7 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 		return recordStageViews;
 	}
     
-	public int compareTo(nz.cri.gns.fred.model.Record arg0) {
+	public int compareTo(nz.cri.gns.fred.model.FREDRecord arg0) {
 		//first compare record types
 		String thisType = RecordUtil.getRecordType(this);
 		String thatType = RecordUtil.getRecordType(arg0);

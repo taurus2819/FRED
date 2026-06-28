@@ -11,7 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
-        <java.version>11</java.version>
+        <java.version>25</java.version>
         <!-- TODO: change this back to master -->
         <gitflow.branch>master-tmp-2026</gitflow.branch>
     </properties>

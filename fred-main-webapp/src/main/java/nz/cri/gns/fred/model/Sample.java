@@ -169,9 +169,9 @@ public interface Sample extends Audited, Comparable<Sample> {
 
     public void setMetaCats(Set<MetaCat> metaCats);
 
-    public Set<Record> getRecords();
+    public Set<FREDRecord> getRecords();
 
-    public void setRecords(Set<Record> records);
+    public void setRecords(Set<FREDRecord> records);
 
     public Set<SentTo> getSentTos();
 

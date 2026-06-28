@@ -19,7 +19,7 @@ import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Relationship;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.MetaCat;
 import nz.cri.gns.fred.model.SampleStageView;
 import nz.cri.gns.fred.model.SedimentaryFeature;
@@ -75,7 +75,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private Stage autoAgeNarrow;
     private Set<SedimentaryFeature> sedimentaryFeatures;
     private Set<MetaCat> metaCats;
-    private Set<Record> records;
+    private Set<FREDRecord> records;
     private Set<SentTo> sentTos;
     private Set<Person> collectors;
     private Set<Relationship> relationships;
@@ -417,11 +417,11 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.metaCats = metaCats;
     }
 
-    public Set<Record> getRecords() {
+    public Set<FREDRecord> getRecords() {
         return this.records;
     }
 
-    public void setRecords(Set<Record> records) {
+    public void setRecords(Set<FREDRecord> records) {
         this.records = records;
     }
 

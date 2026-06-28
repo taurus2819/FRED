@@ -35,7 +35,7 @@ import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
 import nz.cri.gns.fred.model.Sample;
@@ -395,8 +395,8 @@ public class HibernateDAOFactory
     }
 
     @Override
-    public Record createNewRecord() {
-        return new nz.cri.gns.fred.hibernate.Record();
+    public FREDRecord createNewRecord() {
+        return new nz.cri.gns.fred.hibernate.FREDRecord();
     }
 
     @Override
@@ -409,8 +409,7 @@ public class HibernateDAOFactory
         return new nz.cri.gns.fred.hibernate.Adoption();
     }
 
-    @Override
-    public Folder getMasterfileFolder(Record record) throws StorageAccessException {
+    public Folder getMasterfileFolder(FREDRecord record) throws StorageAccessException {
         return HibernateUtils.getFirst(provider, "SELECT f FROM Record AS r INNER JOIN r.sample AS s INNER JOIN s.feature AS feat INNER JOIN feat.masterFile AS f WHERE r.recordId = ?1", record.getRecordId(), Folder.class);
     }
 

@@ -224,7 +224,7 @@
                 <column name="sample_id" />
             </key>
             <one-to-many 
-                class="nz.cri.gns.fred.hibernate.Record"
+                class="nz.cri.gns.fred.hibernate.FREDRecord"
             />
         </set>
         <!-- bi-directional one-to-many association to SentTo -->

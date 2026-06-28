@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
@@ -25,7 +25,7 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
     private Date adoptionDate;
     private String dateRounding;
     private String comments;
-    private Record record;
+    private FREDRecord record;
     private Stage stage;
     private Set<Person> adoptors;
 
@@ -61,11 +61,11 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
         this.comments = comments;
     }
 
-    public Record getRecord() {
+        public FREDRecord getRecord() {
         return this.record;
     }
 
-    public void setRecord(Record record) {
+    public void setRecord(FREDRecord record) {
         this.record = record;
     }
 

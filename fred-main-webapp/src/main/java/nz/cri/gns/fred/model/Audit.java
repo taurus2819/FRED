@@ -103,13 +103,13 @@ public interface Audit extends Comparable<Audit> {
 
     public void setSamples(Set<Sample> samples);
 
-    public Set<Record> getRecords();
+    public Set<FREDRecord> getRecords();
 
-    public void setRecords(Set<Record> records);
+    public void setRecords(Set<FREDRecord> records);
 
-    public Set<Record> getRecordByPalListAuditIds();
+    public Set<FREDRecord> getRecordByPalListAuditIds();
 
-    public void setRecordByPalListAuditIds(Set<Record> recordByPalListAuditIds);
+    public void setRecordByPalListAuditIds(Set<FREDRecord> recordByPalListAuditIds);
 
     public Set<Feature> getFeatures();
 

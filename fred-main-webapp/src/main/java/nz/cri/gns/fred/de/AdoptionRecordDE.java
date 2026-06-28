@@ -15,7 +15,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.FREDConstants;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
@@ -29,7 +29,7 @@ public class AdoptionRecordDE extends RecordDE {
         super(user, sample, folderID, FREDConstants.ADOPTION, factory, provider);
     }
 
-    public AdoptionRecordDE(Record record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws IllegalArgumentException, DataInputException, SQLException, IOException, InsufficientPrivelegesException, StorageAccessException {
+    public AdoptionRecordDE(FREDRecord record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws IllegalArgumentException, DataInputException, SQLException, IOException, InsufficientPrivelegesException, StorageAccessException {
         super(record, folderId, user, factory, provider);
     }
 

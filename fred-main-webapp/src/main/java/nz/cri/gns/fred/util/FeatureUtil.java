@@ -35,7 +35,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
@@ -1437,7 +1437,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             if (!FREDConstants.OUTCROP.equals(feature.getFeatureType())) {
                 sb.append("&SampIDs=").append(sample.getSampleId());
             }
-            for (Record record : sample.getRecords()) {
+            for (FREDRecord record : sample.getRecords()) {
                 sb.append("&RecIDs=").append(record.getRecordId());
             }
         }

@@ -9,7 +9,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.RecordUtil;
@@ -59,7 +59,7 @@ public class DataEntryFormFactorySiteApi {
     }
 
     public static RecordDE getRecordDataEntryForm(int recordID, int folderID, User user, DAOFactory factory, ContentProvider provider) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException, IllegalArgumentException, StorageAccessException {
-        Record record = new RecordUtil(factory).getRecord(recordID);
+        FREDRecord record = new RecordUtil(factory).getRecord(recordID);
         if (record.getAdoption() != null) {
             return new AdoptionRecordDE(record, folderID, user, factory, provider);
         } else {
