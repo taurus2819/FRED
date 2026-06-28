@@ -17,7 +17,7 @@
 %><%@page import="nz.cri.gns.fred.model.Adoption"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.model.Sample"
-%><%@page import="nz.cri.gns.fred.model.Record"
+%><%@page import="nz.cri.gns.fred.model.FREDRecord"
 %><%@page import="nz.cri.gns.fred.query.FREDRecordQuery"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
@@ -75,13 +75,13 @@
 			FREDRecordQuery query = FREDUtil.getFREDRecordQuery(state);
 			String whereSQL = query.getHQLQuery();
 			//System.out.println(whereSQL);
-			List<Record> records = recordUtil.getListFromQueryBuilder(whereSQL);
+			List<FREDRecord> records = recordUtil.getListFromQueryBuilder(whereSQL);
 			confidSamples = new Vector<Sample>();
 			Set<Sample> sampleSet = new HashSet<Sample>();
 			confidAdoptions = new Vector<Adoption>();
 			confidPaleontologies = new Vector<Paleontology>();
 			confidPalLists = new Vector<Paleontology>();
-			for (Record record : records) {
+			for (FREDRecord record : records) {
 				sampleSet.add(record.getSample());
 				if (record.getAudit().getConfidentialFlag() && record.getAudit().getCreatedById().equals(userId)) {
 					if (RecordUtil.getRecordType(record).equals(FREDConstants.ADOPTION))
@@ -172,7 +172,7 @@
 			<tr><td colspan="6" class="deHeading">Confidential Adoption Records</td></tr>
 			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Adoption Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></tr><%
 			for (Adoption adoption : confidAdoptions) {
-				Record record = adoption.getRecord();
+				FREDRecord record = adoption.getRecord();
 				%><tr>
 				<td style="text-align: left"><input type="checkbox" name="AuditIDs" id="Ado<%=record.getAudit().getAuditId()%>" value="<%=record.getAudit().getAuditId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
@@ -197,7 +197,7 @@
 			<tr><td colspan="7" class="deHeading">Confidential Paleontology Records</td></tr>
 			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></tr><%
 			for (Paleontology paleontology : confidPaleontologies) {
-				Record record = paleontology.getRecord();
+				FREDRecord record = paleontology.getRecord();
 				%><tr>
 				<td style="text-align: left"><input type="checkbox" name="AuditIDs" id="Pal<%=record.getAudit().getAuditId()%>" value="<%=record.getAudit().getAuditId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
@@ -223,7 +223,7 @@
 			<tr><td colspan="7" class="deHeading">Confidential Paleontology Taxonomic Lists</td></tr>
 			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></tr><%
 			for (Paleontology paleontology : confidPalLists) {
-				Record record = paleontology.getRecord();
+				FREDRecord record = paleontology.getRecord();
 				%><tr>
 				<td style="text-align: left"><input type="checkbox" name="AuditIDs" id="PList<%=record.getPalListAudit().getAuditId()%>" value="<%=record.getPalListAudit().getAuditId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>

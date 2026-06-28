@@ -10,7 +10,7 @@
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.Sample"
-%><%@page import="nz.cri.gns.fred.model.Record"
+%><%@page import="nz.cri.gns.fred.model.FREDRecord"
 %><%@page import="nz.cri.gns.fred.model.ConfidentialGroup"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
@@ -95,7 +95,7 @@
 			}
 			if (request.getParameter("RecIDs") != null) {
 				for (String recId : request.getParameterValues("RecIDs")) {
-					Record record = recordUtil.getRecord(Integer.parseInt(recId));
+					FREDRecord record = recordUtil.getRecord(Integer.parseInt(recId));
 					if (recordUtil.isAllowedEditRecordConfid(user, record, folder)) {
 						audits.add(record.getAudit());
 						if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL))
