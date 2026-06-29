@@ -95,6 +95,6 @@ deploy-staging-personal:
   script:
     - varName="port_prefix_${GITLAB_USER_LOGIN}"
     - port="${!varName}005"
-    - mvn $MAVEN_CLI_OPTS install -DdeploymentURL=$webapp_staging_url:$port/manager/text tomcat7:redeploy -Dmaven.test.skip=true
+    - mvn $MAVEN_CLI_OPTS -DdeploymentURL=$webapp_staging_url:$port/manager/text tomcat7:redeploy -Dmaven.test.skip=true
     - mvn $MAVEN_CLI_OPTS  clean verify -Pdevelopment
   when: manual
