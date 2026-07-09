@@ -171,8 +171,8 @@ public class ExportServlet extends FREDHibernateServlet {
 
                     final String[] coordHeader = new String[]{
                         "Original Grid Reference", "NZMG Easting",
-                        "NZMG Northing", "NZGD49 Latitude",
-                        "NZGD49 Longitude", "Map Year", "Method", "Accuracy",
+                        "NZMG Northing", "WGS84 Latitude",
+                        "WGS84 Longitude", "Map Year", "Method", "Accuracy",
                         "Locality", "Country", "Coordinate Comments",
                         "Locality Comments"};
                     for (String each : coordHeader) {
