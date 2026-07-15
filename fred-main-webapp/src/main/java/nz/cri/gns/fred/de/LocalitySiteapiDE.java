@@ -69,21 +69,22 @@ import org.springframework.web.client.RestClientException;
 public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryForm {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.LocalitySiteDE");
+    private static final long serialVersionUID = 1L;
 
     public static final String comboNull = "-";
-    protected DAOFactory factory;
-    protected FeatureUtil featureUtil;
-    protected ContentProvider provider;
+    protected transient DAOFactory factory;
+    protected transient FeatureUtil featureUtil;
+    protected transient ContentProvider provider;
     protected User user;
     private UserFolder workingFolder;
     protected Feature feature;
     private Feature copyFeature;
-    protected SanitizeHttpServletRequest sanitizeHttpRequest;
+    protected transient SanitizeHttpServletRequest sanitizeHttpRequest;
     /**
      * Temporary storage for working comments
      */
     protected String editComments;
-    private SiteModel site;
+    private transient SiteModel site;
     /**
      * This allows for bad coordinates to still be re-editted
      */
@@ -111,6 +112,23 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         coord = SiteModelUtil.getFREDCoordinate(feature);
         datum = SiteModelUtil.getFREDDatum(feature);
         ownerId = user.getId();
+    }
+    
+    @Override
+    public void reattach(DAOFactory factory, ContentProvider provider) {
+        this.factory = factory;
+        this.provider = provider;
+        this.featureUtil = new FeatureUtil(factory);
+        this.sanitizeHttpRequest = new SanitizeHttpServletRequest();
+        if (feature != null && feature.getSiteId() != null) {
+            try {
+                this.site = SiteModelUtil.getSite(feature);
+            } catch (IOException e) {
+                log.log(Level.FINE, "Unable to restore site data during reattach", e);
+            }
+            this.coord = SiteModelUtil.getFREDCoordinate(feature);
+            this.datum = SiteModelUtil.getFREDDatum(feature);
+        }
     }
 
     private String getLocalityFromRequest(HttpServletRequest request) {

@@ -1,13 +1,16 @@
 package nz.cri.gns.fred.de;
 
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
 
-public class DETemplate {
+public class DETemplate implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     static class NoLineBreaksPrintWriter extends PrintWriter {
 

@@ -3,6 +3,7 @@ package nz.cri.gns.fred.servlet;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.servlet.util.SearchSessionState;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 
@@ -61,18 +63,19 @@ public class LocalityServlet extends FREDHibernateServlet {
                     }
                 }
             }
-            List<Feature> featureList = FREDUtil.getSortedList(features);
-            if (featureList.size() == 1) {
-                response.sendRedirect(baseUrl + "detail.jsp?FeatID=" + featureList.get(0).getFeatureId());
-            } else if (featureList.size() == 0) {
-                response.sendRedirect(baseUrl + "detail.jsp?FeatID=-1");
-            } else {
-                request.getSession().setAttribute("FRED.features", featureList);
-                request.getSession().setAttribute("FRED.samples", null);
-                request.getSession().setAttribute("FRED.queryString", frNum);
-                response.sendRedirect(baseUrl + "result_list.jsp?Page=1");
-            }
-        } catch (Exception e) {
+                List<Feature> featureList = FREDUtil.getSortedList(features);
+                if (featureList.size() == 1) {
+                    response.sendRedirect(baseUrl + "detail.jsp?FeatID=" + featureList.get(0).getFeatureId());
+                } else if (featureList.size() == 0) {
+                    response.sendRedirect(baseUrl + "detail.jsp?FeatID=-1");
+                } else {
+                    List<Integer> featureIds = featureList.stream()
+                            .map(Feature::getFeatureId)
+                            .collect(Collectors.toList());
+                    SearchSessionState.save(request.getSession(), featureIds, null, frNum);
+                    response.sendRedirect(baseUrl + "result_list.jsp?Page=1");
+                }
+        }  catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect(baseUrl + "detail.jsp?FeatID=-1");
         }

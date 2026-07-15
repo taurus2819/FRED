@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +46,7 @@ import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
+import nz.cri.gns.fred.servlet.util.SearchSessionState;
 
 public class ResultList_jsp extends FREDHibernateServlet {
 
@@ -170,14 +173,31 @@ public class ResultList_jsp extends FREDHibernateServlet {
             session.setAttribute("dataEntryRedirect", "result_list.jsp?Page=" + pageNum);
 
             List<Sample> samples = null;
-            
+            List<Integer> sampleIds = null;
+
             List<Feature> features = null;
-            List<Object> resultsList = new Vector<Object>();
+            List<Integer> featureIds = null;
             if (useStored) {
-                samples = (List<Sample>) session.getAttribute("FRED.samples");
-                features = (List<Feature>) session.getAttribute("FRED.features");
-                queryString = (String) session.getAttribute("FRED.queryString");
-            } else if ("Adv".equals(type)) {
+                Optional<SearchSessionState.Snapshot> snapshot = SearchSessionState.restore(session);
+                if (!snapshot.isPresent()) {
+                    response.sendRedirect("index.jsp");
+                    return;
+                }
+                featureIds = snapshot.get().getFeatureIds();
+                sampleIds = snapshot.get().getSampleIds();
+                queryString = snapshot.get().getQueryString();
+                System.out.println("Query String ****= " + queryString);
+//                features = featureIds.stream()
+//                        .map(fid -> {
+//                            try {
+//                                return featureUtil.getFeature(fid);
+//                            } catch (StorageAccessException e) {
+//                                throw new IllegalStateException(e);
+//                            }
+//                        })
+//                        .collect(Collectors.toList());
+//                features = loadFeaturesByIds(featureUtil, featureIds);
+            }  else if ("Adv".equals(type)) {
                 long startTime =  System.currentTimeMillis();
                 if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_WEBSITE_ACCESS))) {
                     // TODO: what access should they have? I can't find it.
@@ -191,8 +211,8 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 samples = sampleUtil.getLightweightSamples(hq);
                 features = featureUtil.getFeaturesBySampleSubquery(hq);
                 //auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
-                log.log(Level.INFO, "Adv elapsed time = " + ((new Date()).getTime() - startTime));
-                log.log(Level.INFO, "Hibernate Query " + hq);
+                log.log(Level.INFO, "Adv elapsed time ***= " + ((new Date()).getTime() - startTime));
+                log.log(Level.INFO, "Hibernate Query ** " + hq);
             } else {
                 long startTime =  System.currentTimeMillis();
                 queryString = queryStringParam;
@@ -237,17 +257,22 @@ public class ResultList_jsp extends FREDHibernateServlet {
                             .filter(f -> allowedFeatureIds.contains(f.getFeatureId()))
                             .collect(Collectors.toList());
                 }
-                log.log(Level.INFO, "Simple elapsed time = " + ((new Date()).getTime() - startTime));
+                log.log(Level.INFO, "Simple elapsed time *** = " + ((new Date()).getTime() - startTime));
                 auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
             }
-            int numRecords = features.size();
+            int numRecords = featureIds != null ? featureIds.size() : features.size();
             if (numRecords > 0) {
+                 //save queried sample and feature ids in session   
+                if (sampleIds == null && samples != null) {
+                    sampleIds = samples.stream().map(Sample::getSampleId).collect(Collectors.toList());
+                }
+                if (featureIds == null) {
+                    featureIds = features.stream().map(Feature::getFeatureId).collect(Collectors.toList());
+                }
+                SearchSessionState.save(session, featureIds, sampleIds, queryString);
+                log.log(Level.INFO, "ResultList feat size " + featureIds.size() + " sample size " + (sampleIds != null ? sampleIds.size() : 0) + " query " + queryString);
 
-                //save QueryRes vector
-                session.setAttribute("FRED.samples", samples);
-                session.setAttribute("FRED.features", features);
-                session.setAttribute("FRED.queryString", queryString);                
-                log.log(Level.INFO, "ResultList feat size " + (features != null ? features.size() : 0) + " sample size " + (samples != null ? samples.size() : 0) + " query " + queryString);
+                Set<Integer> sampleIdSet = sampleIds == null ? null : new HashSet<>(sampleIds);
                 //Navigation
                 int startIndex = (pageNum - 1) * pageSize + 1;
                 int endIndex = Math.min(numRecords, startIndex + pageSize - 1);
@@ -345,22 +370,30 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 out.write("\t\t\t\t\t</tr>");
 
                 // Obtains feature ids from GET
-                Set<String> fids;
+                Set<Integer> selectedFeatureIds;
                 if (request.getParameterValues("fid") == null) {
-                    fids = new HashSet<String>();
+                    selectedFeatureIds = Collections.emptySet();
                 } else {
-                    fids = new HashSet<String>(Arrays.asList(request.getParameterValues("fid")));
+                    selectedFeatureIds = Arrays.stream(request.getParameterValues("fid"))
+                            .map(Integer::valueOf)
+                            .collect(Collectors.toSet());
                 }
+                
+                String encodedBackUrl = URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1");
 
-                List<Feature> pageFeatures = features.subList(startIndex - 1, endIndex);
+                List<Integer> pageFeatureIds = featureIds.subList(startIndex - 1, endIndex);
+                Map<Integer, Feature> fullPageFeaturesById = loadFullFeaturesByIds(featureUtil, pageFeatureIds);
 
-                for (Feature feature : pageFeatures) {
-                    feature = featureUtil.getFeature(feature.getFeatureId());
+                for (Integer pageFeatureId : pageFeatureIds) {
+                    Feature fullFeature = fullPageFeaturesById.get(pageFeatureId);
+                    if (fullFeature == null) {
+                        fullFeature = featureUtil.getFeature(pageFeatureId);
+                    }
+                    Feature feature = fullFeature;
                     if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
-                        resultsList.add(feature);
 
                         String checkedText = ""; // default un-checked
-                        if (!fids.isEmpty() && fids.contains(feature.getFeatureId().toString())) {
+                        if (!selectedFeatureIds.isEmpty() && selectedFeatureIds.contains(feature.getFeatureId())) {
                             checkedText = "checked=\"checked\"";
                         }
 
@@ -376,7 +409,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                         out.write("                                                                <a href=\"detail.jsp?FeatID=");
                         out.print(feature.getFeatureId());
                         out.write("&backURL=");
-                        out.print(URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1"));
+                        out.print(encodedBackUrl);
                         out.write("&backText=Back+To+Result+List\"><img src=\"images/loc.gif\" border=\"0\" height=\"20\" width=\"20\" alt=\"View Locality\" title=\"View Locality\"/></a>\n");
                         out.write("                                                            </td>\n");
                         out.write("                                                            <td class=\"heading\">");
@@ -394,7 +427,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                         out.write("                                                                <a href=\"locality_map.jsp?FeatID=");
                         out.print(feature.getFeatureId());
                         out.write("&backURL=");
-                        out.print(URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1"));
+                        out.print(encodedBackUrl);
                         out.write("&backText=Back%20To%20Result%20List\">\n");
                         out.write("                                                                    <img src=\"images/map.gif\" height=\"20\" width=\"20\" border=\"0\" alt=\"View Locality Map\" />\n");
                         out.write("\t\t\t\t\t\t\t\t</a>&nbsp;&nbsp;\n");
@@ -419,8 +452,8 @@ public class ResultList_jsp extends FREDHibernateServlet {
 
                         if (!FeatureUtil.OUTCROP.equals(feature.getFeatureType())) {
                             for (Sample sample : FREDUtil.getSortedList(feature.getSamples())) {
-                                if (samples == null || samples.contains(sample) && sampleUtil.isAllowedReadSample(user, sample)) {
-                                    resultsList.add(sample);
+                                if ((sampleIdSet == null || sampleIdSet.contains(sample.getSampleId()))
+                                        && sampleUtil.isAllowedReadSample(user, sample)) {
 
                                     out.write("<tr class=\"lightColour\">\n");
                                     out.write("\t\t\t\t\t\t\t\t\t\t\t\t<td></td>\n");
@@ -428,7 +461,7 @@ public class ResultList_jsp extends FREDHibernateServlet {
                                     out.write("\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"detail.jsp?ID=");
                                     out.print(sample.getSampleId());
                                     out.write("&backURL=");
-                                    out.print(URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1"));
+                                    out.print(encodedBackUrl);
                                     out.write("&backText=Back%20To%20Result%20List\">\n");
                                     out.write("\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"images/drill.gif\" border=\"0\" height=\"20\" width=\"20\" alt=\"View Sample\" title=\"View Sample\"/>\n");
                                     out.write("\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n");
@@ -497,8 +530,6 @@ public class ResultList_jsp extends FREDHibernateServlet {
                 out.write("\n");
                 out.write("\t\t\t\t</table>\n");
                 out.write("\t\t\t</form>");
-
-                session.setAttribute("FRED.results", resultsList);
             } else {
                 out.write("<p>No records found matching your search criteria</p>");
             }
@@ -514,6 +545,40 @@ public class ResultList_jsp extends FREDHibernateServlet {
         } finally {
             out.flush();
         }
+    }
+    
+    private List<Feature> loadFeaturesByIds(FeatureUtil featureUtil, List<Integer> featureIds) throws StorageAccessException {
+        if (featureIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        int maxItems = 1000;
+        int offset = 0;
+        List<Feature> features = new ArrayList<>();
+
+        while (offset * maxItems < featureIds.size()) {
+            StringBuilder buffer = new StringBuilder(1024);
+            for (int i = 0; i < maxItems && offset * maxItems + i < featureIds.size(); i++) {
+                buffer.append(featureIds.get(offset * maxItems + i));
+                buffer.append(',');
+            }
+            String subQuery = buffer.substring(0, buffer.length() - 1);
+            features.addAll(featureUtil.getFeaturesByFeatureSubquery(subQuery));
+            offset++;
+        }
+
+        Collections.sort(features);
+        return features;
+    }
+
+    private Map<Integer, Feature> loadFullFeaturesByIds(FeatureUtil featureUtil, List<Integer> pageFeatureIds)
+            throws StorageAccessException {        
+        List<Feature> fullFeatures = featureUtil.getFeaturesByIds(pageFeatureIds);
+        Map<Integer, Feature> featureMap = new HashMap<>();
+        for (Feature feature : fullFeatures) {
+            featureMap.put(feature.getFeatureId(), feature);
+        }
+        return featureMap;
     }
 
     public Integer paramAsInt(HttpServletRequest req, String paramName) throws ServletException {

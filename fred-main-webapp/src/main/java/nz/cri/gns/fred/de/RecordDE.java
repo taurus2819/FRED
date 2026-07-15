@@ -43,19 +43,20 @@ import nz.cri.gns.xss.SanitizeHttpServletRequest;
 public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.RecordDE");
+    private static final long serialVersionUID = 1L;
 
     protected User user;
     protected FREDRecord record;
     private FREDRecord copyRecord;
 
-    protected RecordUtil recordUtil;
-    protected ContentProvider provider;
+    protected transient RecordUtil recordUtil;
+    protected transient ContentProvider provider;
     protected UserFolder workingFolder;
 
     protected boolean isAllowedSave = false;
     protected boolean isAllowedSubmit = false;
 
-    protected DAOFactory factory;
+    protected transient DAOFactory factory;
 
     protected RecordDE(User user, Sample sample, int folderID, String recordType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         initialise((recordUtil = new RecordUtil(factory)).createRecord(sample, recordType, folderID, user), folderID, user, factory, content);
@@ -64,6 +65,13 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
     public RecordDE(FREDRecord record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws InsufficientPrivelegesException, StorageAccessException {
         recordUtil = new RecordUtil(factory);
         initialise(record, folderId, user, factory, provider);
+    }
+    
+    @Override
+    public void reattach(DAOFactory factory, ContentProvider provider) {
+        this.factory = factory;
+        this.provider = provider;
+        this.recordUtil = new RecordUtil(factory);
     }
 
     private void initialise(FREDRecord record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws StorageAccessException, InsufficientPrivelegesException {

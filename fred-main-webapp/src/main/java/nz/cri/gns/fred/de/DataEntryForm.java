@@ -2,6 +2,7 @@ package nz.cri.gns.fred.de;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.Writer;
 import java.sql.SQLException;
 import java.util.List;
@@ -11,9 +12,18 @@ import javax.servlet.http.HttpServletRequest;
 import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.jsp.IconnedLink;
 
-public interface DataEntryForm {
+public interface DataEntryForm extends Serializable {
+
+    /**
+     * Re attachhing the  transient fields back after session deserialization.
+     * @param factory
+     * @param provider
+     */
+    default void reattach(DAOFactory factory, ContentProvider provider) {
+    }
 	
 	public void copyFrom(int id) throws StorageAccessException, InsufficientPrivelegesException;
 
