@@ -35,7 +35,7 @@ public class SearchSessionStateTest {
     /**
      * The SearchSessionState.save saves the attributes (featureIds and sampleids) in the HttpSession (session object)
      * The buildSession is used to mock a HttpSession, and the SearchSessionState.restore(session)
-     * is used to restore the session.
+     * is used to restore the session.pps
      * 
      * 
      * BELOW INFO FROM 
@@ -51,11 +51,11 @@ public class SearchSessionStateTest {
 
     @Test
     public void restoreReturnsSnapshotWithCopiedValues() {
-        Map<String, Object> attributes = new HashMap<String, Object>();
+        Map<String, Object> attributes = new HashMap<>();
         HttpSession session = buildSession(attributes);
 
-        List<Integer> featureIds = new ArrayList<Integer>(Arrays.asList(1, 2));
-        List<Integer> sampleIds = new ArrayList<Integer>(Arrays.asList(10, 20));
+        List<Integer> featureIds = new ArrayList<>(Arrays.asList(1, 2));
+        List<Integer> sampleIds = new ArrayList<>(Arrays.asList(10, 20));
 
         SearchSessionState.save(session, featureIds, sampleIds, "query-string");
 
@@ -63,25 +63,26 @@ public class SearchSessionStateTest {
         featureIds.add(3);
         sampleIds.add(30);
 
+        //the seession should not be mutated with featureIds = 3 and sampleIds = 30
         Optional<SearchSessionState.Snapshot> snapshot = SearchSessionState.restore(session);
 
         assertTrue(snapshot.isPresent());
-        assertThat(snapshot.get().getFeatureIds(), equalTo(Arrays.asList(1, 2,3)));
-        assertThat(snapshot.get().getSampleIds(), equalTo(Arrays.asList(10, 20, 30)));
+        assertThat(snapshot.get().getFeatureIds(), equalTo(Arrays.asList(1, 2)));
+        assertThat(snapshot.get().getSampleIds(), equalTo(Arrays.asList(10, 20)));
         assertThat(snapshot.get().getQueryString(), equalTo("query-string"));
         
     }
 
     @Test
     public void restoreReturnsEmptyIfStateMissing() {
-        HttpSession session = buildSession(new HashMap<String, Object>());
+        HttpSession session = buildSession(new HashMap<>());
 
         assertFalse(SearchSessionState.restore(session).isPresent());
     }
 
     @Test
     public void restoreReturnsEmptyIfQueryMissing() {
-        Map<String, Object> attributes = new HashMap<String, Object>();
+        Map<String, Object> attributes = new HashMap<>();
         HttpSession session = buildSession(attributes);
         attributes.put("FRED.features", Arrays.asList(1, 2));
 
@@ -90,7 +91,7 @@ public class SearchSessionStateTest {
 
     @Test
     public void restoreSupportsMissingSampleIds() {
-        Map<String, Object> attributes = new HashMap<String, Object>();
+        Map<String, Object> attributes = new HashMap<>();
         HttpSession session = buildSession(attributes);
 
         SearchSessionState.save(session, Arrays.asList(5, 6), null, "q");

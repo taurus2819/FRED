@@ -6,11 +6,11 @@
 %><%@page import="java.util.Set"
 %><%@page import="java.util.TreeSet"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+%><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.Sample"
-%><%@page import="nz.cri.gns.fred.model.Record"
+%><%@page import="nz.cri.gns.fred.model.FREDRecord"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
 %><%@page import="nz.cri.gns.fred.model.Taxon"
@@ -59,8 +59,8 @@ public String getName(HttpServletRequest request) {
 			for (int x = 0; x < features.length; x++) {
 				Set<Sample> samples = features[x].getSamples();
 				for (Sample sample : samples) {
-					Set<Record> records = sample.getRecords();
-					for (Record record : records) {
+					Set<FREDRecord> records = sample.getRecords();
+					for (FREDRecord record : records) {
 						if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
 							Paleontology pal = record.getPaleontology();
 							provTaxa.addAll(recordUtil.getTaxon(pal, FREDConstants.PROVISIONAL));

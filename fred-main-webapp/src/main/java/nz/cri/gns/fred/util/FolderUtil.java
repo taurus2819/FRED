@@ -35,7 +35,7 @@ public class FolderUtil extends ModelUtil {
     }
 
     public FolderType getFolderType(String label) throws StorageAccessException {
-        return fredDAO.getFirst("FROM FolderType AS f WHERE f.name = ?", FolderType.class, label);
+        return fredDAO.getFirst("FROM FolderType AS f WHERE f.name = ?1", FolderType.class, label);
     }
 
     /**
@@ -110,7 +110,7 @@ public class FolderUtil extends ModelUtil {
     public List<UserFolder> getOwnedFolders(Integer ownerId, FolderType type) throws StorageAccessException {
         List<UserFolder> userFolders = new Vector<>();
 //        FrUserView owner = userUtil.getFrUserView(ownerId);
-        List<Folder> folders = fredDAO.getList("FROM Folder as f where f.owner = ? and f.folderType = ?", Folder.class, ownerId, type.getFolderTypeId());
+        List<Folder> folders = fredDAO.getList("FROM Folder as f where f.owner.userId = ?1 and f.folderType.folderTypeId = ?2", Folder.class, ownerId, type.getFolderTypeId());
         for (Folder folder : folders) {
             userFolders.add(UserFolder.getOwnedUserFolder(folder));
         }
@@ -121,7 +121,7 @@ public class FolderUtil extends ModelUtil {
         List<UserFolder> userFolders = new Vector<>();
 //        FrUserView user = userUtil.getFrUserView(userId);
 //        List<FolderUser> fus = fredDAO.getList("FROM FolderUser as f where f.user = ? and f.folder.folderType = ?", FolderUser.class, user, type);
-        List<FolderUser> fus = fredDAO.getList("FROM FolderUser as f where f.user = ? and f.folder.folderType = ?", FolderUser.class, userId, type.getFolderTypeId());
+        List<FolderUser> fus = fredDAO.getList("FROM FolderUser as f where f.user.userId = ?1 and f.folder.folderType.folderTypeId = ?2", FolderUser.class, userId, type.getFolderTypeId());
         for (FolderUser fu : fus) {
             userFolders.add(UserFolder.getAccessibleUserFolder(fu.getFolder(), fu.getUserRights()));
         }
@@ -129,7 +129,7 @@ public class FolderUtil extends ModelUtil {
     }
 
     public List<Folder> getFolders(FolderType type) throws HibernateException, StorageAccessException {
-        return fredDAO.getList("FROM Folder as f WHERE f.folderType = ?", Folder.class, type);
+        return fredDAO.getList("FROM Folder as f WHERE f.folderType = ?1", Folder.class, type.getFolderTypeId());
     }
 
     public List<UserFolder> getPersonalPlusBacklogFolders(User user) throws StorageAccessException {
@@ -175,7 +175,9 @@ public class FolderUtil extends ModelUtil {
 
     public Integer getMasterfileFolderFeatureCount(Folder folder) throws StorageAccessException {
         try {
-            return fredDAO.getList("SELECT COUNT(*) FROM Feature AS f WHERE f.masterFile = ? AND f.audit.status = ?", Integer.class, folder.getFolderId(), FREDConstants.WAITING).get(0);
+            Long count = fredDAO.getList("SELECT COUNT(*) FROM Feature AS f WHERE f.masterFile.folderId = ?1 AND f.audit.status = ?2", Long.class, folder.getFolderId(), FREDConstants.WAITING).get(0);
+            System.out.println("FolderUtil.java - Count - line #179 :" + count);
+            return count.intValue();
         } catch (StorageAccessException e) {
             throw new StorageAccessException(e);
         }
@@ -249,7 +251,7 @@ public class FolderUtil extends ModelUtil {
     }
 
     public FolderUser getFolderUser(Folder folder, FrUserView user) throws StorageAccessException {
-        List<FolderUser> fus = fredDAO.getList("FROM FolderUser AS f WHERE f.folder = ? AND f.user = ?", FolderUser.class, folder.getFolderId(), user.getUserId());
+        List<FolderUser> fus = fredDAO.getList("FROM FolderUser AS f WHERE f.folder.folderId = ?1 AND f.user.userId = ?2", FolderUser.class, folder.getFolderId(), user.getUserId());
         if (!fus.isEmpty()) {
             return fus.get(0);
         }

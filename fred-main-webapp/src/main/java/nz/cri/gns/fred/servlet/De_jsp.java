@@ -10,7 +10,7 @@ import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.fred.de.DataEntryForm;
 import nz.cri.gns.fred.de.DataEntryFormFactorySiteApi;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.fred.website.WebsiteConstants;
@@ -189,6 +189,9 @@ public class De_jsp extends FREDHibernateServlet {
 
     protected DataEntryForm getDataEntryForm(FredHelper h, HttpServletRequest request) throws ServletException {
         DataEntryForm form = getDataEntryFormImpl(h, request);
+        DAOFactory factory = FredHibernate.get().getDAOFactory();
+        ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
+        form.reattach(factory, provider);
         request.setAttribute(WebsiteConstants.DATA_ENTRY_FORM, form);
         request.getSession().setAttribute(WebsiteConstants.DATA_ENTRY_FORM, form);
         return form;

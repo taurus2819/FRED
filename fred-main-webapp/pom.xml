@@ -3,7 +3,7 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top-pg</artifactId>
-        <version>4.0.15-SNAPSHOT</version>
+        <version>5.0.3-SNAPSHOT</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred-pg</artifactId>
@@ -152,19 +152,23 @@
             <version>1.4</version>
         </dependency>
         <dependency>
-            <groupId>net.sf</groupId>
-            <artifactId>hibernate</artifactId>
-            <version>2.0</version>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.6.15.Final</version>
         </dependency>
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core-pg</artifactId>
             <version>4.0.33</version>
             <exclusions>
-            <exclusion>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-            </exclusion>
+                <exclusion>
+                    <groupId>jakarta.activation</groupId>
+                    <artifactId>jakarta.activation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>      
         <dependency>
@@ -203,19 +207,7 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-cglib-repack</artifactId>
             <version>2.1_3</version>
-        </dependency>
-         
-<dependency>
-    <groupId>org.hibernate.javax.persistence</groupId>
-    <artifactId>hibernate-jpa-2.1-api</artifactId>
-    <version>1.0.0.Final</version>
-</dependency>
-
-<!--        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>6.4.2.Final</version>
-        </dependency>-->
+        </dependency>         
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>

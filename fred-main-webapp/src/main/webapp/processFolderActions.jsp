@@ -10,11 +10,11 @@
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.Sample"
-%><%@page import="nz.cri.gns.fred.model.Record"
+%><%@page import="nz.cri.gns.fred.model.FREDRecord"
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
-%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+%><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.Vector"
 %><%!
@@ -163,7 +163,7 @@ if (request.getParameter("ActionType") != null) {
 			//delete sample
 			else if (actionType.equals("Delete") && folder.isAllowedDeleteLocalities()) {
 				Vector<Integer> deleteIds = new Vector<Integer>();
-				for (Record record : sample.getRecords())
+				for (FREDRecord record : sample.getRecords())
 					deleteIds.add(record.getRecordId());
 				sampleUtil.deleteSample(Integer.parseInt(request.getParameter("SampID")), folder, user);
 				%><deleted /><%
@@ -173,7 +173,7 @@ if (request.getParameter("ActionType") != null) {
 				
 			}
 		} else if (!FREDUtil.isEmpty(request.getParameter("RecID"))) {
-			Record record = recordUtil.getRecord(Integer.parseInt(request.getParameter("RecID")));
+			FREDRecord record = recordUtil.getRecord(Integer.parseInt(request.getParameter("RecID")));
 			%><record id="<%=record.getRecordId()%>"><%
 			//submit record
 			if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {

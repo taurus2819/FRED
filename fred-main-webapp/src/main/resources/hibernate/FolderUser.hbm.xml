@@ -24,6 +24,7 @@
     >
         <generator class="sequence">
                 <param name="sequence">fr.fu_seq</param>
+                <param name="increment_size">1</param>
         </generator>
     </id>
     

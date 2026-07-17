@@ -16,8 +16,8 @@ public interface Paleontology extends RecordDetails {
 	public void setLabNumber(String labNumber);
 	public String getCollectionComments();
 	public void setCollectionComments(String collectionComments);
-	public Record getRecord();
-	public void setRecord(Record record);
+	public FREDRecord getRecord();
+	public void setRecord(FREDRecord record);
 	public LabSection getLabSection();
 	public void setLabSection(LabSection labSection);
 	public Stage getStage();

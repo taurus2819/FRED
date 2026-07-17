@@ -14,7 +14,7 @@
         %><%@page import="nz.cri.gns.jsp.JspUtils"
         %><%@page import="nz.cri.gns.jsp.PageState"
         %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-        %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+        %><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
         %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
         %><%@page import="nz.cri.gns.fred.util.FolderUtil"
         %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"

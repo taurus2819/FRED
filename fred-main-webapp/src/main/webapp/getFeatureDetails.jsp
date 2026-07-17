@@ -20,11 +20,11 @@
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.FrNumber"
-%><%@page import="nz.cri.gns.fred.model.Record"
+%><%@page import="nz.cri.gns.fred.model.FREDRecord"
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.util.ByCreationDateComparator"
-%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
+%><%@page import="nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%!
 	public String getStatusColour(String status) {
@@ -92,9 +92,9 @@ for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 		//Records
 		if (sample.getRecords() != null) {
 			%><records><%
-			Vector<Record> records = new Vector<Record>(sample.getRecords());
+			Vector<FREDRecord> records = new Vector<FREDRecord>(sample.getRecords());
 			Collections.sort(records);
-			for (Record record : records) {
+			for (FREDRecord record : records) {
 				boolean isAdoption = RecordUtil.getRecordType(record).equals(FREDConstants.ADOPTION);
 				boolean isPaleontology = !isAdoption;
 				audit = record.getAudit();

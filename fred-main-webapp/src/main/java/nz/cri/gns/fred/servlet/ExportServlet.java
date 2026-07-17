@@ -26,13 +26,13 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
@@ -173,8 +173,8 @@ public class ExportServlet extends FREDHibernateServlet {
 
                     final String[] coordHeader = new String[]{
                         "Original Grid Reference", "NZMG Easting",
-                        "NZMG Northing", "NZGD49 Latitude",
-                        "NZGD49 Longitude", "Map Year", "Method", "Accuracy",
+                        "NZMG Northing", "WGS84 Latitude",
+                        "WGS84 Longitude", "Map Year", "Method", "Accuracy",
                         "Locality", "Country", "Coordinate Comments",
                         "Locality Comments"};
                     for (String each : coordHeader) {
@@ -498,8 +498,8 @@ public class ExportServlet extends FREDHibernateServlet {
 
                     log.log(Level.INFO, "START TIME " + new Date());
                     for (Sample sample : samples) {
-                        Set<Record> records = sample.getRecords();
-                        for (Record r : records) {
+                        Set<FREDRecord> records = sample.getRecords();
+                        for (FREDRecord r : records) {
                             Adoption adoption = r.getAdoption();
                             if (recordUtil.isAllowedReadRecord(user, r)) {
                                 writeLocality(sample, c);
@@ -571,8 +571,8 @@ public class ExportServlet extends FREDHibernateServlet {
 
                     log.log(Level.INFO, "START TIME " + new Date());
                     for (Sample sample : samples) {
-                        Set<Record> records = sample.getRecords();
-                        for (Record r : records) {
+                        Set<FREDRecord> records = sample.getRecords();
+                        for (FREDRecord r : records) {
                             if (recordUtil.isAllowedReadRecord(user, r)) {
                                 writeLocality(sample, c);
                                 Paleontology paleontology = r.getPaleontology();
@@ -647,7 +647,7 @@ public class ExportServlet extends FREDHibernateServlet {
                     log.log(Level.INFO, "START TIME " + new Date());
                     int i = 0;
                     for (Sample sample : samples) {
-                        for (Record r : sample.getRecords()) {
+                        for (FREDRecord r : sample.getRecords()) {
                             Paleontology paleontology = r.getPaleontology();
                             if (paleontology != null && recordUtil.isAllowedReadPalList(user, paleontology)) {
                                 paleontologies.add(paleontology);
@@ -888,9 +888,17 @@ public class ExportServlet extends FREDHibernateServlet {
     private List<Sample> getBatch(String from, List<String> ids) throws HibernateException {
         String idList = ids.stream().collect(Collectors.joining(", "));
         String qstr = from  + " WHERE S.id IN (" + idList + ")";
-        Query query = FredHibernate.get().currentSession().createQuery(qstr);
+//        fredDAO.getList(qstr, Sample.class);
+        org.hibernate.query.Query<Sample> query = FredHibernate.get().currentSession().createQuery(qstr, Sample.class);
         return query.list();
     }
+
+
+//    private List<Sample> getBatch(String from, List<String> ids)  {
+//
+//        return null;//temp
+//
+//    }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

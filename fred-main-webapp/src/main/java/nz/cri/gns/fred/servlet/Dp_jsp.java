@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.servlet;
 
+import java.io.File;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import nz.cri.gns.fred.de.DataEntryForm;
@@ -13,13 +14,14 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.website.WebsiteConstants;
 import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
+import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.jsp.IconnedLink;
 
 /**
@@ -57,6 +59,8 @@ public class Dp_jsp extends FREDHibernateServlet {
         try {
             try {
                 DAOFactory factory = FredHibernate.get().getDAOFactory();
+                ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
+                dataEntryForm.reattach(factory, provider);
                 dataEntryForm.updateFromRequest(request, factory, false);
 
                 if (request.getParameter("SaveType").equals("Submit")) {

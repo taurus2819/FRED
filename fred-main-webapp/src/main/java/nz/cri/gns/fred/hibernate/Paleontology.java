@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
@@ -30,7 +30,7 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     private String stageComments;
     private String labNumber;
     private String collectionComments;
-    private Record record;
+    private FREDRecord record;
     private LabSection labSection;
     private Stage stage;
     private Set<PaleontologyListEntry> palLists = new HashSet();
@@ -87,11 +87,11 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
         this.collectionComments = collectionComments;
     }
 
-    public nz.cri.gns.fred.model.Record getRecord() {
+    public nz.cri.gns.fred.model.FREDRecord getRecord() {
         return this.record;
     }
 
-    public void setRecord(Record record) {
+    public void setRecord(FREDRecord record) {
         this.record = record;
     }
 

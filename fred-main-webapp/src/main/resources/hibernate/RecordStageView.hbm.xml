@@ -48,7 +48,7 @@
     <!-- bi-directional many-to-one association to Age -->
     <many-to-one
         name="record"
-        class="nz.cri.gns.fred.hibernate.Record"
+        class="nz.cri.gns.fred.hibernate.FREDRecord"
         not-null="false"
     >
         <column name="RECORD_ID" />

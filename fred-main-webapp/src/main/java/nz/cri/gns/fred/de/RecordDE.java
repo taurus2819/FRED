@@ -27,7 +27,7 @@ import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.AuditUtil;
@@ -43,30 +43,38 @@ import nz.cri.gns.xss.SanitizeHttpServletRequest;
 public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.RecordDE");
+    private static final long serialVersionUID = 1L;
 
     protected User user;
-    protected Record record;
-    private Record copyRecord;
+    protected FREDRecord record;
+    private FREDRecord copyRecord;
 
-    protected RecordUtil recordUtil;
-    protected ContentProvider provider;
+    protected transient RecordUtil recordUtil;
+    protected transient ContentProvider provider;
     protected UserFolder workingFolder;
 
     protected boolean isAllowedSave = false;
     protected boolean isAllowedSubmit = false;
 
-    protected DAOFactory factory;
+    protected transient DAOFactory factory;
 
     protected RecordDE(User user, Sample sample, int folderID, String recordType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         initialise((recordUtil = new RecordUtil(factory)).createRecord(sample, recordType, folderID, user), folderID, user, factory, content);
     }
 
-    public RecordDE(Record record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws InsufficientPrivelegesException, StorageAccessException {
+    public RecordDE(FREDRecord record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws InsufficientPrivelegesException, StorageAccessException {
         recordUtil = new RecordUtil(factory);
         initialise(record, folderId, user, factory, provider);
     }
+    
+    @Override
+    public void reattach(DAOFactory factory, ContentProvider provider) {
+        this.factory = factory;
+        this.provider = provider;
+        this.recordUtil = new RecordUtil(factory);
+    }
 
-    private void initialise(Record record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws StorageAccessException, InsufficientPrivelegesException {
+    private void initialise(FREDRecord record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws StorageAccessException, InsufficientPrivelegesException {
         this.record = record;
         this.user = user;
         this.factory = factory;
@@ -94,7 +102,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
     @Override
     public void copyFrom(int recordId) throws InsufficientPrivelegesException, StorageAccessException {
-        Record fromRecord = recordUtil.getRecord(recordId);
+        FREDRecord fromRecord = recordUtil.getRecord(recordId);
         if (!recordUtil.isAllowedReadRecord(user, fromRecord)) {
             throw new InsufficientPrivelegesException("You do not have access to that record");
         }
@@ -104,7 +112,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         this.copyRecord = fromRecord;
     }
 
-    protected void getFromDatabase(Record fromRecord) {
+    protected void getFromDatabase(FREDRecord fromRecord) {
         if (fromRecord.getAdoption() != null) {
             Adoption fromAdoption = fromRecord.getAdoption();
             Adoption adoption = record.getAdoption();

@@ -17,7 +17,7 @@ import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.fred.FREDHibernateServlet;
 import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
 import nz.cri.gns.fred.util.FREDUtil;

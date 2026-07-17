@@ -40,7 +40,7 @@ import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueFie
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.hibernate.Island;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
@@ -90,7 +90,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 
     public FREDQuery() {
         //this.people = getValues("FROM Person AS p", Person.class);
-        this.ages = getValues("FROM Age AS a WHERE a.code NOT IN (?, ?) AND a.obsoleteFlag = ?", Age.class, "nd", "nf", 0);
+        this.ages = getValues("FROM Age AS a WHERE a.code NOT IN (?1, ?2) AND a.obsoleteFlag = ?3", Age.class, "nd", "nf", 0);
         try {
             this.frUsers = new UserUtil(FredHibernate.get().getDAOFactory()).getFrWriters();
         } catch (StorageAccessException e) {
@@ -232,7 +232,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         f[5] = new TableRequiredPossibleValueField("record.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class), RECORD_TABLES, RECORD_JOINS);
         f[6] = new TableRequiredTextField("record.paleontology.labNumber", "Lab Number", RECORD_TABLES, RECORD_JOINS);
         f[7] = new TableRequiredTextField("record.paleontology.collectionComments", "Collection Comments", RECORD_TABLES, RECORD_JOINS);
-        f[8] = new TableRequiredPossibleValueField("palList.taxonomicGroup", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), PAL_LIST_TABLES, PAL_LIST_JOINS);
+        f[8] = new TableRequiredPossibleValueField("palList.taxonomicGroup.groupId", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), PAL_LIST_TABLES, PAL_LIST_JOINS);
         f[9] = new TableRequiredTextField("palList.taxonomicName", "Taxonomic Name", PAL_LIST_TABLES, PAL_LIST_JOINS);
         f[10] = new TableRequiredNumberField("palList.specimenCount", "Specimen Count", PAL_LIST_TABLES, PAL_LIST_JOINS);
         f[11] = new TableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", PAL_LIST_TABLES, PAL_LIST_JOINS);

@@ -22,10 +22,10 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.FredDAO;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.site.util.SiteModel;
@@ -150,7 +150,7 @@ public class TaxaReport extends AbstractReport {
             System.out.println(frNum);
             boolean single = sample.getFeature().getSamples().size() == 1;
 
-            for (Record record : sample.getRecords()) {
+            for (FREDRecord record : sample.getRecords()) {
                 if (record.getPaleontology() != null) {
                     for (PaleontologyListEntry entry : record.getPaleontology().getListEntries()) {
                         taxa.println(

@@ -6,7 +6,7 @@ variables:
   GIT_STRATEGY: clone
   TZ: "Pacific/Auckland"
 
-image: maven:3-openjdk-11
+image: maven:3.9.11-eclipse-temurin-25-noble
 
 stages:
   - build
@@ -25,6 +25,7 @@ initial-build:
   stage: build
   except:
     - master
+    - master-tmp-2026
   script:
     - mvn $MAVEN_CLI_OPTS -Pjenkins-build clean deploy
 
@@ -55,7 +56,7 @@ release:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-    - if: $CI_COMMIT_REF_NAME == "master"
+    - if: $CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "master-tmp-2026"
   script:
     - git config user.name "\"$GITLAB_USER_NAME\""
     - git config user.email "\"$GITLAB_USER_EMAIL\""
@@ -72,7 +73,7 @@ deploy-staging:
     - docker
   stage: deploy
   rules:
-  - if: $CI_COMMIT_REF_NAME == "master"  
+  - if: $CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "master-tmp-2026" 
   script:
     - mvn $MAVEN_CLI_OPTS -DdeploymentURL=$webapp_staging_url:8005/manager/text tomcat7:redeploy
   when: manual
@@ -82,7 +83,7 @@ test-staging:
     - docker
   stage: test-staging
   rules:
-  - if: $CI_COMMIT_REF_NAME == "master"  
+  - if: $CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "master-tmp-2026" 
   script:
     - mvn $MAVEN_CLI_OPTS clean verify -Pdevelopment
   when: manual
@@ -94,6 +95,6 @@ deploy-staging-personal:
   script:
     - varName="port_prefix_${GITLAB_USER_LOGIN}"
     - port="${!varName}005"
-    - mvn $MAVEN_CLI_OPTS install -DdeploymentURL=$webapp_staging_url:$port/manager/text tomcat7:redeploy -Dmaven.test.skip=true
+    - mvn $MAVEN_CLI_OPTS -DdeploymentURL=$webapp_staging_url:$port/manager/text tomcat7:redeploy -Dmaven.test.skip=true
     - mvn $MAVEN_CLI_OPTS  clean verify -Pdevelopment
   when: manual

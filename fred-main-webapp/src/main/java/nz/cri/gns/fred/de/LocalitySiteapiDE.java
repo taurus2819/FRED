@@ -69,21 +69,22 @@ import org.springframework.web.client.RestClientException;
 public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryForm {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.LocalitySiteDE");
+    private static final long serialVersionUID = 1L;
 
     public static final String comboNull = "-";
-    protected DAOFactory factory;
-    protected FeatureUtil featureUtil;
-    protected ContentProvider provider;
+    protected transient DAOFactory factory;
+    protected transient FeatureUtil featureUtil;
+    protected transient ContentProvider provider;
     protected User user;
     private UserFolder workingFolder;
     protected Feature feature;
     private Feature copyFeature;
-    protected SanitizeHttpServletRequest sanitizeHttpRequest;
+    protected transient SanitizeHttpServletRequest sanitizeHttpRequest;
     /**
      * Temporary storage for working comments
      */
     protected String editComments;
-    private SiteModel site;
+    private transient SiteModel site;
     /**
      * This allows for bad coordinates to still be re-editted
      */
@@ -111,6 +112,23 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         coord = SiteModelUtil.getFREDCoordinate(feature);
         datum = SiteModelUtil.getFREDDatum(feature);
         ownerId = user.getId();
+    }
+    
+    @Override
+    public void reattach(DAOFactory factory, ContentProvider provider) {
+        this.factory = factory;
+        this.provider = provider;
+        this.featureUtil = new FeatureUtil(factory);
+        this.sanitizeHttpRequest = new SanitizeHttpServletRequest();
+        if (feature != null && feature.getSiteId() != null) {
+            try {
+                this.site = SiteModelUtil.getSite(feature);
+            } catch (IOException e) {
+                log.log(Level.FINE, "Unable to restore site data during reattach", e);
+            }
+            this.coord = SiteModelUtil.getFREDCoordinate(feature);
+            this.datum = SiteModelUtil.getFREDDatum(feature);
+        }
     }
 
     private String getLocalityFromRequest(HttpServletRequest request) {
@@ -406,18 +424,30 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         if (coordType == null || coordType.isBlank()) {
             error.add(
                 new String[]{
-                    "Cordinate Type",
+                    "Coordinate Type",
                     "A Coordinate Type must be selected"});
         }
-        String east = request.getParameter("East");
-        String north = request.getParameter("North");
-        if ( east == null || east.isBlank() || north == null || north.isBlank()) {
+        String east = sanitizeCoordinateParameter(request.getParameter("East"));
+        String north = sanitizeCoordinateParameter(request.getParameter("North"));
+        if (east == null || east.isBlank() || north == null || north.isBlank()) {
             error.add(
                 new String[]{
-                    "Cordinates",
-                    "Location co-ordinates must be provided"});
+                    "Coordinates",
+                    "Location coordinates must be provided"});
         }
         if (!error.isEmpty()) {
+            throw new DataInputException(error);
+        }
+
+        originSystemId = getOriginSystemId(coordType);
+        try {
+            this.origCoord = buildOriginalCoordinate(
+                    originSystemId,
+                    sanitizeCoordinateParameter(request.getParameter("MapSheet")),
+                    east,
+                    north);
+        } catch (IllegalArgumentException ex) {
+            error.add(new String[]{"Coordinates", ex.getMessage()});
             throw new DataInputException(error);
         }
 
@@ -459,33 +489,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         //Feature name
         feature.setFeatureName(sanitizeHttpRequest.stripAllScripts(request.getParameter("FeatName")));
         
-        originSystemId = getOriginSystemId(request.getParameter("CoordType"));
-        //easting : longitude;  northing: latitude
-        switch(this.originSystemId){
-            case 29: //lat|lng
-            case 30:
-            case 28:
-            case 73:
-                this.origCoord = request.getParameter("North") + "|" + request.getParameter("East");
-                break;
-            case 33: //easting|northing
-            case 38: //easting|northing
-            case 7: //easting|northing
-            case 67: //easting|northing
-            case 68: //easting|northing
-            case 70: //easting|northing
-            case 71: //easting|northing
-            case 74: //easting|northing
-                this.origCoord = request.getParameter("East") + "|" + request.getParameter("North");   
-                break;            
-            case 16:
-            case 72:
-            case 17:
-            case 69:
-                this.origCoord = request.getParameter("MapSheet") + "|" + request.getParameter("East") + "|" + request.getParameter("North");
-                break;                
-                
-        }
 
         //Registration area
         String registrationAreaId = sanitizeHttpRequest.stripAllScripts(request.getParameter("RegAreaId"));
@@ -613,16 +616,6 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         } else if(site.getSiteId() > 0){  //updating an existing record(site values)
             try {
             //this means a site is already existing; trying to update the site info
-                int ownerId = Math.toIntExact(this.ownerId);
-                OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
-                int epsg = epsgInfo.getEpsg();
-                String gridref = epsgInfo.getGridref();
-                Double easting  = epsgInfo.getEasting();
-                Double northing = epsgInfo.getNorthing();
-                String latitude = epsgInfo.getLatitude();
-                String longitude = epsgInfo.getLongitude();
-                String format = epsgInfo.getFormat();
-                String auditMsg = "User: " + this.user.getFullName() + ", Coord: " + this.origCoord;
                 smi = updateSite(siteName, locDescr, accuracy, locMethodID, countryCode, locComms);
                 SiteModelUtil.updateSite(site.getSiteId(),smi);
             } catch (IOException ex) {
@@ -704,6 +697,48 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         return featureId;
     }
 
+    private String sanitizeCoordinateParameter(String value) {
+        if (value == null) {
+            return null;
+        }
+        return sanitizeHttpRequest.stripAllScripts(value).trim();
+    }
+
+    /**
+     * Builds the legacy FEATURE.ORIG_COORD value while normalising geographic
+     * coordinates to signed decimal degrees. Projected and map-sheet coordinate
+     * systems retain their established storage formats.
+     */
+    static String buildOriginalCoordinate(int originSystemId, String mapSheet, String east, String north) {
+        switch (originSystemId) {
+            case 29: // NZGD49
+            case 30: // Chatham Island Datum
+            case 28: // NZGD2000
+            case 73: // WGS84
+                String latitude = OrigCoordInfoUtil.parseCoordinate(north, 'L');
+                String longitude = OrigCoordInfoUtil.parseCoordinate(east, 'G');
+                return latitude + "|" + longitude;
+            case 16: // NZMS260
+            case 72: // NZTopo50
+            case 17: // NZMS1 South Island
+            case 69: // NZMS1 North Island
+                if (mapSheet == null || mapSheet.isBlank()) {
+                    throw new IllegalArgumentException("A map sheet is required for the selected coordinate type.");
+                }
+                return mapSheet + "|" + east + "|" + north;
+            default:
+                return east + "|" + north;
+        }
+    }
+
+    private OrigCoordInfoUtil.OrigCoord getOriginalCoordinateDetails() throws IOException {
+        OrigCoordInfoUtil.OrigCoord details = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+        if (details == null) {
+            throw new IllegalArgumentException("The selected coordinate system or coordinate value is not supported.");
+        }
+        return details;
+    }
+
     private SiteModelInput createNewSite(String featName, String description, Double accuracy, Integer locMethodId, String countryCode, String comments) throws IOException, JsonProcessingException {
         String siteName = featName;
         int methodID = 0;
@@ -716,7 +751,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         double heightAccuracy = -1; //site.getHeightAccuracy();
         String comment = comments;
         int ownerId = Math.toIntExact(this.ownerId);
-        OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+        OrigCoordInfoUtil.OrigCoord epsgInfo = getOriginalCoordinateDetails();
         int epsg = epsgInfo.getEpsg();
         String gridref = epsgInfo.getGridref();
         Double easting  = epsgInfo.getEasting();
@@ -743,7 +778,7 @@ public abstract class LocalitySiteapiDE extends DETemplate implements DataEntryF
         double heightAccuracy = -1; //site.getHeightAccuracy();
         String comment = comments;
         int ownerId = Math.toIntExact(this.ownerId);
-        OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(this.originSystemId, this.origCoord);
+        OrigCoordInfoUtil.OrigCoord epsgInfo = getOriginalCoordinateDetails();
         int epsg = epsgInfo.getEpsg();
         String gridref = epsgInfo.getGridref();
         Double easting  = epsgInfo.getEasting();

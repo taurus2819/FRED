@@ -19,7 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
+import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
@@ -27,7 +27,7 @@ import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.PersonRelationship;
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
@@ -105,7 +105,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
             this.generateDate = new Date();
             this.username = ((user != null) ? user.getGivenName() + " " + user.getFamilyName() : "unknown");
 
-            List<Record> records = new Vector<Record>();
+            List<FREDRecord> records = new Vector<FREDRecord>();
             List<Sample> samples = new Vector<Sample>();
             List<Feature> features = new Vector<Feature>();
 
@@ -120,7 +120,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
                         if (!FREDConstants.OUTCROP.equals(feature.getFeatureType())) {
                             samples.add(sample);
                         }
-                        for (Record record : sample.getRecords()) {
+                        for (FREDRecord record : sample.getRecords()) {
                             records.add(record);
                         }
                     }
@@ -131,7 +131,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
                     String[] recIDs = request.getParameterValues("RecIDs");
                     for (int i = 0; i < recIDs.length; i++) {
                         try {
-                            Record record = recordUtil.getRecord(Integer.parseInt(recIDs[i]));
+                            FREDRecord record = recordUtil.getRecord(Integer.parseInt(recIDs[i]));
                             records.add(record);
                         } catch (Exception _e) {
                         }
@@ -176,7 +176,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
         }
     }
 
-    private void makePdf(List<Record> records, List<Sample> samples, List<Feature> features) throws DocumentException, IOException, NamingException, SQLException {
+    private void makePdf(List<FREDRecord> records, List<Sample> samples, List<Feature> features) throws DocumentException, IOException, NamingException, SQLException {
         Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
         PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
         //writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders | PdfWriter.AllowCopy | PdfWriter.AllowAssembly);
@@ -235,7 +235,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
         }
         if (records.size() > 0) {
             int i = 0;
-            for (Record record : records) {
+            for (FREDRecord record : records) {
                 try {
                     writeHeader(record, document);
                     writeRecord(record, document, fonts);
@@ -355,7 +355,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
         writeHeader(sample.getFeature(), document, ((sample.getFeature().getFeatureType().equals("Vertical Section")) ? "V. Section" : sample.getFeature().getFeatureType()) + " Sample");
     }
 
-    private void writeHeader(Record record, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
+    private void writeHeader(FREDRecord record, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
         writeHeader(record.getSample().getFeature(), document, RecordUtil.getRecordType(record));
     }
 
@@ -602,7 +602,7 @@ public class FRFormServlet extends FREDHibernateServlet implements PdfPageEvent 
         }
     }
 
-    private void writeRecord(Record record, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
+    private void writeRecord(FREDRecord record, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
         Font[] bodyFonts = new Font[]{fonts[1], fonts[0]};
 
         //confidFlag = recordUtil.isRecordConfidential(record);

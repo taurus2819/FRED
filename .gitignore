@@ -105,3 +105,4 @@ fred-integration-tests/src/main/resources/hibernate/TaxonomicLookup.hbm.xml
 fred-integration-tests/src/main/resources/hibernate/UserRightView.hbm.xml
 fred-integration-tests/src/main/resources/hibernate/UserView.hbm.xml
 fred-integration-tests/src/main/resources/hibernate/Weathering.hbm.xml
+.vscode/settings.json

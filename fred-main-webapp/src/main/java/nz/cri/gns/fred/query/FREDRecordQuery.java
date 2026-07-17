@@ -162,7 +162,7 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
         f[5] = new PossibleValueField("r.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class));
         f[6] = new BasicTextField("r.paleontology.labNumber", "Lab Number");
         f[7] = new BasicTextField("r.paleontology.collectionComments", "Collection Comments");
-        f[8] = new TableRequiredPossibleValueField("palList.taxonomicGroup", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), PAL_LIST_TABLES, PAL_LIST_JOINS);
+        f[8] = new TableRequiredPossibleValueField("palList.taxonomicGroup.groupId", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), PAL_LIST_TABLES, PAL_LIST_JOINS);
         f[9] = new TableRequiredTextField("palList.taxonomicName", "Taxonomic Name", PAL_LIST_TABLES, PAL_LIST_JOINS);
         f[10] = new TableRequiredNumberField("palList.specimenCount", "Specimen Count", PAL_LIST_TABLES, PAL_LIST_JOINS);
         f[11] = new TableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", PAL_LIST_TABLES, PAL_LIST_JOINS);

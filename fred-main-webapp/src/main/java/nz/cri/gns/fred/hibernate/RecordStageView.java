@@ -2,7 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
-import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.FREDRecord;
 import nz.cri.gns.fred.model.Stage;
 
 public class RecordStageView implements Serializable, nz.cri.gns.fred.model.RecordStageView {
@@ -13,7 +13,7 @@ public class RecordStageView implements Serializable, nz.cri.gns.fred.model.Reco
     private String type;
     private Double baseAge;
     private Double topAge;
-    private Record record;
+    private FREDRecord record;
     private Stage stage;
   
 	public void setId(String id) {
@@ -48,11 +48,11 @@ public class RecordStageView implements Serializable, nz.cri.gns.fred.model.Reco
 		return topAge;
 	}
 
-	public void setRecord(Record record) {
+	public void setRecord(FREDRecord record) {
 		this.record = record;
 	}
 
-	public Record getRecord() {
+	public FREDRecord getRecord() {
 		return record;
 	}
 
