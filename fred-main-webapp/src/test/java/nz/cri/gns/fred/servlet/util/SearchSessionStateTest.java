@@ -105,11 +105,21 @@ public class SearchSessionStateTest {
 
     private HttpSession buildSession(Map<String, Object> attributes) {
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute(anyString())).thenAnswer(invocation -> attributes.get(invocation.getArgument(0)));
+
+        // Explicitly extract argument indices using modern Mockito invocation APIs
+        when(session.getAttribute(anyString())).thenAnswer(invocation -> {
+            String key = invocation.getArgument(0, String.class);
+            return attributes.get(key);
+        });
+
+        // Fixed matchers: combined anyString() with modern object wildcard mapping
         doAnswer(invocation -> {
-            attributes.put(invocation.getArgument(0), invocation.getArgument(1));
+            String key = invocation.getArgument(0, String.class);
+            Object value = invocation.getArgument(1);
+            attributes.put(key, value);
             return null;
-        }).when(session).setAttribute(anyString(), any());
+        }).when(session).setAttribute(anyString(), org.mockito.ArgumentMatchers.any());
+
         return session;
     }
 }

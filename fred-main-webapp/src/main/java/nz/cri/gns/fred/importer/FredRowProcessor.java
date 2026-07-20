@@ -252,7 +252,15 @@ public class FredRowProcessor extends TemplateRowProcessor {
         double heightAccuracy = -1; //site.getHeightAccuracy();
         String comment = directions;   //getRowValueString(row, "COORD_COMMENTS");
         int ownerId = Math.toIntExact(user.getId());
-        OrigCoordInfoUtil.OrigCoord epsgInfo = OrigCoordInfoUtil.getJson(origSystemId, origCoords);
+        OrigCoordInfoUtil.OrigCoord epsgInfo;
+        try {
+            epsgInfo = OrigCoordInfoUtil.getJson(origSystemId, origCoords);
+        } catch (IllegalArgumentException ex) {
+            throw new RowImportException(row, "NORTHING", "Invalid latitude/longitude coordinate: " + ex.getMessage(), ex);
+        }
+        if (epsgInfo == null) {
+            throw new RowImportException(row, "ORIG_SYSTEM_ID", "The coordinate system or coordinate value is not supported.", null);
+        }
         int epsg = epsgInfo.getEpsg();
         String gridref = epsgInfo.getGridref();
         Double easting  = epsgInfo.getEasting();
