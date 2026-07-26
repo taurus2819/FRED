@@ -10,10 +10,10 @@ import javax.servlet.http.HttpSession;
 /**
  * Stores and restores the user's search state in the HTTP session.
  *
- * <p>The current format stores one serializable {@link Snapshot} rather than
- * three separate session attributes. {@link #restore(HttpSession)} can still
- * read the legacy attributes and migrates them to the new format so sessions
- * created by the previous deployment remain usable.</p>
+ * <p>The current format stores one serializable {@link Snapshot}. During the
+ * Blue/Green transition the legacy attributes are also written so the previous
+ * application version can still read search state when requests move between
+ * old and new instances.</p>
  *
  * @author sitikond
  */
@@ -21,8 +21,8 @@ public final class SearchSessionState {
 
     private static final String SEARCH_STATE_KEY = "FRED.searchState";
 
-    // Legacy keys retained temporarily so sessions created by the previous
-    // application version can be restored during a Blue/Green deployment.
+    // Retained temporarily for compatibility with the previous application
+    // version while Blue and Green instances may both receive requests.
     private static final String LEGACY_SAMPLE_IDS_KEY = "FRED.samples";
     private static final String LEGACY_FEATURE_IDS_KEY = "FRED.features";
     private static final String LEGACY_QUERY_STRING_KEY = "FRED.queryString";
@@ -31,7 +31,11 @@ public final class SearchSessionState {
     }
 
     /**
-     * Stores the search results as one immutable, serializable session value.
+     * Stores the search results as one immutable, serializable snapshot.
+     *
+     * <p>Legacy values are dual-written during the deployment transition. They
+     * can be removed in a later release after all old application instances and
+     * old sessions have expired.</p>
      *
      * @param session HTTP session to write to
      * @param featureIds IDs for matching features; must not be {@code null}
@@ -46,15 +50,16 @@ public final class SearchSessionState {
 
         Snapshot snapshot = new Snapshot(featureIds, sampleIds, queryString);
         session.setAttribute(SEARCH_STATE_KEY, snapshot);
-        removeLegacyAttributes(session);
+        writeLegacyAttributes(session, snapshot);
     }
 
     /**
      * Restores the saved search state.
      *
-     * <p>The new snapshot format is checked first. If it is absent, the method
-     * reads the three legacy attributes, converts them into a snapshot, stores
-     * the snapshot under the new key, and removes the legacy attributes.</p>
+     * <p>The snapshot format is checked first. If it is absent, the method reads
+     * the three legacy attributes and stores an equivalent snapshot. The legacy
+     * values remain available so an older Blue/Green instance can continue to
+     * read the same session.</p>
      *
      * @param session HTTP session to read from
      * @return saved state, or an empty optional when no valid state exists
@@ -67,11 +72,8 @@ public final class SearchSessionState {
         }
 
         Optional<Snapshot> legacySnapshot = restoreLegacy(session);
-        legacySnapshot.ifPresent(snapshot -> {
-            session.setAttribute(SEARCH_STATE_KEY, snapshot);
-            removeLegacyAttributes(session);
-        });
-
+        legacySnapshot.ifPresent(snapshot ->
+                session.setAttribute(SEARCH_STATE_KEY, snapshot));
         return legacySnapshot;
     }
 
@@ -139,6 +141,14 @@ public final class SearchSessionState {
             return null;
         }
         return Collections.unmodifiableList(new ArrayList<>(source));
+    }
+
+    private static void writeLegacyAttributes(
+            HttpSession session,
+            Snapshot snapshot) {
+        session.setAttribute(LEGACY_FEATURE_IDS_KEY, snapshot.getFeatureIds());
+        session.setAttribute(LEGACY_SAMPLE_IDS_KEY, snapshot.getSampleIds());
+        session.setAttribute(LEGACY_QUERY_STRING_KEY, snapshot.getQueryString());
     }
 
     private static void removeLegacyAttributes(HttpSession session) {
