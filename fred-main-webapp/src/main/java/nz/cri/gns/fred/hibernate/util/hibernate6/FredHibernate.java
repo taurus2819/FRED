@@ -68,41 +68,48 @@ public class FredHibernate implements HibernateProvider {
     }
 
     private static FredHibernate buildJndiSessionFactory() {
-        Properties properties = new Properties();
+        Properties properties = baseProperties();
         properties.put("hibernate.connection.datasource", "java:comp/env/jdbc/fr");
-        properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-
-        SessionFactory factory = new Configuration()
-            .setProperties(properties)
-            .configure(getHibernateCfg())
-            .buildSessionFactory();
-
-        return new FredHibernate(factory);
+        return buildProvider(properties);
     }
 
     /**
      * Optional development/emergency fallback. No credentials are stored in
-     * source control. All four variables must be explicitly provided.
+     * source control. The connection details must be explicitly provided.
      */
     private static FredHibernate buildEnvironmentSessionFactory() {
-        String url = requiredEnvironmentVariable("FRED_DB_URL");
-        String username = requiredEnvironmentVariable("FRED_DB_USERNAME");
-        String password = requiredEnvironmentVariable("FRED_DB_PASSWORD");
-        String schema = System.getenv().getOrDefault("FRED_DB_SCHEMA", "fr");
+        Properties properties = baseProperties();
+        properties.put("hibernate.connection.driver_class", "org.postgresql.Driver");
+        properties.put("hibernate.connection.url", requiredEnvironmentVariable("FRED_DB_URL"));
+        properties.put("hibernate.connection.username", requiredEnvironmentVariable("FRED_DB_USERNAME"));
+        properties.put("hibernate.connection.password", requiredEnvironmentVariable("FRED_DB_PASSWORD"));
+        properties.put("hibernate.default_schema",
+            System.getenv().getOrDefault("FRED_DB_SCHEMA", "fr"));
+        return buildProvider(properties);
+    }
 
+    /**
+     * Builds a SessionFactory that can open Sessions using an explicitly
+     * supplied JDBC Connection. This preserves the existing test/tooling path
+     * without requiring environment credentials.
+     */
+    private static FredHibernate buildExplicitConnectionProvider() {
+        Properties properties = baseProperties();
+        properties.put("hibernate.default_schema", "fr");
+        return buildProvider(properties);
+    }
+
+    private static Properties baseProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        properties.put("hibernate.connection.driver_class", "org.postgresql.Driver");
-        properties.put("hibernate.connection.url", url);
-        properties.put("hibernate.connection.username", username);
-        properties.put("hibernate.connection.password", password);
-        properties.put("hibernate.default_schema", schema);
+        return properties;
+    }
 
+    private static FredHibernate buildProvider(Properties properties) {
         SessionFactory factory = new Configuration()
             .setProperties(properties)
             .configure(getHibernateCfg())
             .buildSessionFactory();
-
         return new FredHibernate(factory);
     }
 
@@ -118,14 +125,10 @@ public class FredHibernate implements HibernateProvider {
      * Allows tests/tools to provide an explicit connection before calling get().
      */
     public static synchronized FredHibernate usingConnection(Connection connection) {
-        FredHibernate result = buildEnvironmentSessionFactory();
-        result.useConnection(connection);
+        FredHibernate result = buildExplicitConnectionProvider();
+        result.connection = Objects.requireNonNull(connection, "connection");
         instance = result;
         return result;
-    }
-
-    private void useConnection(Connection connection) {
-        this.connection = connection;
     }
 
     private static URL getHibernateCfg() {
@@ -140,7 +143,9 @@ public class FredHibernate implements HibernateProvider {
         Session current = session.get();
         if (current == null) {
             try {
-                current = sessionFactory.openSession();
+                current = connection == null
+                    ? sessionFactory.openSession()
+                    : sessionFactory.withOptions().connection(connection).openSession();
                 session.set(current);
             } catch (HibernateException e) {
                 throw new IllegalStateException("Unable to open Hibernate session", e);
@@ -168,13 +173,5 @@ public class FredHibernate implements HibernateProvider {
 
     public DAOFactory getDAOFactory() {
         return factory;
-    }
-
-    /**
-     * Retained for compatibility with code/tests that inspect the explicit
-     * connection configured through usingConnection().
-     */
-    Connection configuredConnection() {
-        return connection;
     }
 }
