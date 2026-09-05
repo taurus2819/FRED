@@ -7,36 +7,51 @@ import javax.servlet.ServletException;
 import nz.cri.gns.fred.hibernate.util.hibernate6.FredHibernate;
 
 /**
- * A utility for safely closing the current hibernate session.
- * This should be the only code that directly calls FredHibernate.get().closeSession() so that
- * we can add more complex features like transaction rollback by modifying a single place.
- * 
+ * Central request-boundary helper for Hibernate session cleanup.
+ *
+ * <p>Keeping this concern in one place is important before introducing
+ * concurrency: a Hibernate Session is request/thread scoped and must not be
+ * shared with virtual-thread tasks.</p>
  */
+public final class HibernateServletUtil {
 
-public class HibernateServletUtil {
+    private static final Logger LOG = Logger.getLogger(HibernateServletUtil.class.getName());
 
-    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.hibernate.util.HibernateServletUtil");
+    private HibernateServletUtil() {
+    }
 
+    @FunctionalInterface
     public interface ServletFunction {
-
         void service() throws ServletException, IOException;
     }
 
     /**
-     * Wraps a function so that in the end, the current hibernate session is safely closed.
-     * @param sf meant to be HttpServlet.service
-     * @throws ServletException
-     * @throws IOException 
+     * Executes servlet work and always closes the current Hibernate session.
+     * If request handling has already failed, a cleanup failure is attached as
+     * a suppressed exception rather than replacing the original failure.
      */
-    public static void withHibernateSession(ServletFunction sf) throws ServletException, IOException {
+    public static void withHibernateSession(ServletFunction function)
+        throws ServletException, IOException {
+
+        Throwable requestFailure = null;
         try {
-            sf.service();
+            function.service();
+        } catch (ServletException | IOException | RuntimeException | Error e) {
+            requestFailure = e;
+            throw e;
         } finally {
             try {
                 FredHibernate.get().closeSession();
-            } catch (Exception e) {
-                log.log(Level.WARNING, "Could not close hibernate session", e);
-                throw (e);
+            } catch (RuntimeException | Error closeFailure) {
+                if (requestFailure != null) {
+                    requestFailure.addSuppressed(closeFailure);
+                    LOG.log(Level.WARNING,
+                        "Could not close Hibernate session after request failure",
+                        closeFailure);
+                } else {
+                    LOG.log(Level.WARNING, "Could not close Hibernate session", closeFailure);
+                    throw closeFailure;
+                }
             }
         }
     }
